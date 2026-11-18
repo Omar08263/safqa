@@ -1,7 +1,7 @@
 // Safqa service worker: offline support.
 // - Hashed build assets: cache-first (they never change).
 // - Pages, demo snapshot and GET API calls: network-first, falling back to cache.
-const VERSION = 'safqa-v3';
+const VERSION = 'safqa-v4';
 const SHELL = ['/', '/index.html', '/privacy.html', '/terms.html', '/manifest.webmanifest', '/favicon.svg', '/brand/safqa-mark.svg', '/brand/icon-192.png'];
 
 self.addEventListener('install', (event) => {

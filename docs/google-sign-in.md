@@ -1,10 +1,23 @@
 # Google sign-in for Safqa
 
-Safqa ships a real Google Identity Services (GIS) button. It stays in a clear
-"not configured yet" state until a Google **OAuth Client ID** is provided. It
-never fakes a login.
+Safqa ships a real Google sign-in button. It stays in a clear "not configured
+yet" state until a Google **OAuth Client ID** is provided. It never fakes a
+login.
 
 ## Static demo (Hugging Face static Space)
+
+The live static Space is served with `Cross-Origin-Opener-Policy: same-origin`
+by Hugging Face. That header cannot be changed from the Space (it is not a
+meta tag). It isolates the page from popups, so the Google Identity Services
+popup never posts the credential back — the popup sits on
+`accounts.google.com/gsi/transform` and the app never logs in.
+
+The static demo therefore uses the OpenID Connect **implicit redirect** flow
+as the primary path (`response_type=id_token`). After the user picks an
+account, Google redirects to the exact registered URI with `#id_token=...`.
+Safqa reads that fragment *before* the hash router starts, verifies `state`,
+`nonce`, `aud` and `exp`, creates the local demo session, and sends the user
+to `#/dashboard`.
 
 1. Open <https://console.cloud.google.com/> and create a project (e.g. `Safqa`).
 2. **APIs & Services → OAuth consent screen**: choose *External*, app name
@@ -15,7 +28,10 @@ never fakes a login.
    - Authorized JavaScript origins:
      - `https://safqa-eg-safqa.static.hf.space`
      - `http://localhost:47321` (local dev, optional)
-   - No redirect URI is needed for the GIS button.
+   - Authorized redirect URIs (exact, no trailing slash or path):
+     - `https://safqa-eg-safqa.static.hf.space`
+     - `http://localhost:47321` (local dev, optional)
+     - `http://localhost:8787/api/auth/google/callback` (real API mode only)
 4. Copy the Client ID (it ends with `.apps.googleusercontent.com`). It is a
    public identifier, not a secret.
 5. Rebuild and redeploy with it:
@@ -25,15 +41,14 @@ never fakes a login.
    ```
 
 The live static Space already ships with the production Client ID
-`700154178904-k0hi0kp5v19m775u8t1bt6m6mnfhrghc.apps.googleusercontent.com`
-(authorized JavaScript origin: `https://safqa-eg-safqa.static.hf.space`).
+`700154178904-k0hi0kp5v19m775u8t1bt6m6mnfhrghc.apps.googleusercontent.com`.
 It is a public identifier, baked into `apps/web/.env.production` and used as
 the default in `deploy/hf/deploy-static.sh`.
 
-In static mode the ID token is decoded in the browser and checked for audience
-and expiry only (there is no server to verify the signature). The name, email
-and picture from the token create a local account in that browser's
-localStorage, like every other demo account.
+In static mode the ID token is decoded in the browser and checked for issuer,
+audience, expiry, nonce and email verification only (there is no server to
+verify the signature). The name, email and picture from the token create a
+local account in that browser's localStorage, like every other demo account.
 
 ## Real API mode
 
