@@ -173,7 +173,7 @@ After a fetch, JSON-LD (`parseJsonLdOffer`) is the only price/title extractor. M
 
 ### Deploy
 
-- **Free Render demo:** `render.yaml` at the repo root provisions a free web API (Docker), a free static site, free Postgres, and free Key Value. After pushing to GitHub, open `https://dashboard.render.com/blueprint/new?repo=https://github.com/FY881/safqa`, connect GitHub if asked, and click Apply. The public site URL is the `safqa-web` service; demo login is `demo@safqa.app` / `demo1234`. Free Postgres expires after 30 days, free web services spin down after 15 minutes idle, and the background worker is not included (workers are not free). `LLM_PROVIDER=mock` so no model keys are required.
+- **Free Render demo:** `render.yaml` at the repo root provisions a free web API (Docker), a free static site, free Postgres, and free Key Value. After pushing to GitHub, open `https://dashboard.render.com/blueprint/new?repo=https://github.com/Omar08263/safqa`, connect GitHub if asked, and click Apply. The public site URL is the `safqa-web` service; demo login is `demo@safqa.app` / `demo1234`. Free Postgres expires after 30 days, free web services spin down after 15 minutes idle, and the background worker is not included (workers are not free). `LLM_PROVIDER=mock` so no model keys are required.
 - **Web (other hosts):** Vercel (or any static host). Build command `pnpm --filter @safqa/web build`, output `apps/web/dist`. Set `VITE_API_URL` to the public API origin. The service worker registers in production builds.
 - **API and worker:** a small VPS (Hetzner or similar). Copy the repo, set a real `AUTH_SECRET`, and run `docker compose up -d`. Put Caddy or nginx in front of port 8787 for TLS. Do not publish Postgres or Redis.
 - **Backups:** `pg_dump` the volume nightly. `price_points` grows with every observation; a hypertable plus a retention policy is the next step once Timescale is on.
@@ -227,6 +227,6 @@ pnpm dev:mobile
 
 ### النشر
 
-للتجربة المجانية على Render: بعد رفع المستودع، افتح `https://dashboard.render.com/blueprint/new?repo=https://github.com/FY881/safqa` واضغط Apply. رابط الموقع هو خدمة `safqa-web`. الدخول التجريبي `demo@safqa.app` / `demo1234`. قاعدة Postgres المجانية تنتهي بعد ٣٠ يوم، والخدمة بتنام بعد ١٥ دقيقة من غير زيارات، والعامل الخلفي مش مشمول لأن الخطة المجانية ما فيهاش workers.
+للتجربة المجانية على Render: بعد رفع المستودع، افتح `https://dashboard.render.com/blueprint/new?repo=https://github.com/Omar08263/safqa` واضغط Apply. رابط الموقع هو خدمة `safqa-web`. الدخول التجريبي `demo@safqa.app` / `demo1234`. قاعدة Postgres المجانية تنتهي بعد ٣٠ يوم، والخدمة بتنام بعد ١٥ دقيقة من غير زيارات، والعامل الخلفي مش مشمول لأن الخطة المجانية ما فيهاش workers.
 
 بدائل أخرى: الويب على Vercel مع `VITE_API_URL`. الـ API والعامل على VPS صغير بـ Docker. سيب Postgres و Redis جوه الشبكة الداخلية، وغير `AUTH_SECRET`، واعمل نسخة احتياطية بـ `pg_dump`.

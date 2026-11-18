@@ -1,7 +1,7 @@
 # Safqa Render Blueprint (free-tier demo).
 #
 # After this file is on the GitHub default branch, apply it at:
-#   https://dashboard.render.com/blueprint/new?repo=https://github.com/FY881/safqa
+#   https://dashboard.render.com/blueprint/new?repo=https://github.com/Omar08263/safqa
 #
 # You need a free Render account with GitHub connected. Do not add a payment
 # method unless you later choose to upgrade. This file uses only free plans.
