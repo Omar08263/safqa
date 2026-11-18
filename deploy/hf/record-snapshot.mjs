@@ -42,7 +42,9 @@ const ids = new Set([...all.items, ...deals.items, ...deals.suspicious].map((p) 
 const products = {};
 for (const id of ids) {
   const entry = { detail: await get(`/api/products/${id}`) };
-  for (const part of ['history', 'debate', 'prediction', 'stack']) {
+  // 'stack' (coupon/bank stacking) is NOT recorded: its codes are seeded
+  // examples (e.g. SAFQA50), not real offers, so the live site must not show them.
+  for (const part of ['history', 'debate', 'prediction']) {
     try {
       entry[part] = await get(`/api/products/${id}/${part}`);
     } catch (error) {
@@ -86,8 +88,46 @@ for (const message of prompts) {
   });
 }
 
+// Store-published facts and gallery images (packages/db/src/crawl-media.ts).
+const mediaPath = new URL('../live/media.json', import.meta.url);
+const media = existsSync(mediaPath) ? JSON.parse(readFileSync(mediaPath, 'utf8')).products ?? {} : {};
+const imageOf = (id) => (media[id]?.images?.length ? `/media/${id}/0-t.webp` : null);
+for (const [id, entry] of Object.entries(products)) {
+  const m = media[id];
+  if (m) {
+    entry.media = {
+      images: m.images.map((img, i) => ({ full: `/media/${id}/${i}.webp`, thumb: `/media/${id}/${i}-t.webp`, store: img.store, src: img.src })),
+      description: m.description ?? null,
+      specs: m.specs ?? [],
+      ratings: m.ratings ?? [],
+      crawledAt: m.crawledAt,
+    };
+  }
+  if (entry.detail) entry.detail.image = imageOf(id);
+}
+const withImage = (list) => list?.map((p) => ({ ...p, image: imageOf(p.id) }));
+all.items = withImage(all.items);
+deals.items = withImage(deals.items);
+deals.suspicious = withImage(deals.suspicious);
+for (const key of Object.keys(deals)) if (Array.isArray(deals[key]) && deals[key][0]?.id) deals[key] = withImage(deals[key]);
+
+// Daily FX reference rates (free, keyless: open.er-api.com — "Rates By Exchange Rate API").
+// Cached in deploy/live/fx.json so the toolbox works even if the fetch fails.
+const fxPath = new URL('../live/fx.json', import.meta.url);
+let fx = existsSync(fxPath) ? JSON.parse(readFileSync(fxPath, 'utf8')) : null;
+try {
+  const r = await fetch('https://open.er-api.com/v6/latest/USD', { signal: AbortSignal.timeout(15000) });
+  const j = await r.json();
+  if (j?.result === 'success' && j.rates?.EGP) {
+    fx = { base: 'USD', rates: j.rates, updatedAt: new Date(j.time_last_update_unix * 1000).toISOString(), source: 'https://www.exchangerate-api.com' };
+    writeFileSync(fxPath, `${JSON.stringify(fx, null, 1)}\n`);
+  }
+} catch (e) {
+  console.warn('fx fetch failed, using cached rates:', e?.message ?? e);
+}
+
 writeFileSync(
   out,
-  JSON.stringify({ recordedAt: new Date().toISOString(), all: all.items, routes, products, demo, chats }),
+  JSON.stringify({ recordedAt: new Date().toISOString(), all: all.items, routes, products, demo, chats, fx }),
 );
 console.log(`wrote ${out}: ${ids.size} products, ${chats.length} chats`);

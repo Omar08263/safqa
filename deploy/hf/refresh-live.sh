@@ -100,6 +100,8 @@ api_ok && echo "api: up ($API)" || { echo "API did not start; see $STATE_DIR/api
 
 # --- Crawl real prices --------------------------------------------------------------
 (cd packages/db && npx tsx src/refresh-live.ts "$STATUS")
+# Store gallery images, descriptions and specs (re-read weekly per product).
+(cd packages/db && npx tsx src/crawl-media.ts) || echo "media crawl failed (keeping previous media.json)"
 T1=$(date +%s)
 
 # --- Snapshot + deploy ------------------------------------------------------------------

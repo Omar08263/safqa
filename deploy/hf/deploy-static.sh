@@ -14,6 +14,8 @@ export VITE_GOOGLE_CLIENT_ID="${VITE_GOOGLE_CLIENT_ID:-700154178904-k0hi0kp5v19m
 ( cd apps/web && VITE_DEMO_MODE=static VITE_API_URL= ../../node_modules/.bin/vite build --outDir "$OUT" --emptyOutDir )
 mkdir -p "$OUT/demo"
 node deploy/hf/record-snapshot.mjs "$OUT/demo/snapshot.json"
+# Store gallery images (crawled by packages/db/src/crawl-media.ts) as WebP.
+python3 deploy/hf/build-media.py "$OUT" || echo "media: skipped (build-media.py failed)"
 cp deploy/hf/README.static-space.md "$OUT/README.md"
 hf repos create "$SPACE" --type space --space-sdk static --public --exist-ok
 hf upload "$SPACE" "$OUT" . --type space --delete '*' --commit-message "Deploy Safqa static demo"

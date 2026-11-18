@@ -26,3 +26,4 @@ dump.rdb
 *.rdb
 .github/workflows/
 apps/web/public/demo/
+apps/web/public/media/
