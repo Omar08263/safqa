@@ -24,9 +24,16 @@ never fakes a login.
    VITE_GOOGLE_CLIENT_ID=1234-abc.apps.googleusercontent.com deploy/hf/deploy-static.sh
    ```
 
+The live static Space already ships with the production Client ID
+`700154178904-k0hi0kp5v19m775u8t1bt6m6mnfhrghc.apps.googleusercontent.com`
+(authorized JavaScript origin: `https://safqa-eg-safqa.static.hf.space`).
+It is a public identifier, baked into `apps/web/.env.production` and used as
+the default in `deploy/hf/deploy-static.sh`.
+
 In static mode the ID token is decoded in the browser and checked for audience
-and expiry only (there is no server to verify the signature), and the account
-lives in that browser's localStorage, like every other demo account.
+and expiry only (there is no server to verify the signature). The name, email
+and picture from the token create a local account in that browser's
+localStorage, like every other demo account.
 
 ## Real API mode
 

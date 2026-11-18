@@ -23,6 +23,8 @@ const lz = <M extends Record<string, unknown>>(load: () => Promise<M>, name: key
   lazy(async () => ({ default: (await load())[name] as React.ComponentType<any> }));
 const HelpPage = lz(() => import('./pages/help'), 'HelpPage');
 const AboutPage = lz(() => import('./pages/help'), 'AboutPage');
+const PrivacyPage = lz(() => import('./pages/legal'), 'PrivacyPage');
+const TermsPage = lz(() => import('./pages/legal'), 'TermsPage');
 const CalendarPage = lz(() => import('./pages/explore'), 'CalendarPage');
 const CategoriesPage = lz(() => import('./pages/explore'), 'CategoriesPage');
 const InsightsPage = lz(() => import('./pages/explore'), 'InsightsPage');
@@ -172,6 +174,8 @@ const extraRoutes = [
   simple('/referral', () => <ReferralPage />),
   simple('/help', () => <HelpPage />),
   simple('/about', () => <AboutPage />),
+  simple('/privacy', () => <PrivacyPage />),
+  simple('/terms', () => <TermsPage />),
 ];
 
 function numberOrUndefined(value: unknown): number | undefined {

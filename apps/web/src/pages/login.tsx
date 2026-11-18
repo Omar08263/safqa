@@ -173,6 +173,9 @@ export function LoginPage() {
               ))}
             </div>
             <div className="mt-5"><GoogleButton onDone={done} /></div>
+            <p className="mt-3 text-center text-[11px] leading-5 text-muted">
+              {tr('بالمتابعة أنت توافق على', 'By continuing you agree to the')} <a href="/terms.html" className="font-semibold text-primary">{tr('الشروط والأحكام', 'Terms')}</a> {tr('و', 'and')} <a href="/privacy.html" className="font-semibold text-primary">{tr('سياسة الخصوصية', 'Privacy Policy')}</a>.
+            </p>
             <div className="my-5 flex items-center gap-3 text-xs text-muted"><span className="h-px flex-1 bg-border" />{tr('أو بالبريد الإلكتروني', 'or with email')}<span className="h-px flex-1 bg-border" /></div>
           </>
         ) : null}
@@ -211,7 +214,7 @@ export function LoginPage() {
             </div>
           ) : null}
           {mode === 'register' ? (
-            <label className="flex items-start gap-2 text-xs text-muted"><input type="checkbox" name="terms" className="mt-0.5 accent-[var(--saffron)]" /> {tr('موافق إن صفقة تحفظ بياناتي عشان التنبيهات، وأقدر أمسحها في أي وقت.', 'I agree Safqa stores my data for alerts, and I can delete it any time.')}</label>
+            <label className="flex items-start gap-2 text-xs text-muted"><input type="checkbox" name="terms" className="mt-0.5 accent-[var(--saffron)]" /> <span>{tr('أوافق على', 'I agree to the')} <a href="/terms.html" className="font-semibold text-primary">{tr('الشروط والأحكام', 'Terms')}</a> {tr('و', 'and')} <a href="/privacy.html" className="font-semibold text-primary">{tr('سياسة الخصوصية', 'Privacy Policy')}</a>{tr('، وإن بيانات التنبيهات تتحفظ عندي وأقدر أمسحها في أي وقت.', ', and that alert data is stored on my device and I can delete it any time.')}</span></label>
           ) : null}
           {info ? <p className="rounded-2xl bg-palm/10 px-3 py-2 text-sm text-palm">{info}</p> : null}
           {error ? <p className="rounded-2xl bg-destructive/10 px-3 py-2 text-sm text-destructive" role="alert">{error}</p> : null}

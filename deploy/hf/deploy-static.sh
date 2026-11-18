@@ -8,7 +8,10 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 SPACE="${SPACE:-safqa-eg/safqa}"
 OUT="$(mktemp -d)"
-VITE_DEMO_MODE=static VITE_API_URL= pnpm --filter @safqa/web exec vite build --outDir "$OUT" --emptyOutDir
+# Public GIS client ID (not a secret). Override by exporting VITE_GOOGLE_CLIENT_ID.
+export VITE_GOOGLE_CLIENT_ID="${VITE_GOOGLE_CLIENT_ID:-700154178904-k0hi0kp5v19m775u8t1bt6m6mnfhrghc.apps.googleusercontent.com}"
+# Run Vite from apps/web so .env.production is loaded. Avoid the corepack pnpm shim.
+( cd apps/web && VITE_DEMO_MODE=static VITE_API_URL= ../../node_modules/.bin/vite build --outDir "$OUT" --emptyOutDir )
 mkdir -p "$OUT/demo"
 node deploy/hf/record-snapshot.mjs "$OUT/demo/snapshot.json"
 cp deploy/hf/README.static-space.md "$OUT/README.md"

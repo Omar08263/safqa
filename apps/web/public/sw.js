@@ -1,8 +1,8 @@
 // Safqa service worker: offline support.
 // - Hashed build assets: cache-first (they never change).
 // - Pages, demo snapshot and GET API calls: network-first, falling back to cache.
-const VERSION = 'safqa-v2';
-const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/favicon.svg', '/brand/safqa-mark.svg', '/brand/icon-192.png'];
+const VERSION = 'safqa-v3';
+const SHELL = ['/', '/index.html', '/privacy.html', '/terms.html', '/manifest.webmanifest', '/favicon.svg', '/brand/safqa-mark.svg', '/brand/icon-192.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL).catch(() => undefined)).then(() => self.skipWaiting()));
@@ -30,16 +30,17 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   const authed = req.headers.has('authorization');
+  const isLegal = url.pathname === '/privacy.html' || url.pathname === '/terms.html';
   event.respondWith(
     fetch(req)
       .then((res) => {
         if (res.ok && !authed) {
           const copy = res.clone();
-          caches.open(VERSION).then((c) => c.put(req.mode === 'navigate' ? '/index.html' : req, copy));
+          caches.open(VERSION).then((c) => c.put(isLegal ? req : req.mode === 'navigate' ? '/index.html' : req, copy));
         }
         return res;
       })
-      .catch(() => caches.match(req.mode === 'navigate' ? '/index.html' : req).then((hit) => hit || caches.match('/index.html'))),
+      .catch(() => caches.match(isLegal ? req : req.mode === 'navigate' ? '/index.html' : req).then((hit) => hit || (isLegal ? undefined : caches.match('/index.html')))),
   );
 });
 

@@ -186,6 +186,13 @@ export function Shell({ children }: { children: ReactNode }) {
             ))}
           </ul>
         </div>
+        <p className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pb-3 text-xs text-muted">
+          <a href="/privacy.html" className="hover:text-foreground">{tr('سياسة الخصوصية', 'Privacy Policy')}</a>
+          <Link to="/privacy" className="hover:text-foreground">{tr('الخصوصية داخل الموقع', 'In-app privacy')}</Link>
+          <a href="/terms.html" className="hover:text-foreground">{tr('الشروط والأحكام', 'Terms of Service')}</a>
+          <Link to="/terms" className="hover:text-foreground">{tr('قواعد المجتمع', 'Community rules')}</Link>
+          <a href="mailto:rxcc@agentmail.to" className="hover:text-foreground">rxcc@agentmail.to</a>
+        </p>
         <p className="pb-6 text-center text-xs text-muted">© 2026 Safqa · {tr('صُنع في مصر', 'Made in Egypt')} 🇪🇬</p>
       </footer>
 
