@@ -32,7 +32,7 @@ export function LivePage() {
   const tr = useTr();
   const { user } = useSession();
   const [up, setUp] = useState<boolean | null>(null);
-  const [tab, setTab] = useState<'chat' | 'feed'>('chat');
+  const [tab, setTab] = useState<'chat' | 'feed'>(() => (new URLSearchParams(window.location.hash.split('?')[1] ?? window.location.search).get('tab') === 'feed' ? 'feed' : 'chat'));
   const [rules, setRules] = useState<{ rules: { id: string; ar: string }[]; version: string } | null>(null);
   const [needRules, setNeedRules] = useState(false);
   const linked = Boolean(user) && signedInToBackend();

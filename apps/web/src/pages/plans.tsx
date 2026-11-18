@@ -1,16 +1,17 @@
 import { Check, Crown, HelpCircle, Minus, Sparkles } from 'lucide-react';
 import { useState } from 'react';
-import { confetti, PageHeader, useToast } from '../fx/fx';
+import { PageHeader, useToast } from '../fx/fx';
 import { usePrefs } from '../lib/prefs';
 import { haptic, play } from '../lib/sound';
-import { joinWaitlist, perks, type Tier, tiers, useTier, useWaitlist } from '../lib/tiers';
+import { payUrl, perks, type Tier, tiers, useTier } from '../lib/tiers';
 import { useTr } from '../lib/tr';
 
 const faqs = [
-  ['هو فيه دفع أو بطاقة؟', 'لأ خالص. صفقة مفيهاش أي دفع دلوقتي. «مجاني» و«فضّي» شغالين ببلاش، و«ذهبي» و«ماسي» لسه قريبًا ومش هنطلب منك بطاقة لا دلوقتي ولا من غير ما نقولك بوضوح.', 'Is there any payment or card?', 'No. Safqa takes no payment today. Free and Silver work at no cost; Gold and Diamond are coming soon and we will never ask for a card without telling you clearly.'],
-  ['إيه الفرق اللي هحسّه فعلًا؟', 'المراقبة والتنبيهات والمجموعات بتكبر مع الباقة، وده شغال من دلوقتي. الحاجات اللي محتاجة سيرفر (الدعم بأولوية، الوصول المبكر، تيليجرام الخاص) مكتوب جنبها «قريبًا».', 'What will I actually notice?', 'Watchlist, alerts and collections grow with your plan, enforced today. Server-side perks (priority support, early access, private Telegram) are marked "coming soon".'],
-  ['ليه «فضّي» مجاني؟', 'لأننا في فترة الإطلاق وعايزين أكبر عدد يجرّب. لما يتغير ده هنعرّفك قبلها، ومش هنقفل حاجة عندك فجأة.', 'Why is Silver free?', 'We are in launch. If that changes we will tell you first, and nothing you saved will be locked suddenly.'],
-  ['بياناتي بتتحفظ فين؟', 'في المتصفح بتاعك (النسخة دي من غير قاعدة بيانات مشتركة). لو مسحت بيانات الموقع هترجع للباقة المجانية.', 'Where is my data stored?', 'In your browser (this build has no shared database). Clearing site data resets you to Free.'],
+  ['بادفع إزاي؟', 'بإنستاباي بس، من صفحة الدفع: بتحوّل المبلغ بالظبط وتكتب كود الدفع في الملاحظة وترفع صورة الإيصال. وكيل ذكاء اصطناعي 🤖 بيراجع الإيصال فورًا وصاحب الموقع بيأكد. مفيش بطاقات ولا اشتراك بيتجدد لوحده.', 'How do I pay?', 'Only via InstaPay on the payment page: transfer the exact amount with your payment code in the note and upload the receipt. An AI agent 🤖 checks it instantly and the owner confirms. No cards, no auto-renewal.'],
+  ['الأسعار كام؟', 'فضّي 49 ج.م، ذهبي 99 ج.م، ماسي 199 ج.م في الشهر. ولو معاك كود خصم اكتبه في صفحة الدفع.', 'How much?', 'Silver EGP 49, Gold EGP 99, Diamond EGP 199 per month. Have a discount code? Enter it on the payment page.'],
+  ['هيتجدد لوحده؟', 'لأ. الباقة بتشتغل للمدة اللي دفعتها، وبعدها بترجع مجاني لوحدك من غير ما تخسر حاجة اتحفظت.', 'Does it auto-renew?', 'No. The plan runs for the months you paid, then you go back to Free without losing anything you saved.'],
+  ['إيه الفرق اللي هحسّه فعلًا؟', 'المراقبة والتنبيهات والمجموعات وأسئلة الوكلاء بتكبر مع الباقة، وتنبيهات تيليجرام الخاصة بتتفتح من الفضّي. الحدود دي السيرفر هو اللي بيطبّقها.', 'What will I actually notice?', 'Watchlist, alerts, collections and agent questions grow with your plan, and private Telegram alerts start at Silver. The server enforces these limits.'],
+  ['باقتي بتتحفظ فين؟', 'على حسابك في السيرفر، فبتبان نفسها على الموقع والتطبيق وتيليجرام. لو النت فصل بنستخدم آخر باقة عرفناها.', 'Where is my plan stored?', 'On your account on the server, so it is the same on the site, the app and Telegram. Offline we use the last known plan.'],
   ['الأسعار حقيقية؟', 'أيوه. الأسعار بتتقري كل يوم من صفحات المتاجر نفسها (بي.تك، 2B، راية، أمازون مصر) والباقات مش بتغيّر الأسعار ولا الترتيب.', 'Are prices real?', 'Yes. Prices are read daily from the stores\' own pages, and plans never change prices or ranking.'],
 ] as const;
 
@@ -18,27 +19,17 @@ export function PlansPage() {
   const tr = useTr();
   const { locale } = usePrefs();
   const toast = useToast();
-  const { tier: mine, setTier } = useTier();
-  const [waitlist] = useWaitlist();
+  const { tier: mine, until, signedIn } = useTier();
   const [preview, setPreview] = useState<string | null>(null);
 
-  function choose(t: Tier, el: HTMLElement) {
+  function choose(t: Tier) {
     play(t.sound, true);
-    haptic('success');
-    const r = el.getBoundingClientRect();
-    if (t.availability === 'soon') {
-      joinWaitlist(t.id);
-      toast(tr(`تمام! هنبلّغك أول ما باقة ${t.ar} ${t.emoji} تنزل`, `Done! We'll tell you when ${t.en} ${t.emoji} launches`), 'success');
+    haptic('light');
+    if (t.id === 'free') {
+      toast(mine.id === 'free' ? tr('إنت على المجاني بالفعل 🌱', "You're already on Free 🌱") : tr('باقتك بترجع مجاني لوحدها لما مدتها تخلص، من غير ما تخسر حاجة.', 'Your plan returns to Free by itself when it ends; nothing is lost.'), 'info');
       return;
     }
-    const prev = mine;
-    setTier(t.id);
-    if (t.id !== 'free') confetti({ x: r.left + r.width / 2, y: r.top, count: t.id === 'silver' ? 70 : 120 });
-    toast(
-      t.id === 'free' ? tr('رجعت للباقة المجانية 🌱', 'Back on Free 🌱') : tr(`مبروك! باقة ${t.ar} ${t.emoji} اتفعّلت ببلاش`, `${t.en} ${t.emoji} is on, free during launch`),
-      'success',
-      { action: { label: tr('تراجع', 'Undo'), onClick: () => setTier(prev.id) } },
-    );
+    window.location.hash = payUrl(t.id).slice(1);
   }
 
   return (
@@ -46,14 +37,13 @@ export function PlansPage() {
       <PageHeader
         kicker={tr('الباقات والامتيازات', 'Plans & perks')}
         title={tr('اختار الباقة اللي تناسبك', 'Pick the plan that fits you')}
-        lede={tr('مفيش دفع ولا بطاقات. «مجاني» و«فضّي» شغالين دلوقتي ببلاش، و«ذهبي» و«ماسي» قريبًا. كل باقة ليها شارة وصوت وتأثير خاص بيها.', 'No payment, no cards. Free and Silver work today at no cost; Gold and Diamond are coming soon. Each plan has its own badge, sound and effect.')}
+        lede={tr('ابدأ ببلاش، ورقّي وقت ما تحب: فضّي 49، ذهبي 99، ماسي 199 ج.م في الشهر بإنستاباي، من غير بطاقات ومن غير تجديد تلقائي. كل باقة ليها شارة وصوت وتأثير خاص بيها.', 'Start free and upgrade whenever you like: Silver 49, Gold 99, Diamond 199 EGP / month via InstaPay. No cards, no auto-renewal. Each plan has its own badge, sound and effect.')}
         icon={<Crown className="h-6 w-6" />}
       />
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label={tr('الباقات', 'Plans')}>
         {tiers.map((t) => {
           const active = mine.id === t.id;
-          const waiting = waitlist.includes(t.id);
           return (
             <article key={t.id} className={`relative flex flex-col overflow-hidden rounded-[1.75rem] border bg-card p-5 transition ${t.glow} ${active ? 'border-primary ring-2 ring-primary/40' : 'border-border'}`}>
               <div className="absolute inset-x-0 top-0 h-28 opacity-25" style={{ background: `linear-gradient(135deg, ${t.colors[0]}, ${t.colors[2]})` }} aria-hidden="true" />
@@ -62,8 +52,8 @@ export function PlansPage() {
                   <img src={t.badge} alt="" className={`h-20 w-20 drop-shadow-xl transition duration-500 ${preview === t.id ? 'scale-110 rotate-6' : ''}`} />
                   {t.id === 'diamond' ? <span className="sparkle absolute -end-1 -top-1 text-lg" aria-hidden="true">✨</span> : null}
                 </button>
-                <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${t.availability === 'soon' ? 'bg-accent text-muted' : t.availability === 'launch-free' ? 'bg-palm/15 text-palm' : 'bg-primary/15 text-primary'}`}>
-                  {t.availability === 'soon' ? tr('قريبًا', 'Coming soon') : t.availability === 'launch-free' ? tr('مجاني فترة الإطلاق', 'Free during launch') : tr('متاح دايمًا', 'Always free')}
+                <span className={`num rounded-full px-2.5 py-1 text-[12px] font-bold ${t.priceEgp === 0 ? 'bg-palm/15 text-palm' : 'bg-primary/15 text-primary'}`}>
+                  {locale === 'ar' ? t.priceAr : t.priceEn}
                 </span>
               </div>
               <h2 className="relative mt-4 text-2xl font-bold">{t.emoji} {locale === 'ar' ? t.ar : t.en}</h2>
@@ -72,17 +62,19 @@ export function PlansPage() {
                 <Li>{tr(`${t.limits.watchlist} منتج في المراقبة`, `${t.limits.watchlist} watched products`)}</Li>
                 <Li>{tr(`${t.limits.alerts} تنبيه سعر شغّال`, `${t.limits.alerts} active alerts`)}</Li>
                 <Li>{tr(`${t.limits.collections} مجموعة`, `${t.limits.collections} collections`)}</Li>
-                <Li>{String(perks.find((p) => p.en === 'Support priority')?.values[t.id])} · {tr('دعم', 'support')}{t.id === 'gold' || t.id === 'diamond' ? <Soon /> : null}</Li>
+                <Li>{String(perks.find((p) => p.en === 'Support priority')?.values[t.id])} · {tr('دعم', 'support')}</Li>
               </ul>
               <div className="relative mt-auto pt-5">
-                <button
-                  type="button"
-                  disabled={active || (t.availability === 'soon' && waiting)}
-                  onClick={(e) => choose(t, e.currentTarget)}
-                  className={`press h-11 w-full rounded-full font-semibold transition disabled:cursor-default ${active ? 'bg-accent text-foreground' : t.availability === 'soon' ? (waiting ? 'bg-accent text-muted' : 'border border-border bg-background hover:bg-accent') : 'shine bg-primary text-primary-foreground'}`}
-                >
-                  {active ? tr('باقتك الحالية ✓', 'Your plan ✓') : t.availability === 'soon' ? (waiting ? tr('هنبلّغك أول ما تنزل 🔔', "You're on the list 🔔") : tr('بلّغني أول ما تنزل', 'Notify me at launch')) : t.id === 'free' ? tr('ارجع للمجاني', 'Switch to Free') : tr('فعّلها ببلاش', 'Switch on for free')}
-                </button>
+                {active && until ? <p className="t-meta mb-2 text-center text-muted">{tr(`شغالة لحد ${new Date(until).toLocaleDateString('ar-EG-u-nu-latn', { timeZone: 'Africa/Cairo' })}`, `Active until ${new Date(until).toLocaleDateString('en-GB', { timeZone: 'Africa/Cairo' })}`)}</p> : null}
+                {active ? (
+                  <span className="flex h-11 w-full items-center justify-center rounded-full bg-accent font-semibold">{tr('باقتك الحالية ✓', 'Your plan ✓')}</span>
+                ) : t.id === 'free' ? (
+                  <button type="button" onClick={() => choose(t)} className="press h-11 w-full rounded-full border border-border bg-background font-semibold hover:bg-accent">{tr('إزاي أرجع للمجاني؟', 'How do I go back to Free?')}</button>
+                ) : (
+                  <a href={payUrl(t.id)} onClick={() => choose(t)} aria-label={tr(`رقّي لباقة ${t.ar} بـ ${t.priceAr}`, `Upgrade to ${t.en} for ${t.priceEn}`)} className="press shine flex h-11 w-full items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground">
+                    {mine.priceEgp > t.priceEgp ? tr('باقتك أعلى من دي ✓', 'Your plan is higher ✓') : tr(`رقّي لـ${t.ar} ${t.emoji}`, `Upgrade to ${t.en} ${t.emoji}`)}
+                  </a>
+                )}
               </div>
             </article>
           );
@@ -112,7 +104,7 @@ export function PlansPage() {
             </tbody>
           </table>
         </div>
-        <p className="t-meta mt-2">{tr('«قريبًا» = ميزة محتاجة سيرفر مشترك ولسه بنجهّزه. كل الباقي شغال عندك دلوقتي.', '"Soon" = needs the shared server we are still building. Everything else works for you today.')}</p>
+        <p className="t-meta mt-2">{tr('«بتتفعّل تدريجيًا» = ميزة بنطلقها على مراحل للباقات دي. كل الباقي شغال من أول ما الدفع يتأكد.', '"Rolling out" = a perk being enabled in stages. Everything else is on as soon as the payment is confirmed.')}{signedIn ? null : tr(' سجّل دخول عشان باقتك تتقري من حسابك.', ' Sign in so your plan is read from your account.')}</p>
       </section>
 
       <section aria-labelledby="faq">
@@ -134,5 +126,5 @@ function Li({ children }: { children: React.ReactNode }) {
   return <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 flex-none text-palm" aria-hidden="true" /><span>{children}</span></li>;
 }
 function Soon() {
-  return <span className="ms-1.5 rounded-full bg-accent px-1.5 py-0.5 align-middle text-[10px] font-semibold text-muted">قريبًا</span>;
+  return <span className="ms-1.5 rounded-full bg-accent px-1.5 py-0.5 align-middle text-[10px] font-semibold text-muted">بتتفعّل تدريجيًا</span>;
 }

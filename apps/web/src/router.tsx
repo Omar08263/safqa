@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   createHashHistory,
   createRootRoute,
@@ -6,6 +6,7 @@ import {
   createRouter,
   Link,
   Outlet,
+  useNavigate,
 } from '@tanstack/react-router';
 import { Shell } from './components/shell';
 import { AdminPage } from './pages/admin';
@@ -44,9 +45,6 @@ const ProfilePage = lz(() => import('./pages/account'), 'ProfilePage');
 const SettingsPage = lz(() => import('./pages/account'), 'SettingsPage');
 const ReferralPage = lz(() => import('./pages/account'), 'ReferralPage');
 const SavingsPage = lz(() => import('./pages/savings'), 'SavingsPage');
-const CommunityPage = lz(() => import('./pages/community'), 'CommunityPage');
-const MemberPage = lz(() => import('./pages/community'), 'MemberPage') as unknown as React.ComponentType<{ id: string }>;
-const ChatPage = lz(() => import('./pages/chat'), 'ChatPage') as unknown as React.ComponentType<{ dm?: string }>;
 const RulesPage = lz(() => import('./pages/rules'), 'RulesPage');
 const AgentsPage = lz(() => import('./pages/agents'), 'AgentsPage');
 const AgentPage = lz(() => import('./pages/agents'), 'AgentPage') as unknown as React.ComponentType<{ id: string }>;
@@ -184,18 +182,13 @@ const chatRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/chat',
   validateSearch: (s: Record<string, unknown>): { dm?: string } => ({ dm: str(s.dm) }),
-  component: function ChatRoute() {
-    const { dm } = chatRoute.useSearch();
-    return <ChatPage dm={dm} />;
-  },
+  // One community: the old in-browser chat now lives on the server-backed #/live.
+  component: () => <ToLive tab="chat" />,
 });
 const memberRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/u/$id',
-  component: function MemberRoute() {
-    const { id } = memberRoute.useParams();
-    return <MemberPage id={id} />;
-  },
+  component: () => <ToLive tab="feed" />,
 });
 const agentRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -210,7 +203,7 @@ const extraRoutes = [
   chatRoute,
   memberRoute,
   agentRoute,
-  simple('/community', () => <CommunityPage />),
+  simple('/community', () => <ToLive tab="feed" />),
   simple('/rules', () => <RulesPage />),
   simple('/agents', () => <AgentsPage />),
   simple('/radar', () => <RadarPage />),
@@ -260,6 +253,15 @@ const routeTree = rootRoute.addChildren([
   loginRoute,
   ...extraRoutes,
 ]);
+
+/** #/community, #/chat and #/u/:id all open the single server-synced community at #/live. */
+function ToLive({ tab }: { tab: 'chat' | 'feed' }) {
+  const navigate = useNavigate();
+  useEffect(() => {
+    void navigate({ to: '/live', search: { tab } as never, replace: true });
+  }, [navigate, tab]);
+  return null;
+}
 
 const LOST = [
   { emoji: '🧭', ar: 'شكلك تهت في السوق!', en: 'Looks like you got lost in the souq!' },

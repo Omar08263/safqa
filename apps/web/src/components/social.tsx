@@ -1,3 +1,4 @@
+import { TELEGRAM_BOT_URL } from '../lib/edge';
 import { formatEGP, localized, type ProductCard } from '@safqa/shared';
 import { MessageCircle, Send } from 'lucide-react';
 import { useToast } from '../fx/fx';
@@ -7,8 +8,6 @@ import { feedback } from '../lib/sound';
 import { useTr } from '../lib/tr';
 import { appUrl } from './share';
 
-/** Public Telegram channel username, set once it exists (VITE_TELEGRAM_CHANNEL=safqa_eg). */
-export const TELEGRAM_CHANNEL: string = import.meta.env.VITE_TELEGRAM_CHANNEL || '';
 export const TELEGRAM_BOT: string = import.meta.env.VITE_TELEGRAM_BOT || '';
 
 export const waLink = (text: string) => `https://wa.me/?text=${encodeURIComponent(text)}`;
@@ -89,14 +88,10 @@ export function ChannelsCard({ items }: { items: ProductCard[] }) {
         <p className="t-meta mt-2">{tr('بوت واتساب أوتوماتيك محتاج حساب واتساب بيزنس مدفوع، فمش متاح دلوقتي. بنقولها بصراحة.', 'An automatic WhatsApp bot needs a paid WhatsApp Business API account, so it is not available yet. We say so plainly.')}</p>
       </div>
       <div>
-        <h2 className="flex items-center gap-2 text-lg font-bold"><Send className="h-5 w-5 text-[#229ED9]" />{tr('قناة صفقة على تيليجرام', 'Safqa on Telegram')}</h2>
-        <p className="t-body mt-1 text-muted">{TELEGRAM_CHANNEL ? tr('القناة بتنشر أقوى عروض اليوم أوتوماتيك كل صبح بأسعار حقيقية.', 'The channel posts the strongest real deals automatically every morning.') : tr('القناة بتتجهّز: الكود اللي بينشر عروض اليوم جاهز وهيشتغل أول ما نربط حساب البوت. لحد دلوقتي تقدر تشارك العروض على تيليجرام بدوسة.', 'The channel is being set up: the posting code is ready and starts once the bot is connected. Meanwhile, share deals to Telegram in one tap.')}</p>
+        <h2 className="flex items-center gap-2 text-lg font-bold"><Send className="h-5 w-5 text-[#229ED9]" />{tr('صفقة على تيليجرام', 'Safqa on Telegram')}</h2>
+        <p className="t-body mt-1 text-muted">{tr('بوت @SafqaDealsBot بيبعتلك أقوى عروض اليوم بأسعار حقيقية، وبينبهك لما منتج في قايمة متابعتك ينزل. دوس «ابدأ» في البوت وخلاص.', '@SafqaDealsBot sends the strongest real deals of the day and pings you when a watched product drops. Just press Start in the bot.')}</p>
         <div className="mt-3 flex flex-wrap gap-2">
-          {TELEGRAM_CHANNEL ? (
-            <a href={`https://t.me/${TELEGRAM_CHANNEL}`} target="_blank" rel="noreferrer" className="press inline-flex h-9 items-center gap-1.5 rounded-full bg-[#229ED9] px-3.5 text-sm font-semibold text-white"><Send className="h-4 w-4" />{tr('اشترك في القناة', 'Join the channel')}</a>
-          ) : (
-            <span className="inline-flex h-9 items-center rounded-full bg-accent px-3.5 text-sm text-muted">{tr('القناة: قريبًا', 'Channel: coming soon')}</span>
-          )}
+          <a href={TELEGRAM_BOT_URL} target="_blank" rel="noreferrer" className="press inline-flex h-9 items-center gap-1.5 rounded-full bg-[#229ED9] px-3.5 text-sm font-semibold text-white"><Send className="h-4 w-4" />{tr('تابعنا على تيليجرام', 'Follow us on Telegram')}</a>
           <TelegramButton text={text} url={appUrl('/radar')} />
         </div>
       </div>

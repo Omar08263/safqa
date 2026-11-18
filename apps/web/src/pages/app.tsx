@@ -44,10 +44,10 @@ export function AppPage() {
   const thumbs = (catalog.data?.items ?? []).map((x) => media.data?.[x.id]?.thumb).filter(Boolean).slice(0, 6) as string[];
 
   const features = [
-    [BellRing, tr('تنبيهات فورية', 'Instant alerts'), tr('أول ما السعر ينزل فعلًا يوصلك إشعار — مش أي خصم مضروب.', 'A notification the moment a price really drops — never a fake discount.')],
-    [WifiOff, tr('بيشتغل من غير نت', 'Works offline'), tr('آخر أسعار متزامنة + 400 أداة حسابات شغالة على الموبايل.', 'Last-synced prices + 400 calculators on-device.')],
-    [Zap, tr('أسرع من الموقع', 'Faster than the site'), tr('بيفتح في ثانية من الشاشة الرئيسية، ملء الشاشة من غير شريط المتصفح.', 'Opens in a second from the home screen, full-screen.')],
-    [ShieldCheck, tr('خفيف وآمن', 'Light & safe'), tr('مفتوح المصدر، من غير إعلانات ولا صلاحيات غريبة.', 'Open-source, no ads, no weird permissions.')],
+    [BellRing, tr('تنبيهات فورية', 'Instant alerts'), tr('حدد السعر اللي عايزه، والموبايل نفسه يبعتلك إشعار أول ما ينزل. من غير حساب.', 'Set a target and the phone itself notifies you when the price drops. No account needed.')],
+    [WifiOff, tr('بيشتغل من غير نت', 'Works offline'), tr('آخر أسعار اتحملت بتتحفظ على الموبايل، والتقسيط والخصم الحقيقي والعملات شغالين من غير نت.', 'The last prices are cached on the phone; installments, real-discount and currency tools work offline.')],
+    [Zap, tr('تطبيق أصلي بجد', 'Truly native'), tr('مبني بـ React Native: شاشات وأزرار واهتزاز وإشعارات أندرويد حقيقية، مش صفحة ويب جوه برواز.', 'Built with React Native: real Android screens, haptics and notifications — not a web page in a frame.')],
+    [ShieldCheck, tr('خفيف وآمن', 'Light & safe'), tr('مفتوح المصدر، من غير إعلانات، والصلاحية الوحيدة هي الإشعارات (لو وافقت).', 'Open-source, no ads; the only permission is notifications (if you allow it).')],
   ] as const;
 
   return (
@@ -58,7 +58,7 @@ export function AppPage() {
           <div className="space-y-5">
             <p className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-3 py-1 text-sm font-semibold text-primary"><Sparkles className="h-4 w-4" />{tr('تطبيق صفقة', 'The Safqa app')}</p>
             <h1 className="text-4xl font-bold leading-tight sm:text-5xl">{tr('كل صفقة حقيقية في مصر… في جيبك.', 'Every real deal in Egypt… in your pocket.')}</h1>
-            <p className="text-lg text-muted">{tr('نزّل التطبيق لأندرويد، أو ثبّته من المتصفح على أي موبايل أو كمبيوتر. نفس صفقة بالظبط — أسرع، وبإشعارات.', 'Get the Android app, or install from the browser on any phone or computer. Same Safqa — faster, with notifications.')}</p>
+            <p className="text-lg text-muted">{tr('صفقة 4.0 لأندرويد بقت تطبيق أصلي: العروض، البحث، رسم السعر، المراقبة بإشعارات، الرادار والأدوات. أو ثبّت الموقع من المتصفح على أي جهاز.', 'Safqa 4.0 for Android is now a native app: deals, search, price chart, watchlist with notifications, radar and tools. Or install the site from your browser on any device.')}</p>
             <div className="flex flex-wrap gap-3">
               <a href={APK_URL} onClick={(e) => confetti({ x: e.clientX, y: e.clientY })} className="shine inline-flex items-center gap-2 rounded-2xl bg-primary px-5 py-3 font-bold text-primary-foreground shadow-lg"><Smartphone className="h-5 w-5" />{tr('نزّل لأندرويد (APK)', 'Download for Android (APK)')}</a>
               {isStandalone() || pwa.installed ? (
@@ -106,7 +106,7 @@ export function AppPage() {
         <Card>
           <p className="font-bold">{tr('إزاي أثبّت؟', 'How to install')}</p>
           <ol className="mt-3 space-y-3 text-sm">
-            <li className="flex gap-3"><Smartphone className="h-5 w-5 flex-none text-primary" /><span><b>{tr('أندرويد (APK):', 'Android (APK):')}</b> {tr('نزّل الملف ← افتحه ← لو طلب «السماح بالتثبيت من المصدر ده» وافق ← تثبيت. التطبيق بيفتح صفقة بملء الشاشة (Trusted Web Activity) فتسجيل الدخول بجوجل شغال عادي.', 'Download → open → allow “install from this source” → Install. It opens Safqa full-screen (Trusted Web Activity) so Google sign-in works.')}</span></li>
+            <li className="flex gap-3"><Smartphone className="h-5 w-5 flex-none text-primary" /><span><b>{tr('أندرويد (APK):', 'Android (APK):')}</b> {tr('نزّل الملف ← افتحه ← لو طلب «السماح بالتثبيت من المصدر ده» وافق ← تثبيت. تطبيق أصلي (React Native) بيقرا نفس الأسعار الحقيقية اللي على الموقع وبيحفظها للاستخدام من غير نت. أندرويد 7 أو أحدث.', 'Download → open → allow “install from this source” → Install. A native React Native app that reads the same real prices as the site and caches them offline. Android 7+.')}</span></li>
             <li className="flex gap-3"><Apple className="h-5 w-5 flex-none text-primary" /><span><b>{tr('آيفون:', 'iPhone:')}</b> {tr('افتح الموقع في Safari ← زرار المشاركة ⬆️ ← «إضافة إلى الشاشة الرئيسية». (أبل مش بتسمح بتطبيقات من بره الـ App Store.)', 'Open in Safari → Share ⬆️ → “Add to Home Screen”. (Apple does not allow apps outside the App Store.)')}</span></li>
             <li className="flex gap-3"><Globe className="h-5 w-5 flex-none text-primary" /><span><b>{tr('كمبيوتر:', 'Desktop:')}</b> {tr('Chrome أو Edge ← أيقونة التثبيت في شريط العنوان.', 'Chrome or Edge → the install icon in the address bar.')}</span></li>
           </ol>

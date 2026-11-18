@@ -1,6 +1,8 @@
-// Where the real Android app lives (GitHub Releases on the public repo).
-export const APK_URL = 'https://github.com/Omar08263/safqa/releases/latest/download/safqa.apk';
-export const RELEASES_URL = 'https://github.com/Omar08263/safqa/releases/latest';
+// Where the native Android app lives (GitHub Releases on the public repo).
+// Pinned to the tag so another release (e.g. an admin build) never breaks the link.
+export const APP_VERSION = '4.0.0';
+export const APK_URL = `https://github.com/Omar08263/safqa/releases/download/v${APP_VERSION}/safqa.apk`;
+export const RELEASES_URL = `https://github.com/Omar08263/safqa/releases/tag/v${APP_VERSION}`;
 export const SITE_URL = 'https://safqa-eg-safqa.static.hf.space';
 
 export function platform(): 'android' | 'ios' | 'desktop' {

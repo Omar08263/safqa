@@ -28,6 +28,8 @@ if (import.meta.env.VITE_DEMO_MODE === 'static') {
   await installDemoApi(`${import.meta.env.BASE_URL}demo/snapshot.json`);
   // Real backend (Cloudflare) for accounts, sync, chat, payments; demo stays as the offline fallback.
   (await import('./lib/edge')).installEdgeBridge();
+  // The member's tier (limits, perks, flair) comes from the server; cached for offline.
+  void (await import('./lib/tiers')).syncServerTier();
   const google = await completeGoogleRedirectLogin();
   if (google?.ok) window.location.hash = '#/dashboard';
   else if (google && !google.ok) window.location.hash = '#/login';

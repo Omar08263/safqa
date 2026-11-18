@@ -19,7 +19,7 @@ export const primaryNav: NavItem[] = [
   { to: '/radar', ar: 'العروض', en: 'Deals', icon: Radar, key: 'y' },
   { to: '/compare', ar: 'مقارنة', en: 'Compare', icon: GitCompare, key: 'c' },
   { to: '/toolbox', ar: 'أدوات', en: 'Tools', icon: Wrench, key: 't' },
-  { to: '/community', ar: 'المجتمع', en: 'Community', icon: Users, key: 'u' },
+  { to: '/live', ar: 'المجتمع', en: 'Community', icon: Users, key: 'u' },
   { to: '/plans', ar: 'الباقات', en: 'Plans', icon: Crown, key: 'v' },
 ];
 
@@ -28,14 +28,13 @@ export const bottomNav: NavItem[] = [
   { to: '/', ar: 'الرئيسية', en: 'Home', icon: Home },
   { to: '/search', ar: 'بحث', en: 'Search', icon: Search },
   { to: '/radar', ar: 'العروض', en: 'Deals', icon: Radar },
-  { to: '/community', ar: 'المجتمع', en: 'Community', icon: Users },
+  { to: '/live', ar: 'المجتمع', en: 'Community', icon: Users },
 ];
 
 export const allNav: NavItem[] = [
   ...primaryNav,
   { to: '/features', ar: 'كل المميزات', en: 'All features', icon: Sparkles, key: 'f' },
   { to: '/channels', ar: 'واتساب وتيليجرام', en: 'WhatsApp & Telegram', icon: Send },
-  { to: '/chat', ar: 'الشات', en: 'Chat', icon: MessagesSquare, key: 'k' },
   { to: '/agents', ar: 'مقر الوكلاء', en: 'Agents HQ', icon: Cpu, key: 'j' },
   { to: '/rules', ar: 'القواعد والإشراف', en: 'Rules & moderation', icon: ShieldCheck },
   { to: '/app', ar: 'نزّل التطبيق', en: 'Get the app', icon: Smartphone, key: 'n' },
