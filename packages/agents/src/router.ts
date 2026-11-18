@@ -61,6 +61,12 @@ export interface RouterOptions {
   timeoutMs?: number;
   cooldownMs?: number;
   probeMs?: number;
+  /** Start a second provider when a fast role has not answered after this many ms. */
+  hedgeMs?: number;
+  /** Roles that should prefer specific providers (judge stays on Gemini by default). */
+  preferProviders?: Record<string, string[]>;
+  /** Roles that are never hedged. */
+  noHedgeRoles?: string[];
 }
 
 /**
@@ -77,6 +83,9 @@ export class ModelRouter {
   readonly timeoutMs: number;
   readonly cooldownMs: number;
   readonly probeMs: number;
+  readonly hedgeMs: number;
+  private readonly preferProviders: Record<string, string[]>;
+  private readonly noHedge: Set<string>;
 
   constructor(
     endpoints: RouteEndpoint[],
@@ -87,6 +96,9 @@ export class ModelRouter {
     this.timeoutMs = options.timeoutMs ?? 30_000;
     this.cooldownMs = options.cooldownMs ?? 60_000;
     this.probeMs = options.probeMs ?? 20_000;
+    this.hedgeMs = options.hedgeMs ?? 8_000;
+    this.preferProviders = options.preferProviders ?? { judge: ['gemini'] };
+    this.noHedge = new Set(options.noHedgeRoles ?? ['judge']);
     this.states = endpoints.map((endpoint, rank) => ({
       endpoint,
       rank,
@@ -144,6 +156,18 @@ export class ModelRouter {
     const idle = this.states.filter(
       (state) => !exclude.has(state.endpoint.id) && state.inFlight === 0,
     );
+    const preferred = this.preferProviders[role];
+    if (preferred?.length) {
+      for (const providerId of preferred) {
+        const hit = this.states.find(
+          (state) =>
+            !exclude.has(state.endpoint.id) &&
+            state.endpoint.providerId === providerId &&
+            (this.healthy(state, at) || this.probing(state, at)),
+        );
+        if (hit) return this.claimProbe(hit, at);
+      }
+    }
     const probe = idle.find((state) => this.probing(state, at));
     if (probe) return this.claimProbe(probe, at);
     const best = idle.find((state) => this.healthy(state, at));
@@ -161,19 +185,78 @@ export class ModelRouter {
   ): Promise<Completion> {
     const tried = new Set<string>();
     let last: unknown;
+    const hedge = !this.noHedge.has(role) && this.hedgeMs > 0;
     for (let attempt = 0; attempt < this.states.length; attempt += 1) {
       const state = this.pick(role, tried);
       if (!state) break;
       tried.add(state.endpoint.id);
-      const ctrl = new AbortController();
       try {
-        return await this.invoke(state, input, ctrl.signal);
+        return hedge
+          ? await this.hedged(role, state, input, tried)
+          : await this.invoke(state, input, new AbortController().signal);
       } catch (error) {
         if (error instanceof LlmAbortError) continue;
         last = error;
       }
     }
     throw last instanceof Error ? last : new Error('No model is available');
+  }
+
+  /**
+   * Runs the primary call. If it is still pending after hedgeMs, a second
+   * provider starts. The first success wins and the loser is aborted (an
+   * abort is not a failure, so the slow model's circuit stays closed).
+   */
+  private hedged(
+    role: string,
+    primary: EndpointState,
+    input: { messages: ChatMessage[]; tools?: ToolSpec[] },
+    tried: Set<string>,
+  ): Promise<Completion> {
+    return new Promise((resolve, reject) => {
+      const controllers: AbortController[] = [];
+      let settled = false;
+      let pending = 0;
+      let lastError: unknown;
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const launch = (state: EndpointState) => {
+        const ctrl = new AbortController();
+        controllers.push(ctrl);
+        pending += 1;
+        this.invoke(state, input, ctrl.signal).then(
+          (value) => {
+            pending -= 1;
+            if (settled) return;
+            settled = true;
+            if (timer) clearTimeout(timer);
+            for (const other of controllers) if (other !== ctrl) other.abort();
+            resolve(value);
+          },
+          (error: unknown) => {
+            pending -= 1;
+            if (settled) return;
+            if (!(error instanceof LlmAbortError)) lastError = error;
+            if (pending === 0) {
+              settled = true;
+              if (timer) clearTimeout(timer);
+              reject(lastError ?? error);
+            }
+          },
+        );
+      };
+      timer = setTimeout(() => {
+        if (settled) return;
+        const backup = this.pick(role, tried);
+        if (backup) {
+          tried.add(backup.endpoint.id);
+          launch(backup);
+        } else if (pending === 0) {
+          settled = true;
+          reject(lastError ?? new Error('No model is available'));
+        }
+      }, this.hedgeMs);
+      launch(primary);
+    });
   }
 
   private claimProbe(state: EndpointState, at: number): EndpointState {

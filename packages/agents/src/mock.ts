@@ -1,6 +1,10 @@
 import { assistantAsksSearch } from './chat';
 import type { ChatMessage, Completion, LlmProvider, ToolCall } from './types';
 
+/** Human-facing money in explanations (raw numbers stay in EVIDENCE lines for parsing). */
+const egp = (n: number) => `${Math.round(n).toLocaleString('en-US')} ج.م`;
+const egpEn = (n: number) => `EGP ${Math.round(n).toLocaleString('en-US')}`;
+
 let sequence = 0;
 
 function call(name: string, args: Record<string, unknown>): ToolCall {
@@ -98,8 +102,8 @@ function historian(
   const content = [
     `EVIDENCE current=${current} median30=${median30} min90=${min90} fake=${fake} dropPct=${dropPct} inStock=${bool(evidence.inStock)} rating=${num(evidence.rating)}`,
     fake
-      ? `السعر الحالي ${current} قريب من وسيط ٣٠ يوم (${median30}). السعر المشطوب مش مدعوم من التاريخ، فالخصم مضخّم.`
-      : `السعر الحالي ${current} مقابل وسيط ٣٠ يوم ${median30} وقاع ٩٠ يوم ${min90}. الانخفاض حوالي ${dropPct}% وده انخفاض حقيقي.`,
+      ? `السعر الحالي ${egp(current)} قريب من وسيط 30 يوم (${egp(median30)}). السعر المشطوب مش مدعوم من التاريخ، فالخصم مضخّم.`
+      : `السعر الحالي ${egp(current)} مقابل وسيط 30 يوم ${egp(median30)} وقاع 90 يوم ${egp(min90)}. الانخفاض حوالي ${dropPct}% وده انخفاض حقيقي.`,
   ].join('\n');
   return { content, toolCalls: [] };
 }
@@ -233,15 +237,15 @@ function judge(messages: ChatMessage[]): Omit<Completion, 'tokens'> {
   if (action === 'skip') score = 28;
   const recommendation = action;
   const explanationAr = fake
-    ? `الحكم: الخصم مضخّم. السعر ${current} قريب من وسيط ٣٠ يوم (${median30}) والمعارض رفض الصفقة.`
+    ? `الحكم: الخصم مضخّم. السعر ${egp(current)} قريب من وسيط 30 يوم (${egp(median30)}) والمعارض رفض الصفقة.`
     : recommendation === 'buy_now'
-      ? `الحكم: اشترِ دلوقتي. المؤرخ والمعارض اتفقا إن ${current} انخفاض حقيقي عن وسيط ${median30}.`
-      : `الحكم: استنى. المعارض شاف إن ${current} لسه مش صفقة كافية مقارنة بوسيط ${median30}.`;
+      ? `الحكم: اشترِ دلوقتي. المؤرخ والمعارض اتفقا إن ${egp(current)} انخفاض حقيقي عن وسيط ${egp(median30)}.`
+      : `الحكم: استنى. المعارض شاف إن ${egp(current)} لسه مش صفقة كافية مقارنة بوسيط ${egp(median30)}.`;
   const explanationEn = fake
-    ? `Verdict: the discount is inflated. ${current} sits near the 30-day median (${median30}) and the skeptic rejected the deal.`
+    ? `Verdict: the discount is inflated. ${egpEn(current)} sits near the 30-day median (${egpEn(median30)}) and the skeptic rejected the deal.`
     : recommendation === 'buy_now'
-      ? `Verdict: buy now. The historian and the skeptic agree that ${current} is a real drop versus the median ${median30}.`
-      : `Verdict: wait. The skeptic found ${current} is not a strong enough gap versus the median ${median30}.`;
+      ? `Verdict: buy now. The historian and the skeptic agree that ${egpEn(current)} is a real drop versus the median ${egpEn(median30)}.`
+      : `Verdict: wait. The skeptic found ${egpEn(current)} is not a strong enough gap versus the median ${egpEn(median30)}.`;
   const content = JSON.stringify({
     score,
     recommendation,

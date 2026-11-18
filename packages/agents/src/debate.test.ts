@@ -100,7 +100,7 @@ describe('runDebate', () => {
       productId: '00000000-0000-4000-8000-0000000000c9',
       tools: catalog(
         { ...realDrop, current: 17000, min90: 14000 },
-        { id: '11.11', nameAr: '١١/١١', daysUntil: 1 },
+        { id: '11.11', nameAr: '11/11', daysUntil: 1 },
       ),
     });
     expect(wait.verdict.recommendation).toBe('wait');
