@@ -34,6 +34,19 @@ interface State {
   watch: Record<string, Json[]>;
   alerts: Record<string, Json[]>;
   settings: Record<string, Json>;
+  resets?: Record<string, { code: string; exp: number }>;
+}
+
+function decodeJwt(credential: string): Json | null {
+  try {
+    const part = credential.split('.')[1] ?? '';
+    const b64 = part.replace(/-/g, '+').replace(/_/g, '/');
+    const bin = atob(b64 + '='.repeat((4 - (b64.length % 4)) % 4));
+    const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(bytes));
+  } catch {
+    return null;
+  }
 }
 
 function json(body: unknown, status = 200): Response {
@@ -298,6 +311,55 @@ export async function installDemoApi(snapshotUrl: string): Promise<void> {
       save();
       return json({ ok: true });
     }
+    if (method === 'POST' && path === '/api/auth/google') {
+      // Google Identity Services ID token. The static demo has no server, so the
+      // token is decoded in the browser and checked for audience + expiry only.
+      const claims = decodeJwt(String(data.credential || ''));
+      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+      if (!claims || !clientId || claims.aud !== clientId)
+        return fail(401, 'invalid_google_token', 'Google token rejected');
+      if (typeof claims.exp === 'number' && claims.exp * 1000 < Date.now())
+        return fail(401, 'invalid_google_token', 'Google token expired');
+      const email = String(claims.email || '').toLowerCase();
+      if (!email || claims.email_verified === false)
+        return fail(401, 'invalid_google_token', 'Google email not verified');
+      let found = state.users.find((u) => u.email === email);
+      if (!found) {
+        found = {
+          email,
+          password: token(),
+          user: { id: crypto.randomUUID(), email, name: claims.name || email, locale: 'ar' },
+        };
+        state.users.push(found);
+        state.watch[email] = [];
+        state.alerts[email] = [];
+        state.settings[email] = { ...snap.demo.settings, telegramChatId: null, expoPushToken: null, hasWebPush: false };
+      }
+      return json({ ...issue(email), picture: claims.picture ?? null });
+    }
+    if (method === 'POST' && path === '/api/auth/forgot') {
+      const email = String(data.email || '').toLowerCase();
+      const exists = state.users.some((u) => u.email === email);
+      if (!exists) return json({ ok: true, demoCode: null });
+      const code = String(Math.floor(100000 + Math.random() * 900000));
+      state.resets = { ...(state.resets ?? {}), [email]: { code, exp: Date.now() + 15 * 60_000 } };
+      save();
+      // No mail server in the static demo: the code is returned so the UI can show it.
+      return json({ ok: true, demoCode: code });
+    }
+    if (method === 'POST' && path === '/api/auth/reset') {
+      const email = String(data.email || '').toLowerCase();
+      const entry = state.resets?.[email];
+      if (!entry || entry.code !== String(data.code || '').trim() || entry.exp < Date.now())
+        return fail(400, 'invalid_code', 'Wrong or expired code');
+      if (String(data.password || '').length < 8) return fail(400, 'invalid_body', 'Password too short');
+      const found = state.users.find((u) => u.email === email);
+      if (found) found.password = String(data.password);
+      delete state.resets?.[email];
+      for (const [k, v] of Object.entries(state.sessions)) if (v === email) delete state.sessions[k];
+      save();
+      return json({ ok: true });
+    }
     if (path === '/api/events')
       return fail(
         503,
@@ -311,6 +373,38 @@ export async function installDemoApi(snapshotUrl: string): Promise<void> {
     if (!email) return fail(401, 'unauthorized', 'Sign in first');
     const user = state.users.find((u) => u.email === email)?.user;
     if (method === 'GET' && path === '/api/auth/me') return json(user);
+    if (method === 'PATCH' && path === '/api/auth/me') {
+      const found = state.users.find((u) => u.email === email);
+      if (!found) return fail(404, 'not_found', 'No user');
+      if (typeof data.name === 'string' && data.name.trim().length >= 2) found.user = { ...found.user, name: data.name.trim() };
+      if (data.locale === 'ar' || data.locale === 'en') found.user = { ...found.user, locale: data.locale };
+      save();
+      return json(found.user);
+    }
+    if (method === 'POST' && path === '/api/auth/password') {
+      const found = state.users.find((u) => u.email === email);
+      if (!found || found.password !== data.current) return fail(400, 'wrong_password', 'Current password is wrong');
+      if (String(data.next || '').length < 8) return fail(400, 'invalid_body', 'Password too short');
+      found.password = String(data.next);
+      save();
+      return json({ ok: true });
+    }
+    if (method === 'POST' && path === '/api/auth/logout-all') {
+      for (const [k, v] of Object.entries(state.sessions)) if (v === email) delete state.sessions[k];
+      save();
+      return json({ ok: true });
+    }
+    if (method === 'DELETE' && path === '/api/auth/me') {
+      if (email === DEMO_EMAIL) return fail(400, 'demo_account', 'The shared demo account cannot be deleted');
+      state.users = state.users.filter((u) => u.email !== email);
+      for (const [k, v] of Object.entries(state.sessions)) if (v === email) delete state.sessions[k];
+      delete state.watch[email];
+      delete state.alerts[email];
+      delete state.settings[email];
+      save();
+      return json({ ok: true });
+    }
+
     if (path === '/api/watchlist' && method === 'GET')
       return json({ items: state.watch[email] ?? [] });
     if (path === '/api/watchlist' && method === 'POST') {

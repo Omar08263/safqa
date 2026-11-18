@@ -6,6 +6,7 @@ interface Prefs {
   theme: 'light' | 'dark';
   setLocale: (locale: Locale) => void;
   toggleTheme: () => void;
+  setTheme: (theme: 'light' | 'dark') => void;
   t: (key: MessageKey) => string;
 }
 
@@ -36,6 +37,7 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
       theme,
       setLocale: setLocaleState,
       toggleTheme: () => setTheme((current) => (current === 'dark' ? 'light' : 'dark')),
+      setTheme,
       t: (key) => translate(locale, key),
     }),
     [locale, theme],

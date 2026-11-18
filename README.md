@@ -90,6 +90,31 @@
 
 <p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/divider-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/divider-light.svg"><img alt="" src="docs/assets/divider-light.svg" width="100%"></picture></p>
 
+<h2 id="v2">🎨 Web v2: 106 features</h2>
+
+<p align="center"><img src="apps/web/public/brand/safqa-logo-4k.png" alt="Safqa logo" width="420"></p>
+
+The web app now has a <b>numbered feature catalogue at <code>/features</code></b>. It lists 106 features in 9 groups, and every entry links to the page where you can try it: discovery 14, price intelligence 16, money tools 13, watching 9, compare & share 13, account 12, gamification 5, accessibility 11, app & offline 13. Some entries are small UX touches (copy link, toasts, skeletons); the list counts them honestly.
+
+- <b>Sign-in</b>: email register, login and logout-all; a password-reset flow; a profile page (avatar, rename, change password, delete account). Google sign-in uses Google Identity Services when <code>VITE_GOOGLE_CLIENT_ID</code> is set, otherwise the button says it isn't configured. See <a href="docs/google-sign-in.md">docs/google-sign-in.md</a>.
+- <b>Design</b>: a new logo (SVG plus 4096 px PNGs in <code>apps/web/public/brand/</code>) and a glass/mesh design system. It has scroll reveals, page transitions, count-ups, confetti and skeletons, and respects <code>prefers-reduced-motion</code>.
+- <b>Tools</b>: compare up to 4 products with an indexed chart, installment / VAT / currency / true-cost / unit-price calculators, a budget and savings tracker, collections shared by link, a sales calendar with <code>.ics</code> export, market insights, achievements, a ⌘K command palette, keyboard shortcuts, QR share, CSV export and an offline service worker.
+
+<table>
+<tr><td width="50%"><img src="docs/screenshots/v2-home.webp" alt="v2 home" width="100%"></td><td width="50%"><img src="docs/screenshots/v2-features.webp" alt="Features catalogue" width="100%"></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/v2-product-charts.webp" alt="Product charts" width="100%"></td><td width="50%"><img src="docs/screenshots/v2-compare.webp" alt="Compare" width="100%"></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/v2-dashboard.webp" alt="Dashboard" width="100%"></td><td width="50%"><img src="docs/screenshots/v2-tools.webp" alt="Tools" width="100%"></td></tr>
+<tr><td width="50%"><img src="docs/screenshots/v2-insights.webp" alt="Insights" width="100%"></td><td width="50%"><img src="docs/screenshots/v2-home-dark.webp" alt="Dark home" width="100%"></td></tr>
+</table>
+<table><tr>
+<td width="25%"><img src="docs/screenshots/v2-mobile-features.webp" alt="Mobile features" width="100%"></td>
+<td width="25%"><img src="docs/screenshots/v2-mobile-product.webp" alt="Mobile product" width="100%"></td>
+<td width="25%"><img src="docs/screenshots/v2-mobile-home-dark.webp" alt="Mobile dark" width="100%"></td>
+<td width="25%"><img src="docs/screenshots/v2-mobile-settings.webp" alt="Mobile settings" width="100%"></td>
+</tr></table>
+
+In the static demo, accounts, watchlist, collections and reset codes live in your browser's localStorage. The reset code appears on screen because the demo has no mail server.
+
 <h2 id="how-it-works">⚙️ How it works</h2>
 
 <p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/pipeline-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/pipeline-light.svg"><img alt="Crawl, JSON-LD price, MarkItDown, agent debate, score and alert" src="docs/assets/pipeline-light.svg" width="100%"></picture></p>

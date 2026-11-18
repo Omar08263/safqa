@@ -10,6 +10,19 @@ interface SessionValue {
   register: (name: string, email: string, password: string) => Promise<void>;
   acceptTokens: (accessToken: string, refreshToken: string) => Promise<void>;
   logout: () => Promise<void>;
+  /** Authenticated JSON call for endpoints the typed client does not cover. */
+  raw: <T = unknown>(path: string, method?: string, body?: unknown) => Promise<T>;
+  setUser: (user: User) => void;
+}
+
+export class RawError extends Error {
+  constructor(
+    public status: number,
+    public code: string,
+    message: string,
+  ) {
+    super(message);
+  }
 }
 
 const SessionContext = createContext<SessionValue | null>(null);
@@ -98,6 +111,21 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         const me = await createSafqaClient({ baseUrl, getAccessToken: () => accessToken }).me();
         setUser(me);
       },
+      async raw<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
+        const token = window.localStorage.getItem('safqa.access');
+        const res = await fetch(baseUrl + path, {
+          method,
+          headers: {
+            ...(body !== undefined ? { 'content-type': 'application/json' } : {}),
+            ...(token ? { authorization: `Bearer ${token}` } : {}),
+          },
+          body: body !== undefined ? JSON.stringify(body) : undefined,
+        });
+        const data = await res.json().catch(() => null);
+        if (!res.ok) throw new RawError(res.status, data?.error?.code ?? 'error', data?.error?.message ?? res.statusText);
+        return data as T;
+      },
+      setUser,
       async logout() {
         if (refresh) await client.logout(refresh).catch(() => undefined);
         store(null, null);

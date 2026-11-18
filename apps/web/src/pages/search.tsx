@@ -2,6 +2,7 @@ import { localized } from '@safqa/shared';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { DealCard, StateMessage } from '../components/bits';
+import { SearchTop } from '../components/search-top';
 import { usePrefs } from '../lib/prefs';
 import { useSession } from '../lib/session';
 
@@ -36,8 +37,10 @@ export function SearchPage({ search }: { search: SearchFilters }) {
   }
 
   return (
+    <div>
+    <SearchTop search={search} count={results.data?.items.length} />
     <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
-      <aside className="space-y-4 rounded-3xl border border-border bg-card p-4">
+      <aside className="glass h-fit space-y-4 rounded-3xl p-4 lg:sticky lg:top-24">
         <label className="block text-sm">
           {t('filter.store')}
           <select
@@ -135,6 +138,7 @@ export function SearchPage({ search }: { search: SearchFilters }) {
           ))}
         </div>
       </section>
+    </div>
     </div>
   );
 }

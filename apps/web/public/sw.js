@@ -1,11 +1,49 @@
+// Safqa service worker: offline support.
+// - Hashed build assets: cache-first (they never change).
+// - Pages, demo snapshot and GET API calls: network-first, falling back to cache.
+const VERSION = 'safqa-v2';
+const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/favicon.svg', '/brand/safqa-mark.svg', '/brand/icon-192.png'];
+
 self.addEventListener('install', (event) => {
-  event.waitUntil(self.skipWaiting());
+  event.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL).catch(() => undefined)).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== VERSION).map((k) => caches.delete(k)))).then(() => self.clients.claim()),
+  );
 });
 
-self.addEventListener('fetch', () => {
-  // Network-first. Registration is enough for the installable shell.
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith('/api/events')) return;
+  if (url.pathname.startsWith('/assets/') || url.pathname.startsWith('/brand/')) {
+    event.respondWith(
+      caches.match(req).then((hit) => hit || fetch(req).then((res) => {
+        if (res.ok) caches.open(VERSION).then((c) => c.put(req, res.clone()));
+        return res;
+      })),
+    );
+    return;
+  }
+  const authed = req.headers.has('authorization');
+  event.respondWith(
+    fetch(req)
+      .then((res) => {
+        if (res.ok && !authed) {
+          const copy = res.clone();
+          caches.open(VERSION).then((c) => c.put(req.mode === 'navigate' ? '/index.html' : req, copy));
+        }
+        return res;
+      })
+      .catch(() => caches.match(req.mode === 'navigate' ? '/index.html' : req).then((hit) => hit || caches.match('/index.html'))),
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(self.clients.openWindow('/'));
 });

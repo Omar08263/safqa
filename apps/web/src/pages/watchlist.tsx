@@ -1,3 +1,6 @@
+import { Download, Eye } from 'lucide-react';
+import { PageHeader } from '../fx/fx';
+import { downloadFile, toCsv } from '../lib/local';
 import { formatEGP, localized } from '@safqa/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
@@ -53,10 +56,12 @@ export function WatchlistPage() {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-3xl font-semibold">{t('nav.watchlist')}</h1>
-        <span className="rounded-full bg-accent px-3 py-1 text-xs">{live ? t('watch.synced') : t('watch.connecting')}</span>
-      </div>
+      <PageHeader icon={<Eye className="h-6 w-6" />} title={t('nav.watchlist')} lede={locale === 'ar' ? 'المنتجات اللي بتراقبها، وقربها من السعر اللي حطيته.' : 'Products you watch and how close they are to your target.'}>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-accent px-3 py-1 text-xs">{live ? t('watch.synced') : t('watch.connecting')}</span>
+          <Button variant="outline" size="sm" disabled={!list.data?.items.length} onClick={() => downloadFile('safqa-watchlist.csv', toCsv([['product', 'store', 'price_egp', 'target_egp', 'added'], ...(list.data?.items ?? []).map((w) => [w.product.titleEn, w.product.bestOffer?.store.nameEn ?? '', w.product.bestOffer?.priceEgp ?? '', w.targetPriceEgp ?? '', w.createdAt.slice(0, 10)])]), 'text/csv')}><Download className="h-4 w-4" />CSV</Button>
+        </div>
+      </PageHeader>
       {list.isLoading ? <p>{t('common.loading')}</p> : null}
       {list.isError ? (
         <Button variant="outline" onClick={() => void list.refetch()}>
@@ -68,12 +73,18 @@ export function WatchlistPage() {
         {list.data?.items.map((item) => {
           const offer = item.product.bestOffer;
           return (
-            <article key={item.id} className="grid gap-3 rounded-3xl border border-border bg-card p-4 md:grid-cols-[1fr_auto_auto] md:items-center">
+            <article key={item.id} className="glass lift grid gap-3 rounded-3xl p-4 md:grid-cols-[1fr_auto_auto] md:items-center">
               <div>
                 <Link to="/product/$id" params={{ id: item.product.id }} className="font-semibold">
                   {localized(locale, { ar: item.product.titleAr, en: item.product.titleEn })}
                 </Link>
                 <p className="num mt-1 text-lg">{offer ? formatEGP(offer.priceEgp, locale) : '—'}</p>
+                {offer && item.targetPriceEgp ? (
+                  <div className="mt-2 max-w-xs">
+                    <div className="h-2 overflow-hidden rounded-full bg-accent"><div className="bar-grow h-full rounded-full" style={{ width: `${Math.min(100, (item.targetPriceEgp / offer.priceEgp) * 100)}%`, background: offer.priceEgp <= item.targetPriceEgp ? 'var(--palm)' : 'var(--saffron)' }} /></div>
+                    <p className="mt-1 text-xs text-muted">{offer.priceEgp <= item.targetPriceEgp ? (locale === 'ar' ? '🎯 وصل لهدفك!' : '🎯 Target hit!') : locale === 'ar' ? `فاضل ${formatEGP(offer.priceEgp - item.targetPriceEgp, locale)} (${(((offer.priceEgp - item.targetPriceEgp) / offer.priceEgp) * 100).toFixed(1)}%)` : `${formatEGP(offer.priceEgp - item.targetPriceEgp, locale)} to go (${(((offer.priceEgp - item.targetPriceEgp) / offer.priceEgp) * 100).toFixed(1)}%)`}</p>
+                  </div>
+                ) : null}
               </div>
               <form
                 className="flex items-center gap-2"
