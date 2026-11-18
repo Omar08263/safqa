@@ -13,6 +13,8 @@ import { useSession } from '../lib/session';
 import { useTr } from '../lib/tr';
 import { useQuery } from '@tanstack/react-query';
 import { CompareTray, InstallButton, OfflineBanner, OnboardingTour } from './chrome';
+import { AgentsRuntime } from './agents-runtime';
+import { SmartInstallBanner } from './install-banner';
 import { CommandPalette, ShortcutsDialog } from './palette';
 import { Button } from './ui/button';
 
@@ -212,6 +214,8 @@ export function Shell({ children }: { children: ReactNode }) {
       <CommandPalette open={palette} onOpenChange={setPalette} />
       <ShortcutsDialog open={shortcuts} onOpenChange={setShortcuts} />
       <OnboardingTour />
+      <AgentsRuntime />
+      <SmartInstallBanner />
     </div>
   );
 }

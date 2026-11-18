@@ -18,10 +18,12 @@ interface Snapshot {
       debate?: Json;
       prediction?: Json;
       stack?: Json;
+      media?: Json;
     }
   >;
   demo: { user: Json; watchlist: Json[]; alerts: Json[]; settings: Json };
   chats: { message: string; response: Json }[];
+  fx?: { base: string; rates: Record<string, number>; updatedAt: string; source: string } | null;
 }
 
 const KEY = 'safqa.demo.state.v1';
@@ -243,6 +245,20 @@ export async function installDemoApi(snapshotUrl: string): Promise<void> {
       return json({ ok: true, db: 'snapshot', redis: 'off' });
     if (method === 'GET' && snap.routes[path] && path !== '/api/health')
       return json(snap.routes[path]);
+    if (method === 'GET' && path === '/api/fx')
+      return snap.fx ? json(snap.fx) : fail(404, 'not_found', 'No cached FX rates');
+    if (method === 'GET' && path === '/api/media') {
+      const map: Record<string, Json> = {};
+      for (const [id, entry] of Object.entries(snap.products))
+        if (entry.media?.images?.length)
+          map[id] = { thumb: entry.media.images[0].thumb, full: entry.media.images[0].full, count: entry.media.images.length };
+      return json({ recordedAt: snap.recordedAt, items: map });
+    }
+    const mediaMatch = path.match(/^\/api\/products\/([^/]+)\/media$/);
+    if (method === 'GET' && mediaMatch) {
+      const media = snap.products[mediaMatch[1] ?? '']?.media;
+      return media ? json(media) : fail(404, 'not_found', 'No media for this product');
+    }
     if (method === 'GET' && path === '/api/products/search')
       return json(search(url.searchParams));
     const productMatch = path.match(

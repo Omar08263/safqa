@@ -1,7 +1,7 @@
 import { formatEGP, localized, type Locale, type ProductCard } from '@safqa/shared';
 import { Link } from '@tanstack/react-router';
 import { GitCompare, ShieldAlert, Star } from 'lucide-react';
-import { ProductArt } from '../features/visuals';
+import { ProductThumb } from '../features/visuals';
 import { Skeleton, useToast } from '../fx/fx';
 import { useCompare } from '../lib/compare';
 import { usePrefs } from '../lib/prefs';
@@ -37,7 +37,7 @@ export function DealCard({ product, index = 0 }: { product: ProductCard; index?:
     <div className="spotlight lift group relative flex flex-col gap-3 rounded-3xl border border-border bg-card p-3 [content-visibility:auto]">
       <Link to="/product/$id" params={{ id: product.id }} className="absolute inset-0 z-10 rounded-3xl" aria-label={title} />
       <div className="relative">
-        <ProductArt slug={product.category?.slug} seed={index} />
+        <ProductThumb id={product.id} slug={product.category?.slug} seed={index} alt={title} />
         <div className="absolute start-2 top-2 flex gap-1.5">
           {offer.discountPct ? <span className="rounded-full bg-black/55 px-2 py-0.5 text-xs font-bold text-white backdrop-blur">-{Math.round(offer.discountPct)}%</span> : null}
           {offer.fakeDiscount ? <span className="flex items-center gap-1 rounded-full bg-destructive px-2 py-0.5 text-xs font-bold text-white"><ShieldAlert className="h-3 w-3" />{t('deal.fake')}</span> : null}

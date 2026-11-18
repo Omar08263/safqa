@@ -1,8 +1,8 @@
 import { formatEGP, localized, type MessageKey } from '@safqa/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { BadgePercent, Calculator, Download, ExternalLink, GitCompare, Layers, PartyPopper, Printer, ShieldAlert, ShoppingBag, Sparkles, Star, Target, TrendingDown } from 'lucide-react';
-import { FormEvent, useEffect, useState } from 'react';
+import { BellRing, Calculator, Download, ExternalLink, GitCompare, Layers, Printer, QrCode, ShieldAlert, ShoppingBag, Sparkles, Star, Target, TrendingDown, Zap } from 'lucide-react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { ScoreRing } from '../components/bits';
 import { Markdown } from '../components/markdown';
 import { ChangeLog, PercentileBar, RangeChart, ScoreBreakdown, StoreSpread, historyStats } from '../components/product-extras';
@@ -10,7 +10,11 @@ import { appUrl, ShareBar } from '../components/share';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { ProductArt } from '../features/visuals';
+import { AiSummaryCard, DescriptionCard, Gallery, PriceBadges, ProductRow, QASection, ReviewsSection, SectionTabs, SpecDiff, SpecsTable, StickyBuyBar, useRelated } from '../components/product-v3';
+import { useCatalog } from '../lib/catalog';
+import { type ProductMedia, useProductMedia } from '../lib/media';
+import { canonical, summarize } from '../lib/product-intel';
+import type { ProductCard, ProductDetail } from '@safqa/shared';
 import { Card, confetti, Reveal, Skeleton, useToast } from '../fx/fx';
 import { type Collection, keys, type Purchase, track } from '../lib/activity';
 import { useCompare } from '../lib/compare';
@@ -42,7 +46,16 @@ export function ProductPage({ id }: { id: string }) {
   const history = useQuery({ queryKey: ['history', id], queryFn: () => client.history(id) });
   const debate = useQuery({ queryKey: ['debate', id], queryFn: () => client.debate(id) });
   const prediction = useQuery({ queryKey: ['prediction', id], queryFn: () => client.prediction(id) });
-  const stack = useQuery({ queryKey: ['stack', id], queryFn: () => client.stack(id) });
+  const mediaQ = useProductMedia(id);
+  const catalog = useCatalog();
+  const all = (catalog.data?.items ?? []) as ProductCard[];
+  const related = useRelated(product.data, all);
+  const [backInStock, setBackInStock] = useLocal<string[]>('safqa.backInStock.v1', []);
+  const loadRival = useCallback(async (rid: string) => {
+    const [d, m] = await Promise.all([queryClient.fetchQuery({ queryKey: ['product', rid], queryFn: () => client.product(rid) }).catch(() => null), fetch(`/api/products/${rid}/media`).then((r) => (r.ok ? (r.json() as Promise<ProductMedia>) : null)).catch(() => null)]);
+    return { detail: d as ProductDetail | null, media: m };
+  }, [client, queryClient]);
+  const summary = useMemo(() => (product.data ? summarize(product.data, mediaQ.data, history.data, all) : null), [product.data, mediaQ.data, history.data, all]);
   const watch = useMutation({
     mutationFn: () => client.addWatch(id, target ? Number(target) : null),
     onSuccess: async () => {
@@ -92,8 +105,8 @@ export function ProductPage({ id }: { id: string }) {
   function logPurchase(e: React.MouseEvent) {
     if (!best) return;
     const reference = item.median30 ?? best.listPriceEgp ?? best.priceEgp;
-    setPurchases((list) => [{ id: crypto.randomUUID(), title, paidEgp: stack.data?.finalEgp ?? best.priceEgp, referenceEgp: reference, at: new Date().toISOString(), productId: id }, ...list]);
-    const saved = reference - (stack.data?.finalEgp ?? best.priceEgp);
+    setPurchases((list) => [{ id: crypto.randomUUID(), title, paidEgp: best.priceEgp, referenceEgp: reference, at: new Date().toISOString(), productId: id }, ...list]);
+    const saved = reference - best.priceEgp;
     if (saved > 0) confetti({ x: e.clientX, y: e.clientY });
     toast(saved > 0 ? tr(`مبروك! وفّرت ${formatEGP(saved, locale)} 🎉`, `Nice! You saved ${formatEGP(saved, locale)} 🎉`) : tr('اتسجّلت في متتبع التوفير', 'Logged in your savings tracker'));
   }
@@ -111,7 +124,7 @@ export function ProductPage({ id }: { id: string }) {
         <Link to="/">{tr('الرئيسية', 'Home')}</Link> / <Link to="/categories">{tr('الأقسام', 'Categories')}</Link> / <Link to="/search" search={{ category: item.category?.slug }}>{item.category ? localized(locale, { ar: item.category.nameAr, en: item.category.nameEn }) : ''}</Link>
       </nav>
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-[0.9fr_1.1fr] [&>*]:min-w-0">
-        <Reveal><ProductArt slug={item.category?.slug} className="h-72 sm:h-96" /></Reveal>
+        <Reveal><Gallery media={mediaQ.data} slug={item.category?.slug} title={title} /></Reveal>
         <div>
           <p className="text-sm font-semibold text-primary">{item.brand} {item.model ? `· ${item.model}` : ''}</p>
           <div className="mt-1 flex items-start justify-between gap-4">
@@ -125,6 +138,7 @@ export function ProductPage({ id }: { id: string }) {
               {best.discountPct ? <span className={`mb-1 rounded-full px-3 py-1 text-sm font-bold ${best.fakeDiscount ? 'bg-destructive/15 text-destructive' : 'bg-[var(--palm)]/15 text-palm'}`}>-{Math.round(best.discountPct)}%</span> : null}
             </div>
           ) : null}
+          <PriceBadges item={item} history={history.data} />
           <p className="mt-2 flex items-center gap-2 text-sm text-muted">{t('deal.best')} · {best ? localized(locale, { ar: best.store.nameAr, en: best.store.nameEn }) : ''}{best?.rating ? <span className="inline-flex items-center gap-0.5"><Star className="h-3.5 w-3.5 fill-[var(--saffron)] text-[var(--saffron)]" />{best.rating}</span> : null}</p>
           <div className="mt-3"><PriceFreshness compact /></div>
 
@@ -176,13 +190,24 @@ export function ProductPage({ id }: { id: string }) {
             <Button variant="outline" size="sm" onClick={logPurchase}><ShoppingBag className="h-4 w-4" />{tr('اشتريته', 'I bought it')}</Button>
             <Link to="/tools" search={{ price: best?.priceEgp }}><Button variant="outline" size="sm"><Calculator className="h-4 w-4" />{tr('قسّطه', 'Installments')}</Button></Link>
             <Button variant="outline" size="sm" onClick={exportCsv}><Download className="h-4 w-4" />CSV</Button>
+            {best && !best.inStock ? <Button variant={backInStock.includes(id) ? 'default' : 'outline'} size="sm" onClick={() => { setBackInStock(backInStock.includes(id) ? backInStock.filter((x) => x !== id) : [...backInStock, id]); toast(tr('هنبلغك أول ما يرجع (في التحديث اليومي)', 'We will tell you when it is back (daily update)')); }}><BellRing className="h-4 w-4" />{tr('بلغني لما يتوفر', 'Notify when in stock')}</Button> : null}
+            <Link to="/radar"><Button variant="outline" size="sm"><QrCode className="h-4 w-4" />{tr('رادار العروض', 'Deal radar')}</Button></Link>
             <Button variant="outline" size="sm" onClick={() => window.print()}><Printer className="h-4 w-4" />{tr('اطبع', 'Print')}</Button>
           </div>
           <div className="no-print mt-3"><ShareBar url={appUrl(`/product/${id}`)} title={title} /></div>
         </div>
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr] [&>*]:min-w-0">
+      <SectionTabs sections={[['ai-summary', tr('ملخص ذكي', 'Summary')], ['details', tr('الوصف والمواصفات', 'Details')], ['price-history', tr('سجل السعر', 'Price history')], ['offers', tr('المتاجر', 'Stores')], ['reviews', tr('التقييمات', 'Reviews')], ['qa', tr('أسئلة', 'Q&A')], ['related', tr('مشابه', 'Related')]]} />
+
+      {summary ? <AiSummaryCard s={summary} /> : null}
+
+      <div id="details" className="grid scroll-mt-32 gap-6 lg:grid-cols-2 [&>*]:min-w-0">
+        <DescriptionCard media={mediaQ.data} />
+        <SpecsTable media={mediaQ.data} item={item} />
+      </div>
+
+      <div id="price-history" className="grid scroll-mt-32 gap-6 lg:grid-cols-[1.4fr_1fr] [&>*]:min-w-0">
         <Card>
           <h2 className="mb-3 text-lg font-bold">{t('product.history')}</h2>
           {history.data && history.data.series.length > 0 ? <RangeChart history={history.data} /> : <Skeleton className="h-72" />}
@@ -219,7 +244,7 @@ export function ProductPage({ id }: { id: string }) {
         </Reveal>
       ) : null}
 
-      <section>
+      <section id="offers" className="scroll-mt-32">
         <h2 className="mb-3 text-xl font-bold">{t('product.offers')}</h2>
         <div className="overflow-hidden rounded-3xl border border-border">
           {[...item.offers].sort((a, b) => a.priceEgp - b.priceEgp).map((offer) => {
@@ -250,27 +275,41 @@ export function ProductPage({ id }: { id: string }) {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2 [&>*]:min-w-0">
-        {stack.data && stack.data.savedEgp > 0 && best ? (
-          <Card>
-            <h2 className="flex items-center gap-2 text-lg font-bold"><BadgePercent className="h-5 w-5 text-primary" />{tr('مُجمّع الكوبونات', 'Coupon stacker')}</h2>
-            <p className="mt-1 text-sm text-muted">{tr('أحسن ترتيب للكوبونات وعروض البنوك على العرض ده:', 'Best order of coupons and bank offers on this deal:')}</p>
-            <ol className="mt-3 space-y-2">
-              <li className="flex justify-between text-sm"><span>{tr('السعر', 'Price')}</span><span className="num">{formatEGP(best.priceEgp, locale)}</span></li>
-              {stack.data.applied.map((line, i) => (
-                <li key={line.id} className="flex justify-between rounded-xl bg-accent px-3 py-2 text-sm"><span>{i + 1}. <span className="font-semibold">{line.label}</span></span><span className="num text-palm">-{formatEGP(line.savedEgp, locale)}</span></li>
-              ))}
-              <li className="flex justify-between border-t border-border pt-2 font-bold"><span>{tr('هتدفع', 'You pay')}</span><span className="num text-lg">{formatEGP(stack.data.finalEgp, locale)}</span></li>
-            </ol>
-            <Button size="sm" className="mt-3" onClick={(e) => { confetti({ x: e.clientX, y: e.clientY, count: 80 }); toast(tr(`توفير ${formatEGP(stack.data?.savedEgp ?? 0, locale)} بالكوبونات`, `${formatEGP(stack.data?.savedEgp ?? 0, locale)} saved with coupons`)); }}><PartyPopper className="h-4 w-4" />{tr(`وفّر ${formatEGP(stack.data.savedEgp, locale)}`, `Save ${formatEGP(stack.data.savedEgp, locale)}`)}</Button>
-          </Card>
-        ) : null}
         {history.data ? (
           <Card>
             <h2 className="mb-3 text-lg font-bold">{tr('سجل تغيّر السعر', 'Price change log')}</h2>
             <ChangeLog history={history.data} />
           </Card>
         ) : null}
+        <SpecDiff item={item} media={mediaQ.data} rivals={related.same.slice(0, 8)} loadMedia={loadRival} />
       </div>
+
+      {(() => {
+        const c = canonical(item, mediaQ.data);
+        const kw = c.hp ? Math.round(c.hp * (c.inverter ? 0.75 : 1) * 1000) / 1000 : c.watts ? c.watts / 1000 : null;
+        if (!kw || !best) return null;
+        const hours = c.hp ? 8 : item.category?.slug === 'tvs' ? 5 : 1;
+        const kwh = kw * hours * 30;
+        const egp = kwh * 1.5;
+        return (
+          <Card>
+            <h2 className="flex items-center gap-2 text-lg font-bold"><Zap className="h-5 w-5 text-primary" />{tr('تكلفة التشغيل التقريبية', 'Approximate running cost')}</h2>
+            <p className="mt-1 text-sm text-muted">{tr(`لو اشتغل ${hours} ساعة يوميًا ≈ ${Math.round(kwh)} كيلووات ساعة في الشهر ≈ ${Math.round(egp)} جنيه (بافتراض متوسط 1.5 ج/كيلووات — الشريحة الفعلية بتفرق)`, `At ${hours} h/day ≈ ${Math.round(kwh)} kWh/month ≈ EGP ${Math.round(egp)} (assuming EGP 1.5/kWh — your tier differs)`)}</p>
+            <Link to="/toolbox" search={{ q: c.hp ? 'تكييف' : 'كهرباء' }} className="mt-2 inline-block text-sm font-semibold text-primary">{tr('احسبها بالظبط في الأدوات ←', 'Calculate precisely in the toolbox →')}</Link>
+          </Card>
+        );
+      })()}
+
+      <ReviewsSection item={item} media={mediaQ.data} />
+      <QASection item={item} media={mediaQ.data} />
+
+      <div id="related" className="scroll-mt-32 space-y-6">
+        <ProductRow title={tr('منتجات مشابهة في نفس القسم', 'Similar in this category')} items={related.same} />
+        <ProductRow title={tr('في نفس الميزانية', 'In the same budget')} items={related.similar} />
+        <ProductRow title={tr(`كمان من ${item.brand ?? ''}`, `More from ${item.brand ?? ''}`)} items={related.brand} />
+        <ProductRow title={tr('شفتهم قريب', 'Recently viewed')} items={related.recent} />
+      </div>
+      <StickyBuyBar item={item} title={title} />
 
       <section aria-labelledby="agent-debate">
         <h2 id="agent-debate" className="mb-3 text-xl font-bold">{t('debate.title')}</h2>

@@ -1,4 +1,5 @@
 import { Gamepad2, Headphones, Laptop, Package, Refrigerator, Shirt, Smartphone } from 'lucide-react';
+import { useMediaMap } from '../lib/media';
 import type { LucideIcon } from 'lucide-react';
 
 export const categoryVisual: Record<string, { icon: LucideIcon; from: string; to: string }> = {
@@ -23,6 +24,19 @@ export function ProductArt({ slug, className = 'h-28', seed = 0 }: { slug?: stri
       <span className="absolute -bottom-10 end-4 h-28 w-28 rounded-full bg-black/10 blur-lg" style={{ transform: `translateX(${(seed % 5) * 8}px)` }} />
       <span className="grid-bg absolute inset-0 opacity-20" />
       <Icon className="float absolute inset-0 m-auto h-1/2 w-1/2 text-white drop-shadow-[0_10px_20px_rgba(0,0,0,0.25)]" strokeWidth={1.4} style={{ animationDelay: `${(seed % 7) * 0.4}s` }} />
+    </div>
+  );
+}
+
+/** Real store photo when the crawler captured one, else the generated art. */
+export function ProductThumb({ id, slug, className = 'h-28', seed = 0, alt = '' }: { id: string; slug?: string | null; className?: string; seed?: number; alt?: string }) {
+  const media = useMediaMap();
+  const img = media.data?.[id];
+  if (!img) return <ProductArt slug={slug} className={className} seed={seed} />;
+  return (
+    <div className={`relative grid place-items-center overflow-hidden rounded-2xl bg-white ${className}`}>
+      <img src={img.thumb} alt={alt} loading="lazy" decoding="async" className="h-full w-full object-contain p-2 transition duration-500 group-hover:scale-105" />
+      {img.count > 1 ? <span className="absolute bottom-1.5 end-1.5 rounded-full bg-black/55 px-1.5 text-[10px] font-bold text-white">{img.count} 📷</span> : null}
     </div>
   );
 }

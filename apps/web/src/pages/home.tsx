@@ -8,7 +8,7 @@ import { Countdown } from '../components/countdown';
 import { PriceFreshness } from '../components/price-freshness';
 import { Button } from '../components/ui/button';
 import { features } from '../features/registry';
-import { ProductArt } from '../features/visuals';
+import { ProductThumb } from '../features/visuals';
 import { CountUp, Reveal, Spotlight } from '../fx/fx';
 import { track, useActivity } from '../lib/activity';
 import { useCatalog } from '../lib/catalog';
@@ -101,7 +101,7 @@ export function HomePage() {
           <div className="relative hidden h-[520px] lg:block" aria-hidden="true">
             {top.map((p, i) => (
               <div key={p.id} className="glass float absolute w-72 rounded-3xl p-3 shadow-2xl" style={{ top: `${i * 34}%`, insetInlineStart: `${[4, 34, 10][i]}%`, ['--r' as string]: `${[-4, 3, -2][i]}deg`, animationDelay: `${i * 1.3}s` }}>
-                <ProductArt slug={p.category?.slug} className="h-16" seed={i} />
+                <ProductThumb id={p.id} slug={p.category?.slug} className="h-16" seed={i} />
                 <p className="mt-2 truncate text-sm font-semibold">{localized(locale, { ar: p.titleAr, en: p.titleEn })}</p>
                 <div className="mt-1 flex items-center justify-between">
                   <span className="num text-lg font-bold">{formatEGP(p.bestOffer?.priceEgp ?? 0, locale)}</span>

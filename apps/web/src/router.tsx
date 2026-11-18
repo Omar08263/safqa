@@ -39,6 +39,15 @@ const ProfilePage = lz(() => import('./pages/account'), 'ProfilePage');
 const SettingsPage = lz(() => import('./pages/account'), 'SettingsPage');
 const ReferralPage = lz(() => import('./pages/account'), 'ReferralPage');
 const SavingsPage = lz(() => import('./pages/savings'), 'SavingsPage');
+const CommunityPage = lz(() => import('./pages/community'), 'CommunityPage');
+const MemberPage = lz(() => import('./pages/community'), 'MemberPage') as unknown as React.ComponentType<{ id: string }>;
+const ChatPage = lz(() => import('./pages/chat'), 'ChatPage') as unknown as React.ComponentType<{ dm?: string }>;
+const RulesPage = lz(() => import('./pages/rules'), 'RulesPage');
+const AgentsPage = lz(() => import('./pages/agents'), 'AgentsPage');
+const AgentPage = lz(() => import('./pages/agents'), 'AgentPage') as unknown as React.ComponentType<{ id: string }>;
+const RadarPage = lz(() => import('./pages/radar'), 'RadarPage');
+const ToolboxPage = lz(() => import('./pages/toolbox'), 'ToolboxPage') as unknown as React.ComponentType<{ q?: string; tool?: string }>;
+const AppPage = lz(() => import('./pages/app'), 'AppPage');
 const ToolsPage = lz(() => import('./pages/tools'), 'ToolsPage') as unknown as React.ComponentType<{ price?: number }>;
 
 const rootRoute = createRootRoute({
@@ -156,7 +165,51 @@ const sharedRoute = createRoute({
     return <SharedPage d={d} />;
   },
 });
+const str = (x: unknown) => (typeof x === 'string' && x ? x : undefined);
+const toolboxRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/toolbox',
+  validateSearch: (s: Record<string, unknown>): { q?: string; tool?: string } => ({ q: str(s.q), tool: str(s.tool) }),
+  component: function ToolboxRoute() {
+    const { q, tool } = toolboxRoute.useSearch();
+    return <ToolboxPage q={q} tool={tool} />;
+  },
+});
+const chatRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/chat',
+  validateSearch: (s: Record<string, unknown>): { dm?: string } => ({ dm: str(s.dm) }),
+  component: function ChatRoute() {
+    const { dm } = chatRoute.useSearch();
+    return <ChatPage dm={dm} />;
+  },
+});
+const memberRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/u/$id',
+  component: function MemberRoute() {
+    const { id } = memberRoute.useParams();
+    return <MemberPage id={id} />;
+  },
+});
+const agentRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/agents/$id',
+  component: function AgentRoute() {
+    const { id } = agentRoute.useParams();
+    return <AgentPage id={id} />;
+  },
+});
 const extraRoutes = [
+  toolboxRoute,
+  chatRoute,
+  memberRoute,
+  agentRoute,
+  simple('/community', () => <CommunityPage />),
+  simple('/rules', () => <RulesPage />),
+  simple('/agents', () => <AgentsPage />),
+  simple('/radar', () => <RadarPage />),
+  simple('/app', () => <AppPage />),
   toolsRoute,
   compareRoute,
   sharedRoute,

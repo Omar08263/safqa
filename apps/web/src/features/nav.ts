@@ -1,6 +1,6 @@
 import {
   Award, BarChart3, Bell, Bot, CalendarDays, Calculator, Gift, GitCompare, HeartHandshake, HelpCircle, Home, LayoutDashboard,
-  LayoutGrid, Layers, PiggyBank, Search, Settings, Sparkles, Store, UserCircle, Eye,
+  LayoutGrid, Layers, MessagesSquare, Users, Radar, Wrench, Smartphone, ShieldCheck, Cpu, PiggyBank, Search, Settings, Sparkles, Store, UserCircle, Eye,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -16,12 +16,19 @@ export const primaryNav: NavItem[] = [
   { to: '/', ar: 'الرئيسية', en: 'Home', icon: Home, key: 'h' },
   { to: '/search', ar: 'بحث', en: 'Search', icon: Search, key: 's' },
   { to: '/compare', ar: 'مقارنة', en: 'Compare', icon: GitCompare, key: 'c' },
-  { to: '/tools', ar: 'أدوات', en: 'Tools', icon: Calculator, key: 't' },
+  { to: '/toolbox', ar: 'أدوات', en: 'Tools', icon: Wrench, key: 't' },
+  { to: '/community', ar: 'المجتمع', en: 'Community', icon: Users, key: 'u' },
   { to: '/features', ar: 'المميزات', en: 'Features', icon: Sparkles, key: 'f' },
 ];
 
 export const allNav: NavItem[] = [
   ...primaryNav,
+  { to: '/radar', ar: 'رادار العروض', en: 'Deal radar', icon: Radar, key: 'y' },
+  { to: '/chat', ar: 'الشات', en: 'Chat', icon: MessagesSquare, key: 'k' },
+  { to: '/agents', ar: 'مقر الوكلاء', en: 'Agents HQ', icon: Cpu, key: 'j' },
+  { to: '/rules', ar: 'القواعد والإشراف', en: 'Rules & moderation', icon: ShieldCheck },
+  { to: '/app', ar: 'نزّل التطبيق', en: 'Get the app', icon: Smartphone, key: 'n' },
+  { to: '/tools', ar: 'الأدوات الكلاسيكية', en: 'Classic tools', icon: Calculator },
   { to: '/dashboard', ar: 'لوحة التحكم', en: 'Dashboard', icon: LayoutDashboard, key: 'd' },
   { to: '/watchlist', ar: 'المراقبة', en: 'Watchlist', icon: Eye, key: 'w' },
   { to: '/alerts', ar: 'التنبيهات', en: 'Alerts', icon: Bell, key: 'a' },

@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { appUrl, ShareBar } from '../components/share';
 import { Button } from '../components/ui/button';
-import { ProductArt } from '../features/visuals';
+import { ProductThumb } from '../features/visuals';
 import { Card, PageHeader } from '../fx/fx';
 import { track } from '../lib/activity';
 import { useCatalog } from '../lib/catalog';
@@ -110,7 +110,7 @@ export function ComparePage({ ids: fromUrl }: { ids?: string }) {
                   {items.map((p, i) => (
                     <th key={p.id} className="p-3 text-start align-top">
                       <div className="relative">
-                        <ProductArt slug={p.category?.slug} className="h-20" seed={i} />
+                        <ProductThumb id={p.id} slug={p.category?.slug} className="h-20" seed={i} />
                         <button type="button" onClick={() => compare.remove(p.id)} className="absolute end-1 top-1 grid h-7 w-7 place-items-center rounded-full bg-black/50 text-white" aria-label={tr('شيل', 'Remove')}><X className="h-4 w-4" /></button>
                       </div>
                       <Link to="/product/$id" params={{ id: p.id }} className="mt-2 line-clamp-2 block font-semibold hover:text-primary"><span className="me-1 inline-block h-2.5 w-2.5 rounded-full" style={{ background: colors[i] }} />{localized(locale, { ar: p.titleAr, en: p.titleEn })}</Link>
