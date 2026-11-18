@@ -13,12 +13,13 @@
 <img alt="Vite 8" src="https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&labelColor=1c1915&logo=vite&logoColor=white">
 <img alt="Tailwind 4" src="https://img.shields.io/badge/Tailwind-4-38BDF8?style=for-the-badge&labelColor=1c1915&logo=tailwindcss&logoColor=white">
 <img alt="Node.js 22" src="https://img.shields.io/badge/Node.js-22-5FA04E?style=for-the-badge&labelColor=1c1915&logo=nodedotjs&logoColor=white">
+<br/>
 <img alt="Hono 4" src="https://img.shields.io/badge/Hono-4-E36002?style=for-the-badge&labelColor=1c1915&logo=hono&logoColor=white">
 <img alt="PostgreSQL 16" src="https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&labelColor=1c1915&logo=postgresql&logoColor=white">
-<br/>
 <img alt="Redis BullMQ" src="https://img.shields.io/badge/Redis-BullMQ-DC382D?style=for-the-badge&labelColor=1c1915&logo=redis&logoColor=white">
 <img alt="Drizzle ORM" src="https://img.shields.io/badge/Drizzle-ORM-C5F74F?style=for-the-badge&labelColor=1c1915&logo=drizzle&logoColor=C5F74F">
 <img alt="Expo 58" src="https://img.shields.io/badge/Expo-58-000020?style=for-the-badge&labelColor=1c1915&logo=expo&logoColor=white">
+<br/>
 <img alt="Docker ready" src="https://img.shields.io/badge/Docker-ready-2496ED?style=for-the-badge&labelColor=1c1915&logo=docker&logoColor=white">
 <img alt="pnpm 10" src="https://img.shields.io/badge/pnpm-10-F69220?style=for-the-badge&labelColor=1c1915&logo=pnpm&logoColor=white">
 <img alt="Turborepo 2" src="https://img.shields.io/badge/Turborepo-2-EF4444?style=for-the-badge&labelColor=1c1915&logo=turborepo&logoColor=white">
@@ -33,7 +34,7 @@
 <p><b>Safqa (صفقة, “a deal”)</b> tracks prices across Egyptian stores, spots inflated “was” prices,<br/>and has a panel of AI agents argue about every deal before you spend a pound.</p>
 
 <p>
-  <a href="https://safqa-eg-safqa.static.hf.space"><img alt="Open the live demo" src="https://img.shields.io/badge/%E2%96%B6%20%20Open%20the%20live%20demo-%D8%AC%D8%B1%D9%91%D8%A8%20%D8%B5%D9%81%D9%82%D8%A9-c9840a?style=for-the-badge&labelColor=1c1915"></a>
+  <a href="https://safqa-eg-safqa.static.hf.space"><img alt="Open the live demo" src="https://img.shields.io/badge/%E2%96%B6%20%20live%20demo-try%20Safqa%20now-c9840a?style=for-the-badge&labelColor=1c1915&logo=huggingface&logoColor=FFD21E"></a>
 </p>
 
 <p><a href="#showcase"><b>Showcase</b></a> · <a href="#features"><b>Features</b></a> · <a href="#how-it-works"><b>How it works</b></a> · <a href="#agent-debate"><b>Agents</b></a> · <a href="#architecture"><b>Architecture</b></a> · <a href="#quick-start"><b>Quick start</b></a> · <a href="#deploy"><b>Deploy</b></a> · <a href="#roadmap"><b>Roadmap</b></a> · <a href="#العربية"><b>العربية</b></a></p>
