@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "space.hf.safqa.twa",
+      "sha256_cert_fingerprints": ["FB:54:24:22:4B:16:5A:91:C3:5A:59:AF:60:2F:04:BC:42:2B:69:75:D8:54:AA:EA:DC:7A:82:CF:B3:CE:BF:31"]
+    }
+  }
+]

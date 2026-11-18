@@ -235,6 +235,8 @@ export function useCommunityState(): CommunityState | null {
     const h = (e: Event) => { if (!(e instanceof CustomEvent) || e.detail === 'safqa.community.v1') force((x) => x + 1); };
     window.addEventListener('safqa:local', h);
     window.addEventListener('storage', h);
+    // Seeding may have happened in an earlier effect of the same render, before this listener existed.
+    force((x) => x + 1);
     return () => { window.removeEventListener('safqa:local', h); window.removeEventListener('storage', h); };
   }, []);
   return readCommunity();
