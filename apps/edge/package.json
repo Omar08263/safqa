@@ -1,0 +1,12 @@
+{
+  "name": "@safqa/edge",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Safqa real backend on Cloudflare Workers + D1 + KV + Workers AI (free tier)",
+  "scripts": {
+    "deploy": "npx -y wrangler@4 deploy",
+    "migrate": "npx -y wrangler@4 d1 migrations apply safqa --remote",
+    "test": "vitest run --root ../.. apps/edge"
+  }
+}

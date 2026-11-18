@@ -1,0 +1,38 @@
+name = "safqa-api"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[ai]
+binding = "AI"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "safqa"
+database_id = "63fe0a16-276c-493c-9889-d7c971422783"
+migrations_dir = "migrations"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "d7e02776ec5045bfbc176385cac1a876"
+
+[triggers]
+# Every 10 min: appeals, Telegram outbox, hourly cleanup, daily 9:30 Cairo digest.
+crons = ["*/10 * * * *"]
+
+[vars]
+ALLOWED_ORIGINS = "https://safqa-eg-safqa.static.hf.space,https://safqa-admin.pages.dev,http://localhost:47321,http://localhost:5173,capacitor://localhost,https://localhost"
+GOOGLE_CLIENT_ID = "700154178904-k0hi0kp5v19m775u8t1bt6m6mnfhrghc.apps.googleusercontent.com"
+INSTAPAY_ADDRESS = "om3r0@instapay"
+INSTAPAY_LINK = "https://ipn.eg/S/om3r0/instapay/9xdBaB"
+SITE_URL = "https://safqa-eg-safqa.static.hf.space"
+CHAT_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+CHAT_FALLBACK_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct"
+VISION_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct"
+AI_DAILY_CALL_BUDGET = "180"
+# Secrets (wrangler secret put): JWT_SECRET, PUSH_SECRET, ADMIN_EMAILS, TELEGRAM_BOT_TOKEN (optional)
+
+# Shared web modules (rules, agents, moderation) read Vite env at import time.
+[define]
+"import.meta.env" = "{\"VITE_DEMO_MODE\":\"edge\"}"

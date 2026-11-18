@@ -115,6 +115,8 @@ if [ "${SKIP_DEPLOY:-0}" != "1" ]; then
   COMMIT_URL="$(echo "$DEPLOY_OUT" | grep -oE 'https://huggingface.co/spaces/[^ ]+/commit/[0-9a-f]+' | tail -1 || true)"
   DEPLOY_LINE="${COMMIT_URL:-uploaded} -> https://${SPACE/\//-}.static.hf.space"
 fi
+# --- Edge API: real-time data for agents, Telegram deal alerts, watchlist alerts --------
+EDGE_LINE="$(bash deploy/edge/push-snapshot.sh 2>&1 | tail -1)" || EDGE_LINE="edge push FAILED: $EDGE_LINE"
 
 # --- Summary ------------------------------------------------------------------------------
 T2=$(date +%s)
@@ -129,4 +131,5 @@ for (const [store, n] of Object.entries(s.perStore)) console.log(`  ${store.padE
 for (const f of s.failures) console.log(`  FAIL ${f.store} ${f.product}: ${f.reason}${f.stale ? " (kept last price, stale)" : ""}`);
 ' "$STATUS"
 echo "deploy: $DEPLOY_LINE"
+echo "$EDGE_LINE"
 echo "time: crawl+db $((T1 - T0))s, snapshot+build+deploy $((T2 - T1))s, total $((T2 - T0))s"
