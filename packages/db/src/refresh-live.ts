@@ -124,9 +124,11 @@ let ok = 0;
 const changed = new Set<string>();
 const live = new Set<string>();
 
-for (const item of catalog.products) {
+// Stores are crawled in parallel (one queue per store); inside a store the
+// adapter's per-host gap keeps requests polite. This keeps a 200+ product
+// catalog well under the 15 minute budget.
+async function crawlOffer(item: CatalogProduct, entry: CatalogOffer): Promise<void> {
   const productId = stableId(`product:${item.key}`);
-  for (const entry of item.offers) {
     const stat = (perStore[entry.store] ??= { ok: 0, failed: 0 });
     const adapter = adapterBySlug(entry.store);
     const store = storeId.get(entry.store);
@@ -135,7 +137,7 @@ for (const item of catalog.products) {
     if (!adapter || !store) {
       failures.push({ product: item.key, store: entry.store, url: entry.url, reason: 'no adapter for store', stale: Boolean(existing) });
       stat.failed += 1;
-      continue;
+      return;
     }
     let reason = '';
     try {
@@ -205,7 +207,7 @@ for (const item of catalog.products) {
         stat.ok += 1;
         ok += 1;
         console.log(`ok   ${entry.store.padEnd(9)} ${String(parsed.priceEGP).padStart(7)} EGP ${parsed.inStock ? 'in stock ' : 'out      '} ${item.key}`);
-        continue;
+        return;
       }
     } catch (error) {
       reason = reasonOf(error);
@@ -219,7 +221,20 @@ for (const item of catalog.products) {
     stat.failed += 1;
     console.log(`FAIL ${entry.store.padEnd(9)} ${item.key}: ${reason}${existing ? ` (kept last price ${existing.priceEgp} EGP, stale)` : ''}`);
   }
+
+const queues = new Map<string, { item: CatalogProduct; entry: CatalogOffer }[]>();
+for (const item of catalog.products) {
+  for (const entry of item.offers) {
+    const list = queues.get(entry.store) ?? [];
+    list.push({ item, entry });
+    queues.set(entry.store, list);
+  }
 }
+await Promise.all(
+  [...queues.values()].map(async (list) => {
+    for (const { item, entry } of list) await crawlOffer(item, entry);
+  }),
+);
 
 // 4. Products that are no longer in the catalog stay in the DB but are recomputed.
 for (const productId of live) await recomputeProduct(database, productId, runAt);

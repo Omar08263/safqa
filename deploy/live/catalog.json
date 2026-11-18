@@ -1,93 +1,3334 @@
 {
   "$comment": "Real products tracked by deploy/hf/refresh-live.sh. Every URL is a live public product page. Prices come only from the page's schema.org JSON-LD (parseJsonLdOffer); a page that is blocked or has no JSON-LD keeps its last good price and is marked stale. Add a product by appending an entry with a unique key.",
   "categories": [
-    { "slug": "phones", "nameAr": "هواتف", "nameEn": "Phones" },
-    { "slug": "audio", "nameAr": "صوتيات", "nameEn": "Audio" },
-    { "slug": "tvs", "nameAr": "شاشات", "nameEn": "TVs" },
-    { "slug": "appliances", "nameAr": "أجهزة منزلية", "nameEn": "Appliances" },
-    { "slug": "lifestyle", "nameAr": "ساعات ذكية", "nameEn": "Wearables" }
+    {
+      "slug": "phones",
+      "nameAr": "هواتف",
+      "nameEn": "Phones"
+    },
+    {
+      "slug": "audio",
+      "nameAr": "صوتيات",
+      "nameEn": "Audio"
+    },
+    {
+      "slug": "tvs",
+      "nameAr": "شاشات",
+      "nameEn": "TVs"
+    },
+    {
+      "slug": "appliances",
+      "nameAr": "أجهزة منزلية",
+      "nameEn": "Appliances"
+    },
+    {
+      "slug": "lifestyle",
+      "nameAr": "ساعات ذكية",
+      "nameEn": "Wearables"
+    },
+    {
+      "slug": "laptops",
+      "nameAr": "لابتوبات",
+      "nameEn": "Laptops"
+    },
+    {
+      "slug": "tablets",
+      "nameAr": "تابلت",
+      "nameEn": "Tablets"
+    },
+    {
+      "slug": "gaming",
+      "nameAr": "ألعاب",
+      "nameEn": "Gaming"
+    },
+    {
+      "slug": "kitchen",
+      "nameAr": "أجهزة المطبخ",
+      "nameEn": "Kitchen"
+    }
   ],
   "products": [
-    { "key": "iphone-17-pro-max-256-deep-blue", "category": "phones", "brand": "Apple", "model": "iPhone 17 Pro Max", "titleAr": "أبل آيفون 17 برو ماكس 256 جيجا أزرق داكن", "titleEn": "Apple iPhone 17 Pro Max 256GB Deep Blue",
+    {
+      "key": "iphone-17-pro-max-256-deep-blue",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 17 Pro Max",
+      "titleAr": "أبل آيفون 17 برو ماكس 256 جيجا أزرق داكن",
+      "titleEn": "Apple iPhone 17 Pro Max 256GB Deep Blue",
       "offers": [
-        { "store": "btech", "url": "https://btech.com/en/p/apple-iphone-17-pro-max-256gb-12gb-ram-5g-deep-blue?offering_id=bd1cf37e-739f-4c81-97b8-312e63686534" },
-        { "store": "2b", "url": "https://2b.com.eg/en/offers/apple-iphone-17-pro-max-256gb-deep-blue-official-warranty.html" },
-        { "store": "noon", "url": "https://www.noon.com/egypt-en/iphone-17-pro-max-256gb-nano-sim-esim-deep-blue-5g-with-facetime-international-version/N70211580V/p/" },
-        { "store": "amazon-eg", "url": "https://www.amazon.eg/-/en/dp/B0FQFK93TR" }
-      ] },
-    { "key": "iphone-15-128-blue", "category": "phones", "brand": "Apple", "model": "iPhone 15", "titleAr": "أبل آيفون 15 ذاكرة 128 جيجا أزرق", "titleEn": "Apple iPhone 15 128GB Blue",
-      "offers": [ { "store": "2b", "url": "https://2b.com.eg/en/apple-iphone-15-128gb-blue-official-warranty.html" } ] },
-    { "key": "galaxy-s26-fe-256-graphite", "category": "phones", "brand": "Samsung", "model": "Galaxy S26 FE", "titleAr": "سامسونج جالاكسي S26 FE ذاكرة 256 جيجا جرافيت", "titleEn": "Samsung Galaxy S26 FE 256GB Graphite",
-      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/samsung-galaxy-s26-fe-256-gb-8-gb-5g-dual-sim-graphite?offering_id=94947e45-24d3-403e-9679-53fe4f3dfc5a" } ] },
-    { "key": "galaxy-a56-256-black", "category": "phones", "brand": "Samsung", "model": "Galaxy A56", "titleAr": "سامسونج جالاكسي A56 ذاكرة 256 جيجا رام 8", "titleEn": "Samsung Galaxy A56 5G 8GB/256GB",
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-iphone-17-pro-max-256gb-12gb-ram-5g-deep-blue?offering_id=bd1cf37e-739f-4c81-97b8-312e63686534"
+        },
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/offers/apple-iphone-17-pro-max-256gb-deep-blue-official-warranty.html"
+        },
+        {
+          "store": "noon",
+          "url": "https://www.noon.com/egypt-en/iphone-17-pro-max-256gb-nano-sim-esim-deep-blue-5g-with-facetime-international-version/N70211580V/p/"
+        },
+        {
+          "store": "amazon-eg",
+          "url": "https://www.amazon.eg/-/en/dp/B0FQFK93TR"
+        }
+      ]
+    },
+    {
+      "key": "iphone-15-128-blue",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 15",
+      "titleAr": "أبل آيفون 15 ذاكرة 128 جيجا أزرق",
+      "titleEn": "Apple iPhone 15 128GB Blue",
       "offers": [
-        { "store": "2b", "url": "https://2b.com.eg/en/samsung-galaxy-a56-8gb-ram-256gb-black.html" },
-        { "store": "amazon-eg", "url": "https://www.amazon.eg/-/en/dp/B0HJZV27G8" }
-      ] },
-    { "key": "galaxy-a16-128-black", "category": "phones", "brand": "Samsung", "model": "Galaxy A16", "titleAr": "سامسونج جالاكسي A16 ذاكرة 128 جيجا أسود", "titleEn": "Samsung Galaxy A16 128GB Black",
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/apple-iphone-15-128gb-blue-official-warranty.html"
+        }
+      ]
+    },
+    {
+      "key": "galaxy-s26-fe-256-graphite",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy S26 FE",
+      "titleAr": "سامسونج جالاكسي S26 FE ذاكرة 256 جيجا جرافيت",
+      "titleEn": "Samsung Galaxy S26 FE 256GB Graphite",
       "offers": [
-        { "store": "btech", "url": "https://btech.com/en/p/samsung-galaxy-a16-128gb-4gb-4g-lte-dual-sim-black-local?offering_id=3afc181d-6e05-46b2-bef1-631dce46980d" },
-        { "store": "2b", "url": "https://2b.com.eg/en/samsung-galaxy-a16-4gb-ram-128gb-black.html" },
-        { "store": "noon", "url": "https://www.noon.com/egypt-en/galaxy-a16-dual-sim-4g-black-4gb-ram-128gb-middle-east-version/N70126887V/p/" }
-      ] },
-    { "key": "honor-600-256-gold", "category": "phones", "brand": "Honor", "model": "Honor 600", "titleAr": "هونر 600 ذاكرة 256 جيجا ذهبي", "titleEn": "Honor 600 256GB 5G Light Gold",
-      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/a10c32e0-ab59-4ac6-9426-aaa6ff52f7cf?offering_id=332fba2b-4aba-4e51-8a0f-b0d4135eafe7" } ] },
-    { "key": "honor-x5c-plus-128-black", "category": "phones", "brand": "Honor", "model": "X5C Plus", "titleAr": "هونر X5C بلس ذاكرة 128 جيجا أسود", "titleEn": "Honor X5C Plus 128GB Midnight Black",
-      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/6ac7b2fb-b75f-4fbd-8665-d305de42adfc?offering_id=e7a202fa-b55d-472a-8ecc-6a58c7a2dd4a" } ] },
-    { "key": "redmi-note-15-128-black", "category": "phones", "brand": "Xiaomi", "model": "Redmi Note 15", "titleAr": "شاومي ريدمي نوت 15 ذاكرة 128 جيجا أسود", "titleEn": "Xiaomi Redmi Note 15 6GB/128GB Black",
-      "offers": [ { "store": "2b", "url": "https://2b.com.eg/en/offers/xiaomi-redmi-note-15-6gb-ram-128gb-black.html" } ] },
-    { "key": "airpods-4-anc", "category": "audio", "brand": "Apple", "model": "AirPods 4 ANC", "titleAr": "سماعة أبل إيربودز 4 بعزل الضوضاء", "titleEn": "Apple AirPods 4 with Active Noise Cancellation",
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-galaxy-s26-fe-256-gb-8-gb-5g-dual-sim-graphite?offering_id=94947e45-24d3-403e-9679-53fe4f3dfc5a"
+        }
+      ]
+    },
+    {
+      "key": "galaxy-a56-256-black",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy A56",
+      "titleAr": "سامسونج جالاكسي A56 ذاكرة 256 جيجا رام 8",
+      "titleEn": "Samsung Galaxy A56 5G 8GB/256GB",
       "offers": [
-        { "store": "2b", "url": "https://2b.com.eg/en/apple-airpods-4-with-active-noise-cancellation-white.html" },
-        { "store": "amazon-eg", "url": "https://www.amazon.eg/-/en/dp/B0DGJ7M995" }
-      ] },
-    { "key": "soundcore-r50i-nc-black", "category": "audio", "brand": "Anker", "model": "Soundcore R50i NC", "titleAr": "سماعة أنكر ساوندكور R50i NC بعزل الضوضاء أسود", "titleEn": "Anker Soundcore R50i NC Earbuds Black",
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/samsung-galaxy-a56-8gb-ram-256gb-black.html"
+        },
+        {
+          "store": "amazon-eg",
+          "url": "https://www.amazon.eg/-/en/dp/B0HJZV27G8"
+        }
+      ]
+    },
+    {
+      "key": "galaxy-a16-128-black",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy A16",
+      "titleAr": "سامسونج جالاكسي A16 ذاكرة 128 جيجا أسود",
+      "titleEn": "Samsung Galaxy A16 128GB Black",
       "offers": [
-        { "store": "btech", "url": "https://btech.com/en/p/anker-soundcore-r50i-earbuds-noise-cancellation-black-a3959h11?offering_id=37baea54-bd1d-4a59-8ccd-15d069da8ea8" },
-        { "store": "2b", "url": "https://2b.com.eg/en/anker-soundcore-r50i-earphone-tws-a3959h11-black.html" }
-      ] },
-    { "key": "soundcore-r60i-nc-black", "category": "audio", "brand": "Anker", "model": "Soundcore R60i NC", "titleAr": "سماعة أنكر ساوندكور R60i NC أسود", "titleEn": "Anker Soundcore R60i NC Earbuds Black",
-      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/e2ecf1cb-831f-4891-a755-1b31ba1571ef?offering_id=27aab6e5-a084-46c9-a634-1f3fdcc9e6a4" } ] },
-    { "key": "soundcore-liberty-4-pro", "category": "audio", "brand": "Anker", "model": "Soundcore Liberty 4 Pro", "titleAr": "سماعة أنكر ساوندكور ليبرتي 4 برو أسود", "titleEn": "Anker Soundcore Liberty 4 Pro Earbuds Black",
-      "offers": [ { "store": "2b", "url": "https://2b.com.eg/en/anker-soundcore-liberty-4-pro-earbuds-black.html" } ] },
-    { "key": "apple-watch-s11-46-jet-black", "category": "lifestyle", "brand": "Apple", "model": "Watch Series 11 46mm", "titleAr": "ساعة أبل الإصدار 11 مقاس 46 مم أسود", "titleEn": "Apple Watch Series 11 46mm Jet Black",
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-galaxy-a16-128gb-4gb-4g-lte-dual-sim-black-local?offering_id=3afc181d-6e05-46b2-bef1-631dce46980d"
+        },
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/samsung-galaxy-a16-4gb-ram-128gb-black.html"
+        },
+        {
+          "store": "noon",
+          "url": "https://www.noon.com/egypt-en/galaxy-a16-dual-sim-4g-black-4gb-ram-128gb-middle-east-version/N70126887V/p/"
+        }
+      ]
+    },
+    {
+      "key": "honor-600-256-gold",
+      "category": "phones",
+      "brand": "Honor",
+      "model": "Honor 600",
+      "titleAr": "هونر 600 ذاكرة 256 جيجا ذهبي",
+      "titleEn": "Honor 600 256GB 5G Light Gold",
       "offers": [
-        { "store": "btech", "url": "https://btech.com/en/p/6a1a5780-ad9e-4395-9628-d3689c659b75?offering_id=e89bff7b-ab4e-4f8d-8fd6-f8364254c4eb" },
-        { "store": "2b", "url": "https://2b.com.eg/en/apple-watch-series-11-gps-46-mm-jet-black-aluminium-case-with-black-sport-band-s-m.html" }
-      ] },
-    { "key": "huawei-band-10-black", "category": "lifestyle", "brand": "Huawei", "model": "Band 10", "titleAr": "سوار هواوي باند 10 أسود", "titleEn": "Huawei Band 10 Black",
-      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/huawei-band-10-smart-band-1-47-inch-black-case-black-strap?offering_id=590b206e-6a96-49e1-b751-1c0a273726a9" } ] },
-    { "key": "huawei-fit-4-black", "category": "lifestyle", "brand": "Huawei", "model": "Watch Fit 4", "titleAr": "ساعة هواوي فيت 4 أسود", "titleEn": "Huawei Watch Fit 4 Black",
-      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/huawei-fit-4-smart-watch-1-82-inch-grey-case-and-black-strap?offering_id=6c19e2ae-f43b-4336-8bf0-c6a0237cbafb" } ] },
-    { "key": "lg-55-nano-55nu830", "category": "tvs", "brand": "LG", "model": "55NU830B6LA", "titleAr": "شاشة إل جي 55 بوصة نانو 4K سمارت", "titleEn": "LG 55\" NanoCell 4K Smart TV 55NU830B6LA",
-      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/lg-55-inch-smart-tv-nano-4k-uhd-55nu830b6la?offering_id=85ced936-7a6e-41c2-985b-ca3c817555f2" } ] },
-    { "key": "samsung-50-du8000", "category": "tvs", "brand": "Samsung", "model": "UA50DU8000", "titleAr": "شاشة سامسونج 50 بوصة كريستال 4K سمارت", "titleEn": "Samsung 50\" Crystal UHD 4K Smart TV UA50DU8000",
-      "offers": [ { "store": "2b", "url": "https://2b.com.eg/en/samsung-tv-50-inch-crystal-uhd-smart-built-in-receiver-ua50du8000.html" } ] },
-    { "key": "samsung-32-h5000f", "category": "tvs", "brand": "Samsung", "model": "32H5000F", "titleAr": "شاشة سامسونج 32 بوصة HD سمارت", "titleEn": "Samsung 32\" HD Smart TV 32H5000F",
-      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/samsung-tv-32-inch-hd-smart-led-receiver-32h5000f?offering_id=84fd8724-975e-483e-bd0f-63a6f9320342" } ] },
-    { "key": "hisense-32a4q", "category": "tvs", "brand": "Hisense", "model": "32A4Q", "titleAr": "شاشة هايسنس 32 بوصة سمارت", "titleEn": "Hisense 32\" Smart TV 32A4Q",
-      "offers": [ { "store": "2b", "url": "https://2b.com.eg/en/hisense-tv-32-inch-smart-fhd-vidaa-32a4q.html" } ] },
-    { "key": "fresh-50-google-tv", "category": "tvs", "brand": "Fresh", "model": "50MFQ433G", "titleAr": "شاشة فريش 50 بوصة جوجل تي في", "titleEn": "Fresh 50\" FHD Google TV 50MFQ433G",
-      "offers": [ { "store": "2b", "url": "https://2b.com.eg/en/fresh-tv-50-inch-fhd-led-smart-google-tv-50mfq433g-22367.html" } ] },
-    { "key": "carrier-xcool-1-5hp", "category": "appliances", "brand": "Carrier", "model": "XCool 1.5HP", "titleAr": "تكييف كاريير إكس كول 1.5 حصان بارد", "titleEn": "Carrier XCool Split AC 1.5HP Cooling",
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/a10c32e0-ab59-4ac6-9426-aaa6ff52f7cf?offering_id=332fba2b-4aba-4e51-8a0f-b0d4135eafe7"
+        }
+      ]
+    },
+    {
+      "key": "honor-x5c-plus-128-black",
+      "category": "phones",
+      "brand": "Honor",
+      "model": "X5C Plus",
+      "titleAr": "هونر X5C بلس ذاكرة 128 جيجا أسود",
+      "titleEn": "Honor X5C Plus 128GB Midnight Black",
       "offers": [
-        { "store": "btech", "url": "https://btech.com/en/p/a0abee78-c9c3-4e6b-981c-0a5c9c0eb49a?offering_id=d7e9d4eb-2ccd-4198-9578-b5c4522f8929" },
-        { "store": "2b", "url": "https://2b.com.eg/en/carrier-air-conditioner-1-5-hp-xcool-split-inverter-cooling-only-white-kheft12dn.html" }
-      ] },
-    { "key": "fresh-ac-1-5hp", "category": "appliances", "brand": "Fresh", "model": "FUFW12C", "titleAr": "تكييف فريش 1.5 حصان بارد", "titleEn": "Fresh Split AC 1.5HP Cooling FUFW12C",
-      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/fresh-air-conditioner-1-5hp-cooling-fufw12c-iw-ag-2022?offering_id=159f6212-ba6b-446a-8b1e-ed5afa8f4b1d" } ] },
-    { "key": "haier-washer-8kg-hw80", "category": "appliances", "brand": "Haier", "model": "HW80-BP14929AS6", "titleAr": "غسالة هاير 8 كيلو إنفرتر تحميل أمامي", "titleEn": "Haier 8kg Inverter Front Load Washer HW80-BP14929AS6",
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/6ac7b2fb-b75f-4fbd-8665-d305de42adfc?offering_id=e7a202fa-b55d-472a-8ecc-6a58c7a2dd4a"
+        }
+      ]
+    },
+    {
+      "key": "redmi-note-15-128-black",
+      "category": "phones",
+      "brand": "Xiaomi",
+      "model": "Redmi Note 15",
+      "titleAr": "شاومي ريدمي نوت 15 ذاكرة 128 جيجا أسود",
+      "titleEn": "Xiaomi Redmi Note 15 6GB/128GB Black",
       "offers": [
-        { "store": "btech", "url": "https://btech.com/en/p/haier-front-load-inverter-washing-machine-8kg-silver-hw80-bp14929as6?offering_id=9718c36b-7922-4c4a-b6c6-388f3ba4c904" },
-        { "store": "2b", "url": "https://2b.com.eg/en/haier-washing-machine-8-kg-steam-front-loading-bldc-inverter-silver-hw80-bp14929as6.html" }
-      ] },
-    { "key": "lg-washer-8kg-f4y2", "category": "appliances", "brand": "LG", "model": "F4Y2TYG6P", "titleAr": "غسالة إل جي 8 كيلو إنفرتر تحميل أمامي", "titleEn": "LG 8kg Inverter Front Load Washer F4Y2TYG6P",
-      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/b4aa1359-dd09-40a8-b504-f882a7fde318?offering_id=c1e2a7b7-4dbc-4538-b43d-5798cd2a44f3" } ] },
-    { "key": "samsung-microwave-40l-grill", "category": "appliances", "brand": "Samsung", "model": "MG40DG5524ATS", "titleAr": "ميكروويف سامسونج 40 لتر بالشواية", "titleEn": "Samsung 40L Grill Microwave MG40DG5524ATS",
-      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/samsung-microwave-grill-40-liters-black-silver-mg40dg5524atsg?offering_id=d41a9765-0d71-4882-90cd-fb1f6eb87b7a" } ] },
-    { "key": "lg-neochef-42l", "category": "appliances", "brand": "LG", "model": "MH8265DIS", "titleAr": "ميكروويف إل جي نيوشيف 42 لتر بالشواية", "titleEn": "LG NeoChef 42L Grill Microwave MH8265DIS",
-      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/lg-neochef-microwave-oven-grill-42liters-black-mh8265dis?offering_id=f03182c7-d5f2-48aa-ad6a-cc3fa453b254" } ] },
-    { "key": "delonghi-magnifica-start", "category": "appliances", "brand": "De'Longhi", "model": "Magnifica Start", "titleAr": "ماكينة إسبريسو ديلونجي ماجنيفيكا ستارت", "titleEn": "De'Longhi Magnifica Start Bean-to-Cup Espresso Machine",
-      "offers": [ { "store": "2b", "url": "https://2b.com.eg/en/de-longhi-espresso-machine-magnificat-start-automatic-bean-to-cup-5-hot-drinks-1450-watt-stainless-steel-ecam220-80-sb.html" } ] }
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/offers/xiaomi-redmi-note-15-6gb-ram-128gb-black.html"
+        }
+      ]
+    },
+    {
+      "key": "airpods-4-anc",
+      "category": "audio",
+      "brand": "Apple",
+      "model": "AirPods 4 ANC",
+      "titleAr": "سماعة أبل إيربودز 4 بعزل الضوضاء",
+      "titleEn": "Apple AirPods 4 with Active Noise Cancellation",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/apple-airpods-4-with-active-noise-cancellation-white.html"
+        },
+        {
+          "store": "amazon-eg",
+          "url": "https://www.amazon.eg/-/en/dp/B0DGJ7M995"
+        }
+      ]
+    },
+    {
+      "key": "soundcore-r50i-nc-black",
+      "category": "audio",
+      "brand": "Anker",
+      "model": "Soundcore R50i NC",
+      "titleAr": "سماعة أنكر ساوندكور R50i NC بعزل الضوضاء أسود",
+      "titleEn": "Anker Soundcore R50i NC Earbuds Black",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/anker-soundcore-r50i-earbuds-noise-cancellation-black-a3959h11?offering_id=37baea54-bd1d-4a59-8ccd-15d069da8ea8"
+        },
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/anker-soundcore-r50i-earphone-tws-a3959h11-black.html"
+        }
+      ]
+    },
+    {
+      "key": "soundcore-r60i-nc-black",
+      "category": "audio",
+      "brand": "Anker",
+      "model": "Soundcore R60i NC",
+      "titleAr": "سماعة أنكر ساوندكور R60i NC أسود",
+      "titleEn": "Anker Soundcore R60i NC Earbuds Black",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/e2ecf1cb-831f-4891-a755-1b31ba1571ef?offering_id=27aab6e5-a084-46c9-a634-1f3fdcc9e6a4"
+        }
+      ]
+    },
+    {
+      "key": "soundcore-liberty-4-pro",
+      "category": "audio",
+      "brand": "Anker",
+      "model": "Soundcore Liberty 4 Pro",
+      "titleAr": "سماعة أنكر ساوندكور ليبرتي 4 برو أسود",
+      "titleEn": "Anker Soundcore Liberty 4 Pro Earbuds Black",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/anker-soundcore-liberty-4-pro-earbuds-black.html"
+        }
+      ]
+    },
+    {
+      "key": "apple-watch-s11-46-jet-black",
+      "category": "lifestyle",
+      "brand": "Apple",
+      "model": "Watch Series 11 46mm",
+      "titleAr": "ساعة أبل الإصدار 11 مقاس 46 مم أسود",
+      "titleEn": "Apple Watch Series 11 46mm Jet Black",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/6a1a5780-ad9e-4395-9628-d3689c659b75?offering_id=e89bff7b-ab4e-4f8d-8fd6-f8364254c4eb"
+        },
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/apple-watch-series-11-gps-46-mm-jet-black-aluminium-case-with-black-sport-band-s-m.html"
+        }
+      ]
+    },
+    {
+      "key": "huawei-band-10-black",
+      "category": "lifestyle",
+      "brand": "Huawei",
+      "model": "Band 10",
+      "titleAr": "سوار هواوي باند 10 أسود",
+      "titleEn": "Huawei Band 10 Black",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/huawei-band-10-smart-band-1-47-inch-black-case-black-strap?offering_id=590b206e-6a96-49e1-b751-1c0a273726a9"
+        }
+      ]
+    },
+    {
+      "key": "huawei-fit-4-black",
+      "category": "lifestyle",
+      "brand": "Huawei",
+      "model": "Watch Fit 4",
+      "titleAr": "ساعة هواوي فيت 4 أسود",
+      "titleEn": "Huawei Watch Fit 4 Black",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/huawei-fit-4-smart-watch-1-82-inch-grey-case-and-black-strap?offering_id=6c19e2ae-f43b-4336-8bf0-c6a0237cbafb"
+        }
+      ]
+    },
+    {
+      "key": "lg-55-nano-55nu830",
+      "category": "tvs",
+      "brand": "LG",
+      "model": "55NU830B6LA",
+      "titleAr": "شاشة إل جي 55 بوصة نانو 4K سمارت",
+      "titleEn": "LG 55\" NanoCell 4K Smart TV 55NU830B6LA",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/lg-55-inch-smart-tv-nano-4k-uhd-55nu830b6la?offering_id=85ced936-7a6e-41c2-985b-ca3c817555f2"
+        }
+      ]
+    },
+    {
+      "key": "samsung-50-du8000",
+      "category": "tvs",
+      "brand": "Samsung",
+      "model": "UA50DU8000",
+      "titleAr": "شاشة سامسونج 50 بوصة كريستال 4K سمارت",
+      "titleEn": "Samsung 50\" Crystal UHD 4K Smart TV UA50DU8000",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/samsung-tv-50-inch-crystal-uhd-smart-built-in-receiver-ua50du8000.html"
+        }
+      ]
+    },
+    {
+      "key": "samsung-32-h5000f",
+      "category": "tvs",
+      "brand": "Samsung",
+      "model": "32H5000F",
+      "titleAr": "شاشة سامسونج 32 بوصة HD سمارت",
+      "titleEn": "Samsung 32\" HD Smart TV 32H5000F",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-tv-32-inch-hd-smart-led-receiver-32h5000f?offering_id=84fd8724-975e-483e-bd0f-63a6f9320342"
+        }
+      ]
+    },
+    {
+      "key": "hisense-32a4q",
+      "category": "tvs",
+      "brand": "Hisense",
+      "model": "32A4Q",
+      "titleAr": "شاشة هايسنس 32 بوصة سمارت",
+      "titleEn": "Hisense 32\" Smart TV 32A4Q",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/hisense-tv-32-inch-smart-fhd-vidaa-32a4q.html"
+        }
+      ]
+    },
+    {
+      "key": "fresh-50-google-tv",
+      "category": "tvs",
+      "brand": "Fresh",
+      "model": "50MFQ433G",
+      "titleAr": "شاشة فريش 50 بوصة جوجل تي في",
+      "titleEn": "Fresh 50\" FHD Google TV 50MFQ433G",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/fresh-tv-50-inch-fhd-led-smart-google-tv-50mfq433g-22367.html"
+        }
+      ]
+    },
+    {
+      "key": "carrier-xcool-1-5hp",
+      "category": "appliances",
+      "brand": "Carrier",
+      "model": "XCool 1.5HP",
+      "titleAr": "تكييف كاريير إكس كول 1.5 حصان بارد",
+      "titleEn": "Carrier XCool Split AC 1.5HP Cooling",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/a0abee78-c9c3-4e6b-981c-0a5c9c0eb49a?offering_id=d7e9d4eb-2ccd-4198-9578-b5c4522f8929"
+        },
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/carrier-air-conditioner-1-5-hp-xcool-split-inverter-cooling-only-white-kheft12dn.html"
+        }
+      ]
+    },
+    {
+      "key": "fresh-ac-1-5hp",
+      "category": "appliances",
+      "brand": "Fresh",
+      "model": "FUFW12C",
+      "titleAr": "تكييف فريش 1.5 حصان بارد",
+      "titleEn": "Fresh Split AC 1.5HP Cooling FUFW12C",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/fresh-air-conditioner-1-5hp-cooling-fufw12c-iw-ag-2022?offering_id=159f6212-ba6b-446a-8b1e-ed5afa8f4b1d"
+        }
+      ]
+    },
+    {
+      "key": "haier-washer-8kg-hw80",
+      "category": "appliances",
+      "brand": "Haier",
+      "model": "HW80-BP14929AS6",
+      "titleAr": "غسالة هاير 8 كيلو إنفرتر تحميل أمامي",
+      "titleEn": "Haier 8kg Inverter Front Load Washer HW80-BP14929AS6",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/haier-front-load-inverter-washing-machine-8kg-silver-hw80-bp14929as6?offering_id=9718c36b-7922-4c4a-b6c6-388f3ba4c904"
+        },
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/haier-washing-machine-8-kg-steam-front-loading-bldc-inverter-silver-hw80-bp14929as6.html"
+        }
+      ]
+    },
+    {
+      "key": "lg-washer-8kg-f4y2",
+      "category": "appliances",
+      "brand": "LG",
+      "model": "F4Y2TYG6P",
+      "titleAr": "غسالة إل جي 8 كيلو إنفرتر تحميل أمامي",
+      "titleEn": "LG 8kg Inverter Front Load Washer F4Y2TYG6P",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/b4aa1359-dd09-40a8-b504-f882a7fde318?offering_id=c1e2a7b7-4dbc-4538-b43d-5798cd2a44f3"
+        }
+      ]
+    },
+    {
+      "key": "samsung-microwave-40l-grill",
+      "category": "appliances",
+      "brand": "Samsung",
+      "model": "MG40DG5524ATS",
+      "titleAr": "ميكروويف سامسونج 40 لتر بالشواية",
+      "titleEn": "Samsung 40L Grill Microwave MG40DG5524ATS",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-microwave-grill-40-liters-black-silver-mg40dg5524atsg?offering_id=d41a9765-0d71-4882-90cd-fb1f6eb87b7a"
+        }
+      ]
+    },
+    {
+      "key": "lg-neochef-42l",
+      "category": "appliances",
+      "brand": "LG",
+      "model": "MH8265DIS",
+      "titleAr": "ميكروويف إل جي نيوشيف 42 لتر بالشواية",
+      "titleEn": "LG NeoChef 42L Grill Microwave MH8265DIS",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/lg-neochef-microwave-oven-grill-42liters-black-mh8265dis?offering_id=f03182c7-d5f2-48aa-ad6a-cc3fa453b254"
+        }
+      ]
+    },
+    {
+      "key": "delonghi-magnifica-start",
+      "category": "appliances",
+      "brand": "De'Longhi",
+      "model": "Magnifica Start",
+      "titleAr": "ماكينة إسبريسو ديلونجي ماجنيفيكا ستارت",
+      "titleEn": "De'Longhi Magnifica Start Bean-to-Cup Espresso Machine",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/de-longhi-espresso-machine-magnificat-start-automatic-bean-to-cup-5-hot-drinks-1450-watt-stainless-steel-ecam220-80-sb.html"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-17-pro-max-256gb-cosmic-orange-official-warranty",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 17 Pro Max",
+      "titleAr": "موبايل أبل iPhone 17 Pro Max - 256 جيجا - Cosmic برتقالي",
+      "titleEn": "Apple iPhone 17 Pro Max - 256GB - Cosmic Orange (Official Warranty)",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/apple-iphone-17-pro-max-256gb-cosmic-orange-official-warranty.html"
+        },
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/apple-iphone-17-pro-max-single-sim-esim-256gb-12gb-ram-5g-cosmic-orange-mfyn4af-a"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-17-pro-single-sim-esim-256gb-12gb-ram-5g-cosmic-orange",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 17 Pro Single SIM & eSIM",
+      "titleAr": "موبايل أبل iPhone 17 Pro Single SIM & eSIM 256 جيجا 12 جيجا RAM 5G - Cosmic",
+      "titleEn": "Apple iPhone 17 Pro Single SIM & eSIM, 256GB, 12GB RAM, 5G - Cosmic Orange",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/apple-iphone-17-pro-single-sim-esim-256gb-12gb-ram-5g-cosmic-orange-mg8h4af-a"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-17-256-gb-8-gb-5g-dual-sim-black",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 17",
+      "titleAr": "موبايل أبل iPhone 17 256 جيجا 8 جيجا 5G خطين - أسود",
+      "titleEn": "Apple iPhone 17 , 256 GB , 8 GB , 5G , Dual-SIM - Black",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-iphone-17-256gb-8gb-ram-5g-black"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-17-256-gb-8-gb-5g-dual-sim-lavender",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 17",
+      "titleAr": "موبايل أبل iPhone 17 256 جيجا 8 جيجا 5G خطين - Lavender",
+      "titleEn": "Apple iPhone 17 , 256 GB , 8 GB , 5G , Dual-SIM - Lavender",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-iphone-17-256gb-8gb-ram-5g-lavender"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-16-plus-256gb-utramarine-official-warranty",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 16 Plus",
+      "titleAr": "موبايل أبل iPhone 16 Plus - 256 جيجا - Utramarine",
+      "titleEn": "Apple iPhone 16 Plus - 256GB - Utramarine (Official Warranty )",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/apple-iphone-16-plus-256gb-utramarine-official-warranty.html"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-17-pro-max-single-sim-esim-256gb-12gb-ram-5g-deep-blue",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 17 Pro Max Single SIM & eSIM",
+      "titleAr": "موبايل أبل iPhone 17 Pro Max Single SIM & eSIM 256 جيجا 12 جيجا RAM 5G - Deep",
+      "titleEn": "Apple iPhone 17 Pro Max Single SIM & eSIM, 256GB, 12GB RAM, 5G - Deep Blue",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/apple-iphone-17-pro-max-single-sim-esim-256gb-12gb-ram-5g-deep-blue-mfyp4af-a"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-17-256-gb-8-gb-5g-dual-sim-mist-blue",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 17",
+      "titleAr": "موبايل أبل iPhone 17 256 جيجا 8 جيجا 5G خطين - Mist أزرق",
+      "titleEn": "Apple iPhone 17 , 256 GB , 8 GB , 5G , Dual-SIM - Mist Blue",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-iphone-17-256gb-8gb-ram-5g-mist-blue"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-16-plus-256gb-black-official-warranty",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 16 Plus",
+      "titleAr": "موبايل أبل iPhone 16 Plus - 256 جيجا - أسود",
+      "titleEn": "Apple iPhone 16 Plus - 256GB - Black (Official Warranty )",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/apple-iphone-16-plus-256gb-black-official-warranty.html"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-17-256-gb-8-gb-5g-dual-sim-sage",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 17",
+      "titleAr": "موبايل أبل iPhone 17 256 جيجا 8 جيجا 5G خطين - Sage",
+      "titleEn": "Apple iPhone 17 , 256 GB , 8 GB , 5G , Dual-SIM - Sage",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-iphone-17-256gb-8gb-ram-5g-sage"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-17-air-esim-256gb-12gb-ram-5g-space-black",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 17 Air eSIM",
+      "titleAr": "موبايل أبل iPhone 17 Air eSIM 256 جيجا 12 جيجا RAM 5G - Space أسود",
+      "titleEn": "Apple iPhone 17 Air eSIM, 256GB, 12GB RAM, 5G - Space Black",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/apple-iphone-17-air-esim-256gb-12gb-ram-5g-space-black-mg2l4af-a"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-a16-dual-sim-128gb-4gb-ram-4g-lte-black",
+      "category": "phones",
+      "brand": "SAMSUNG",
+      "model": "Galaxy A16 Dual SIM",
+      "titleAr": "موبايل سامسونج Galaxy A16 خطين 128 جيجا 4 جيجا RAM 4G LTE - أسود",
+      "titleEn": "SAMSUNG Galaxy A16 Dual SIM, 128GB, 4GB RAM, 4G LTE - Black",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-galaxy-a16-dual-sim-128gb-4gb-ram-4g-lte-black-a166f-black"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-s25-ultra-single-sim-esim-512gb-12gb-ram-5g-titanium-gr",
+      "category": "phones",
+      "brand": "SAMSUNG",
+      "model": "Galaxy S25 Ultra Single SIM & eSIM",
+      "titleAr": "موبايل سامسونج Galaxy S25 Ultra Single SIM & eSIM 512 جيجا 12 جيجا RAM 5G",
+      "titleEn": "SAMSUNG Galaxy S25 Ultra Single SIM & eSIM, 512GB, 12GB RAM, 5G - Titanium Grey",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-galaxy-s25-ultra-single-sim-512gb-12gb-ram-5g-titanium-grey-galaxys25ultra-512-12gb-5g-titaniumgrey-tbarak-2"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-s25-ultra-single-sim-esim-512gb-12gb-ram-5g-titanium-si",
+      "category": "phones",
+      "brand": "SAMSUNG",
+      "model": "Galaxy S25 Ultra Single SIM & eSIM",
+      "titleAr": "موبايل سامسونج Galaxy S25 Ultra Single SIM & eSIM 512 جيجا 12 جيجا RAM 5G",
+      "titleEn": "SAMSUNG Galaxy S25 Ultra Single SIM & eSIM, 512GB, 12GB RAM, 5G - Titanium Silver Blue",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-galaxy-s25-ultra-single-sim-512gb-12gb-ram-5g-titanium-blue-silver-galaxys25ultra-512-12gb-5g-titaniumsilverblue-tbarak-2"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-s25-ultra-single-sim-esim-1tb-12gb-ram-5g-titanium-blac",
+      "category": "phones",
+      "brand": "SAMSUNG",
+      "model": "Galaxy S25 Ultra Single SIM & eSIM",
+      "titleAr": "موبايل سامسونج Galaxy S25 Ultra Single SIM & eSIM 1 تيرا 12 جيجا RAM 5G",
+      "titleEn": "SAMSUNG Galaxy S25 Ultra Single SIM & eSIM, 1TB, 12GB RAM, 5G - Titanium Black",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-galaxy-s25-ultra-single-sim-1tb-12gb-ram-5g-titanium-black-1"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-s25-ultra-single-sim-esim-1tb-12gb-ram-5g-titanium-whit",
+      "category": "phones",
+      "brand": "SAMSUNG",
+      "model": "Galaxy S25 Ultra Single SIM & eSIM",
+      "titleAr": "موبايل سامسونج Galaxy S25 Ultra Single SIM & eSIM 1 تيرا 12 جيجا RAM 5G",
+      "titleEn": "SAMSUNG Galaxy S25 Ultra Single SIM & eSIM, 1TB, 12GB RAM, 5G - Titanium White Silver",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-galaxy-s25-ultra-single-sim-1tb-12gb-ram-5g-titanium-white-silver-2"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-s25-ultra-12gb-ram-1tb-titanium-silver-blue",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy S25 Ultra",
+      "titleAr": "موبايل سامسونج Galaxy S25 Ultra - 12 جيجا RAM - 1 تيرا - تيتانيوم فضي أزرق",
+      "titleEn": "Samsung Galaxy S25 Ultra - 12GB RAM - 1TB - Titanium Silver Blue",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/samsung-galaxy-s25-ultra-12gb-ram-1tb-titanium-silver-blue.html"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-s25-fe-dual-sim-256gb-8gb-ram-5g-icy-blue",
+      "category": "phones",
+      "brand": "SAMSUNG",
+      "model": "Galaxy S25 FE Dual SIM",
+      "titleAr": "موبايل سامسونج Galaxy S25 FE خطين 256 جيجا 8 جيجا RAM 5G - Icy أزرق",
+      "titleEn": "SAMSUNG Galaxy S25 FE Dual SIM, 256GB, 8GB RAM, 5G - Icy Blue",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-galaxy-s25-fe-dual-sim-256gb-8gb-ram-5g-icy-blue"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-s25-ultra-12gb-ram-1tb-silver-blue",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy S25 Ultra",
+      "titleAr": "موبايل سامسونج Galaxy S25 Ultra - 12 جيجا RAM - 1 تيرا - فضي أزرق",
+      "titleEn": "Samsung Galaxy S25 Ultra - 12GB RAM - 1TB - Silver Blue",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/samsung-galaxy-s25-ultra-12gb-ram-1tb-silver.html"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-s25-ultra-12gb-ram-1tb-black",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy S25 Ultra",
+      "titleAr": "موبايل سامسونج Galaxy S25 Ultra - 12 جيجا RAM - 1 تيرا - أسود",
+      "titleEn": "Samsung Galaxy S25 Ultra - 12GB RAM - 1TB - Black",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/samsung-galaxy-s25-ultra-12gb-ram-1tb-black.html"
+        }
+      ]
+    },
+    {
+      "key": "xiaomi-smart-2-pro-electric-kettle-1-7-liter-1800-watt-white",
+      "category": "phones",
+      "brand": "Xiaomi",
+      "model": "Smart 2 Pro Electric Kettle",
+      "titleAr": "غلاية شاومي سمارت 2 Pro Electric Kettle 1.7 لتر 1800 وات - أبيض",
+      "titleEn": "Xiaomi Smart 2 Pro Electric Kettle, 1.7 Liter, 1800 Watt - White",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/xiaomi-smart-2-pro-electric-kettle-17-liter-1800-watt-white-1"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-a15-256-gb-8-gb-4g-dual-sim-yellow",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy A15",
+      "titleAr": "موبايل سامسونج Galaxy A15 256 جيجا 8 جيجا 4G خطين - أصفر",
+      "titleEn": "Samsung Galaxy A15 , 256 GB , 8 GB , 4G , Dual-SIM - Yellow",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-galaxy-a15-256-gb-8gb-4g-lte-dual-sim-yellow-local"
+        }
+      ]
+    },
+    {
+      "key": "xiaomi-mi-electric-kettle-2-1-7-liter-1800-watt-white",
+      "category": "phones",
+      "brand": "Xiaomi",
+      "model": "Mi Electric Kettle 2",
+      "titleAr": "غلاية شاومي Mi Electric Kettle 2 1.7 لتر 1800 وات - أبيض",
+      "titleEn": "Xiaomi Mi Electric Kettle 2, 1.7 Liter, 1800 Watt - White",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/xiaomi-mi-electric-kettle-17-liter-1800-watt-white-6934177778285-moreshop-194022-talaat"
+        }
+      ]
+    },
+    {
+      "key": "xiaomi-redmi-15c-dual-sim-256gb-8gb-ram-4g-lte-midnight-black",
+      "category": "phones",
+      "brand": "Xiaomi",
+      "model": "Redmi 15C Dual SIM",
+      "titleAr": "موبايل شاومي Redmi 15C خطين 256 جيجا 8 جيجا RAM 4G LTE - Midnight أسود",
+      "titleEn": "Xiaomi Redmi 15C Dual SIM, 256GB, 8GB RAM, 4G LTE - Midnight Black",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/xiaomi-redmi-15c-dual-sim-256gb-8gb-ram-4g-lte-midnight-black-6932554456290-dream2000-15c-8g-black"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-a15-256-gb-8-gb-4g-lte-dual-sim-black",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy A15",
+      "titleAr": "موبايل سامسونج Galaxy A15 256 جيجا 8 جيجا 4G LTE خطين - أسود",
+      "titleEn": "Samsung Galaxy A15 , 256 GB , 8 GB , 4G LTE , Dual-SIM - Black",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-galaxy-a15-256gb-8gb-4g-lte-dual-sim-black-local"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-a16-128-gb-4-gb-4g-lte-dual-sim-grey",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy A16",
+      "titleAr": "موبايل سامسونج Galaxy A16 128 جيجا 4 جيجا 4G LTE خطين - رمادي",
+      "titleEn": "Samsung Galaxy A16 , 128 GB , 4 GB , 4G LTE , Dual-SIM - Grey",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-galaxy-a16-128gb-4gb-4g-lte-dual-sim-grey-local"
+        }
+      ]
+    },
+    {
+      "key": "xiaomi-redmi-watch-5-active-smart-watch-for-unisex-lcd-display-2-inch-",
+      "category": "phones",
+      "brand": "Xiaomi",
+      "model": "Redmi Watch 5 Active Smart Watch for Unisex",
+      "titleAr": "ساعة ذكية شاومي Redmi 5 Active LCD Display 2 بوصة Midnight أسود",
+      "titleEn": "Xiaomi Redmi Watch 5 Active Smart Watch for Unisex, LCD Display, 2 Inch, Midnight Black - BHR8784GL",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/xiaomi-redmi-watch-5-active-smart-watch-for-unisex-lcd-display-2-inch-midnight-black-bhr8784gl-6941812791585-dr-mobile-6941812791585-ehab-group-192187-talaat"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-a16-128-gb-4-gb-4g-lte-dual-sim-green",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy A16",
+      "titleAr": "موبايل سامسونج Galaxy A16 128 جيجا 4 جيجا 4G LTE خطين - أخضر",
+      "titleEn": "Samsung Galaxy A16 , 128 GB , 4 GB , 4G LTE , Dual-SIM - Green",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-galaxy-a16-128gb-4gb-4g-lte-dual-sim-light-green-local"
+        }
+      ]
+    },
+    {
+      "key": "ozo-skins-australian-oak-wood-for-nokia-6-2-se154aow",
+      "category": "phones",
+      "brand": "Ozo",
+      "model": "Skins Australian OAK Wood For Nokia 6.2",
+      "titleAr": "موبايل Ozo Skins Australian OAK Wood For Nokia 6.2",
+      "titleEn": "Ozo Skins Australian OAK Wood For Nokia 6.2 - SE154AOW",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/ozo-skins-australian-oak-wood-for-nokia-62-se154aow-4808"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-a17-128-gb-4-gb-4g-lte-dual-sim-black",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy A17",
+      "titleAr": "موبايل سامسونج Galaxy A17 128 جيجا 4 جيجا 4G LTE خطين - أسود",
+      "titleEn": "Samsung Galaxy A17 , 128 GB , 4 GB , 4G LTE , Dual-SIM - Black",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-galaxy-a17-128gb-4gb-ram-4g-dual-sim-black"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-a17-128-gb-4-gb-4g-lte-dual-sim-grey",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy A17",
+      "titleAr": "موبايل سامسونج Galaxy A17 128 جيجا 4 جيجا 4G LTE خطين - رمادي",
+      "titleEn": "Samsung Galaxy A17 , 128 GB , 4 GB , 4G LTE , Dual-SIM - Grey",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-galaxy-a17-128gb-4gb-ram-4g-dual-sim-grey"
+        }
+      ]
+    },
+    {
+      "key": "honor-pad-x9a-single-sim-tablet-11-5-inch-128gb-8gb-ram-4g-lte-grey",
+      "category": "tablets",
+      "brand": "Honor",
+      "model": "Pad X9a Single SIM Tablet",
+      "titleAr": "تابلت أونر Pad X9a Single SIM Tablet 11.5 بوصة 128 جيجا 8 جيجا RAM 4G LTE",
+      "titleEn": "HONOR Pad X9a Single SIM Tablet, 11.5 Inch, 128GB, 8GB RAM, 4G LTE - Grey",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/honor-pad-x9a-single-sim-tablet-11-5-inch-128gb-8gb-ram-4g-lte-grey-6936520867158-dream2000-dp005410-dubai-6936520867158-ehab-group-196834-talaat-honor-pad-x9a-128-8gb-4g-grey-vooc-1"
+        }
+      ]
+    },
+    {
+      "key": "realme-15-pro-5g-12gb-ram-256gb-flowing-silver",
+      "category": "phones",
+      "brand": "Realme",
+      "model": "15 Pro 5G",
+      "titleAr": "موبايل ريلمي 15 Pro 5G - 12 جيجا RAM - 256 جيجا - Flowing فضي",
+      "titleEn": "Realme 15 Pro 5G - 12GB RAM - 256GB - Flowing Silver",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/realme-15-pro-5g-12gb-ram-256gb-flowing-silver.html"
+        }
+      ]
+    },
+    {
+      "key": "realme-15-pro-5g-12gb-ram-256gb-velvet-green",
+      "category": "phones",
+      "brand": "Realme",
+      "model": "15 Pro 5G",
+      "titleAr": "موبايل ريلمي 15 Pro 5G - 12 جيجا RAM - 256 جيجا - Velvet أخضر",
+      "titleEn": "Realme 15 Pro 5G - 12GB RAM - 256GB - Velvet Green",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/realme-15-pro-5g-12gb-ram-256gb-velvet-green.html"
+        }
+      ]
+    },
+    {
+      "key": "lenovo-loq-15irx9-laptop-intel-core-i7-13650hx-processor-15-6-inch-fhd",
+      "category": "laptops",
+      "brand": "Lenovo",
+      "model": "LOQ 15IRX9 Laptop",
+      "titleAr": "لابتوب لينوفو LOQ 15IRX9 Intel Core i7-13650HX Processor 15.6 بوصة FHD Display",
+      "titleEn": "Lenovo LOQ 15IRX9 Laptop, Intel Core i7-13650HX Processor, 15.6 Inch FHD Display, 512GB SSD, 16GB RAM DDR5, NVIDIA GeForce RTX 3050 GDDR6 6G",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/lenovo-loq-15irx9-laptop-intel-core-i7-13650hx-processor-156-inch-fhd-display-512-gb-ssd-16-gb-ram-ddr5-nvidia-geforce-rtx-3050-gddr6-6-gb-graphics-dos-storm-grey-83dv008qed-5-elv130311-elite-elv130311-elite"
+        }
+      ]
+    },
+    {
+      "key": "asus-zenbook-s-16-oled-um5606wa-rj288w-laptop-amd-ryzen-ai-9-hx-370-pr",
+      "category": "laptops",
+      "brand": "ASUS",
+      "model": "Zenbook S 16 OLED UM5606WA",
+      "titleAr": "لابتوب أسوس Zenbook S 16 OLED UM5606WA-RJ288W AMD Ryzen AI 9 HX 370 Processor",
+      "titleEn": "ASUS Zenbook S 16 OLED UM5606WA-RJ288W Laptop, AMD Ryzen AI 9 HX 370 Processor, 16 Inch FHD Display, 2 TB SSD, 32 GB RAM LPDDR5X, AMD Radeon",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/asus-zenbook-s-16-oled-um5606wa-rj288w-laptop-amd-ryzen-ai-9-hx-370-processor-16-inch-fhd-display-2-tb-ssd-32-gb-ram-lpddr5x-amd-radeon-890m-graphics-win11-home-white-90nb13m4-m00hm0-2"
+        }
+      ]
+    },
+    {
+      "key": "dell-vostro-3530-laptop-intel-core-i7-1355u-processor-15-6-inch-fhd-di",
+      "category": "laptops",
+      "brand": "DELL",
+      "model": "Vostro 3530 Laptop",
+      "titleAr": "لابتوب ديل Vostro 3530 Intel Core i7-1355U Processor 15.6 بوصة FHD Display 512",
+      "titleEn": "DELL Vostro 3530 Laptop, Intel Core i7-1355U Processor, 15.6 Inch FHD Display, 512 GB SSD, 8 GB RAM DDR4, Intel UHD Graphics, DOS - Black",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/dell-vostro-3530-laptop-intel-core-i7-1355u-processor-156-inch-fhd-display-512-gb-ssd-8-gb-ram-ddr4-intel-uhd-graphics-dos-black-1"
+        }
+      ]
+    },
+    {
+      "key": "asus-vivobook-s-14-m5406ua-qd055w-laptop-amd-ryzen-9-8945hs-processor-",
+      "category": "laptops",
+      "brand": "ASUS",
+      "model": "Vivobook S 14 M5406UA",
+      "titleAr": "لابتوب أسوس Vivobook S 14 M5406UA-QD055W AMD Ryzen 9 8945HS Processor 14 بوصة",
+      "titleEn": "ASUS Vivobook S 14 M5406UA-QD055W Laptop, AMD Ryzen 9 8945HS Processor, 14 Inch WUXGA Display, 512 GB SSD, 16 GB RAM LPDDR5X, AMD Radeon Gra",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/asus-vivobook-s-14-m5406ua-qd055w-laptop-amd-ryzen-9-8945hs-processor-14-inch-wuxga-display-512-gb-ssd-16-gb-ram-lpddr5x-amd-radeon-graphics-win11-cool-silver-90nb1461-m002z0-90nb1461-m002z0-silver-arab"
+        }
+      ]
+    },
+    {
+      "key": "msi-thin-15-b13ve-gaming-laptop-intel-core-i7-13620h-processor-15-6-in",
+      "category": "laptops",
+      "brand": "MSI",
+      "model": "Thin 15 B13VE Gaming Laptop",
+      "titleAr": "لابتوب إم إس آي Thin 15 B13VE Gaming Intel Core i7 13620H Processor 15.6 بوصة",
+      "titleEn": "MSI Thin 15 B13VE Gaming Laptop, Intel Core i7 13620H Processor, 15.6 Inch FHD Display, 512 GB SSD, 16 GB RAM DDR4, NVIDIA GeForce RTX 4050 ",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/msi-thin-15-b13ve-gaming-laptop-intel-core-i7-13620h-processor-156-inch-fhd-display-512-gb-ssd-16-gb-ram-ddr4-nvidia-geforce-rtx-4050-6-gb-graphics-dos-cosmos-grey-2-thin-15-b13ve-512-16-gb-grey-elaptop"
+        }
+      ]
+    },
+    {
+      "key": "dell-vostro-3530-laptop-intel-core-i7-1355u-processor-15-6-inch-fhd-di-raya",
+      "category": "laptops",
+      "brand": "DELL",
+      "model": "Vostro 3530 Laptop",
+      "titleAr": "لابتوب ديل Vostro 3530 Intel Core i7-1355U Processor 15.6 بوصة FHD Display 512",
+      "titleEn": "DELL Vostro 3530 Laptop, Intel Core i7-1355U Processor, 15.6 Inch FHD Display, 512 GB SSD, 8 GB RAM DDR4, Intel UHD Graphics, DOS - Black",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/dell-vostro-3530-laptop-intel-core-i7-1355u-processor-156-inch-fhd-display-512-gb-ssd-8-gb-ram-ddr4-intel-uhd-graphics-dos-black-2"
+        }
+      ]
+    },
+    {
+      "key": "jbl-professional-wired-powered-subwoofer-15-inch-black-irx115s",
+      "category": "audio",
+      "brand": "JBL",
+      "model": "Professional Wired Powered Subwoofer",
+      "titleAr": "جي بي إل Professional Wired Powered Subwoofer 15-Inch أسود",
+      "titleEn": "JBL Professional Wired Powered Subwoofer, 15-Inch, Black - IRX115S",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/jbl-professional-wired-powered-subwoofer-15-inch-black-irx115s-professional-black-fielgarage"
+        }
+      ]
+    },
+    {
+      "key": "jbl-eon-one-mkii-powered-column-speaker-with-built-in-mixer-and-dsp-5-",
+      "category": "audio",
+      "brand": "JBL",
+      "model": "EON ONE MKII Powered Column Speaker with Built",
+      "titleAr": "سماعة بلوتوث جي بي إل EON ONE MKII with Built-In Mixer and DSP",
+      "titleEn": "JBL EON ONE MKII Powered Column Speaker with Built-In Mixer and DSP, 5-Channel, 1500 Watt - Black",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/jbl-eon-one-mkii-powered-column-speaker-with-built-in-mixer-and-dsp-5-channel-1500-watt-black-eon-one-mkii-black-fielgarage"
+        }
+      ]
+    },
+    {
+      "key": "anker-soundcore-c30i-open-ear-earbuds-up-to-10-hours-white-a3330h21",
+      "category": "audio",
+      "brand": "Anker",
+      "model": "SoundCore C30i Open Ear Earbuds",
+      "titleAr": "سماعة لاسلكية أنكر SoundCore C30i Open Ear Earbuds Up to 10 Hours أبيض",
+      "titleEn": "Anker SoundCore C30i Open Ear Earbuds, Up to 10 Hours, White - A3330H21",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/anker-soundcore-c30i-open-ear-earbuds-white-a3330h21-217097"
+        }
+      ]
+    },
+    {
+      "key": "anker-soundcore-p40i-in-ear-earbuds-noise-cancellation-up-to-12-hours-",
+      "category": "audio",
+      "brand": "Anker",
+      "model": "SoundCore P40i In",
+      "titleAr": "سماعة لاسلكية أنكر SoundCore P40i In-Ear Earbuds Noise Cancellation Up to 12",
+      "titleEn": "Anker SoundCore P40i In-Ear Earbuds, Noise Cancellation, Up to 12 Hours, Black - A3955H11",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/anker-soundcore-p40i-in-ear-earbuds-black-a3955h11-217109"
+        }
+      ]
+    },
+    {
+      "key": "jbl-clip-5-porable-bluetooth-speaker-up-to-20-hours-black-jblclip5blka",
+      "category": "audio",
+      "brand": "JBL",
+      "model": "Clip 5 Porable Bluetooth Speaker",
+      "titleAr": "سماعة بلوتوث جي بي إل Clip 5 Porable Up to 20 Hours أسود",
+      "titleEn": "JBL Clip 5 Porable Bluetooth Speaker, Up to 20 Hours, Black - JBLCLIP5BLKAM",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/jbl-clip-5-porable-bluetooth-speaker-up-to-20-hours-black-jblclip5blkam-1200130010170-fielgarage"
+        }
+      ]
+    },
+    {
+      "key": "jbl-xtreme-4-wireless-bluetooth-speaker-1-unit-black-jblxtreme4blkam",
+      "category": "audio",
+      "brand": "JBL",
+      "model": "Xtreme 4 Wireless Bluetooth Speaker",
+      "titleAr": "سماعة بلوتوث جي بي إل Xtreme 4 لاسلكي 1 Unit أسود",
+      "titleEn": "JBL Xtreme 4 Wireless Bluetooth Speaker, 1 Unit, Black - ‎JBLXTREME4BLKAM",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/jbl-xtreme-4-wireless-bluetooth-speaker-1-unit-black-jblxtreme4blkep-1200130008153-moreshop-1"
+        }
+      ]
+    },
+    {
+      "key": "xiaomi-redmi-watch-5-active-smart-watch-for-unisex-lcd-display-2-inch--raya",
+      "category": "lifestyle",
+      "brand": "Xiaomi",
+      "model": "Redmi Watch 5 Active Smart Watch for Unisex",
+      "titleAr": "ساعة ذكية شاومي Redmi 5 Active LCD Display 2 بوصة Midnight",
+      "titleEn": "Xiaomi Redmi Watch 5 Active Smart Watch for Unisex, LCD Display, 2 Inch, Midnight Black - BHR8784GL",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/xiaomi-redmi-watch-5-active-smart-watch-2-inch-midnight-black-bhr8784gl-6941812791585-iq-store-6941812791585"
+        }
+      ]
+    },
+    {
+      "key": "xiaomi-redmi-watch-5-active-smart-watch-2-inch-matte-silver-bhr8790gl",
+      "category": "lifestyle",
+      "brand": "Xiaomi",
+      "model": "Redmi Watch 5 Active Smart Watch",
+      "titleAr": "ساعة ذكية شاومي Redmi 5 Active 2 بوصة Matte فضي",
+      "titleEn": "Xiaomi Redmi Watch 5 Active Smart Watch, 2 Inch, Matte Silver - BHR8790GL",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/xiaomi-redmi-watch-5-active-smart-watch-2-inch-matte-silver-bhr8790gl-6941812791547-dr-mobile-6941812791547-ehab-group-192188-talaat"
+        }
+      ]
+    },
+    {
+      "key": "xiaomi-redmi-watch-5-lite-smart-watch-for-women-amoled-display-1-96-in",
+      "category": "lifestyle",
+      "brand": "Xiaomi",
+      "model": "Redmi Watch 5 Lite Smart Watch for Women",
+      "titleAr": "ساعة ذكية شاومي Redmi 5 Lite for Women AMOLED Display 1.96",
+      "titleEn": "Xiaomi Redmi Watch 5 Lite Smart Watch for Women, AMOLED Display, 1.96 Inch, 470 mAh, Light Gold - BHR8791GL",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/xiaomi-redmi-watch-5-lite-smart-watch-for-women-amoled-display-1-96-inch-470-mah-light-gold-bhr8791gl-5lite-bhr8791gl-gold-vx-6941812791554-dr-mobile-193820-talaat"
+        }
+      ]
+    },
+    {
+      "key": "apple-ipad-a16-11-generation-wi-fi-6gb-ram-256gb-blue",
+      "category": "tablets",
+      "brand": "Apple",
+      "model": "iPad A16 (11 Generation)",
+      "titleAr": "تابلت أبل iPad A16 - Wi-Fi - 6 جيجا RAM - 256 جيجا - أزرق",
+      "titleEn": "Apple iPad A16 (11 Generation) - Wi-Fi - 6GB RAM - 256GB - Blue",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/apple-ipad-a16-11-generation-wi-fi-6gb-ram-256gb-blue.html"
+        }
+      ]
+    },
+    {
+      "key": "xiaomi-redmi-watch-5-active-smart-watch-2-inch-matte-silver-bhr8790gl-raya",
+      "category": "lifestyle",
+      "brand": "Xiaomi",
+      "model": "Redmi Watch 5 Active Smart Watch",
+      "titleAr": "ساعة ذكية شاومي Redmi 5 Active 2 بوصة Matte فضي",
+      "titleEn": "Xiaomi Redmi Watch 5 Active Smart Watch, 2 Inch, Matte Silver - BHR8790GL",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/xiaomi-redmi-watch-5-active-smart-watch-2-inch-matte-silver-bhr8790gl-6941812791547-iq-store-6941812791547"
+        }
+      ]
+    },
+    {
+      "key": "nintendo-switch-mario-kart-8-deluxe-2017",
+      "category": "gaming",
+      "brand": "Nintendo",
+      "model": "Switch",
+      "titleAr": "ألعاب جهاز ألعاب نينتندو Switch-Mario Kart 8 Deluxe 2017",
+      "titleEn": "Nintendo Switch-Mario Kart 8 Deluxe 2017",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/nintendo-switch-mario-kart-8-deluxe-2017"
+        }
+      ]
+    },
+    {
+      "key": "god-of-war-for-playstation-4",
+      "category": "gaming",
+      "brand": "Generic",
+      "model": "God of War For Playstation 4",
+      "titleAr": "ألعاب جهاز ألعاب Generic God of War For Playstation 4",
+      "titleEn": "God of War For Playstation 4",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/god-of-war-for-playstation-4-15"
+        }
+      ]
+    },
+    {
+      "key": "ubisoft-the-crew-2-playstation-4",
+      "category": "gaming",
+      "brand": "Ubisoft",
+      "model": "The Crew 2 PlayStation 4",
+      "titleAr": "ألعاب جهاز ألعاب Ubisoft The Crew 2 PlayStation 4",
+      "titleEn": "Ubisoft The Crew 2 PlayStation 4",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/ubisoft-the-crew-2-playstation-4-35150"
+        }
+      ]
+    },
+    {
+      "key": "rockstar-grand-theft-auto-v-for-playstation-5",
+      "category": "gaming",
+      "brand": "Rockstar",
+      "model": "Grand Theft Auto V for PlayStation 5",
+      "titleAr": "ألعاب جهاز ألعاب Rockstar Grand Theft Auto V for PlayStation 5",
+      "titleEn": "Rockstar Grand Theft Auto V for PlayStation 5",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/rockstar-grand-theft-auto-v-for-playstation-5-eg1915-eg-egy-gamer"
+        }
+      ]
+    },
+    {
+      "key": "fresh-manual-washing-machine-single-tub-smart-5-kg-white-pf2a0175",
+      "category": "tvs",
+      "brand": "Fresh",
+      "model": "Manual Washing Machine Single Tub Smart",
+      "titleAr": "غسالة فريش Manual Single Tub سمارت 5 كيلو أبيض",
+      "titleEn": "Fresh Manual Washing Machine Single Tub Smart, 5 Kg, White - PF2A0175",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/fresh-top-load-half-automatic-washing-machine-single-tub-smart-5-kg-white-pf2a0175-8502"
+        }
+      ]
+    },
+    {
+      "key": "samsung-tv-frame-for-55-inch-tvs-brick-red-vg-scfa55trcru",
+      "category": "tvs",
+      "brand": "SAMSUNG",
+      "model": "Tv FRAMe For 55 Inch Tvs",
+      "titleAr": "شاشة سامسونج FRAMe For 55 بوصة Tvs Brick أحمر",
+      "titleEn": "SAMSUNG Tv FRAMe For 55 Inch Tvs, Brick Red - VG-SCFA55TRCRU",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-tv-frame-for-55-inch-tvs-brick-red-vg-scfa55trcru-17778"
+        }
+      ]
+    },
+    {
+      "key": "tornado-50-inch-4k-uhd-smart-led-tv-with-built-in-receiver-50us1500e",
+      "category": "tvs",
+      "brand": "TORNADO",
+      "model": "50 Inch 4K UHD Smart LED TV with Built",
+      "titleAr": "شاشة تورنيدو 50 بوصة 4K UHD سمارت",
+      "titleEn": "TORNADO 50 Inch 4K UHD Smart LED TV with Built-In Receiver - 50US1500E",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/tornado-50-inch-4k-uhd-smart-led-tv-with-built-in-receiver-50us1500e-567"
+        }
+      ]
+    },
+    {
+      "key": "tornado-58-inch-4k-uhd-smart-dled-tv-with-built-in-receiver-58us1500e",
+      "category": "tvs",
+      "brand": "TORNADO",
+      "model": "58 Inch 4K UHD Smart DLED TV With Built",
+      "titleAr": "شاشة تورنيدو 58 بوصة 4K UHD سمارت DLED",
+      "titleEn": "TORNADO 58 Inch 4K UHD Smart DLED TV With Built-In Receiver - 58US1500E",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/tornado-58-inch-4k-uhd-smart-dled-tv-with-built-in-receiver-58us1500e-28176"
+        }
+      ]
+    },
+    {
+      "key": "lg-55-inch-4k-uhd-smart-oled-tv-with-built-in-receiver-oled55b46la",
+      "category": "tvs",
+      "brand": "LG",
+      "model": "55 Inch 4K UHD Smart OLED TV with Built In Receiver",
+      "titleAr": "شاشة إل جي 55 بوصة 4K UHD سمارت OLED with Built In Receiver",
+      "titleEn": "LG 55 Inch 4K UHD Smart OLED TV with Built In Receiver - OLED55B46LA",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/lg-55-inch-4k-uhd-smart-oled-tv-with-built-in-receiver-oled55b46la-15-oled55b46la"
+        }
+      ]
+    },
+    {
+      "key": "nokia-110-y2026-dual-sim-blue",
+      "category": "phones",
+      "brand": "Nokia",
+      "model": "110 Y2026 Dual",
+      "titleAr": "موبايل نوكيا 110 Y2026 خطين أزرق",
+      "titleEn": "Nokia 110 Y2026 Dual-SIM , Blue",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/nokia-110-y2026-dual-sim-blue"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-smarttag2-airtag-finder-4-pieces-white-black",
+      "category": "tvs",
+      "brand": "SAMSUNG",
+      "model": "Galaxy SmartTag2 Airtag Finder",
+      "titleAr": "موبايل سامسونج Galaxy SmartTag2 Airtag Finder- 4 Pieces - أبيض أسود",
+      "titleEn": "SAMSUNG Galaxy SmartTag2 Airtag Finder- 4 Pieces - White Black",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-galaxy-smarttag2-airtag-finder-4-pieces-white-black-8806095031764-drmobile"
+        }
+      ]
+    },
+    {
+      "key": "lenovo-loq-15irx9-laptop-intel-core-i7-13650hx-16gb-512gb-ssd-nvidia-g",
+      "category": "laptops",
+      "brand": "Lenovo",
+      "model": "LOQ 15IRX9 Laptop",
+      "titleAr": "لابتوب لينوفو LOQ 15IRX9 - Intel Core i7-13650HX - 16 جيجا - 512 جيجا SSD",
+      "titleEn": "Lenovo LOQ 15IRX9 Laptop - Intel® Core™ i7-13650HX - 16GB - 512GB SSD - NVIDIA® GeForce RTX 3050 6GB - 15.6\" FHD - Luna Grey",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/lenovo-loq-15irx9-laptop-intelr-coretm-i7-13650hx-16gb-512gb-ssd-nvidiar-geforce-rtxtm-3050-6gb-15-6-fhd-luna-grey.html"
+        }
+      ]
+    },
+    {
+      "key": "mean-well-elg-150-24-led-driver-150-w-24-v-ip67",
+      "category": "tvs",
+      "brand": "Mean Well",
+      "model": "ELG",
+      "titleAr": "شاشة Mean Well ELG-150-24 Driver 150 W -24 V",
+      "titleEn": "Mean Well ELG-150-24 LED Driver 150 W -24 V - IP67",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/mean-well-elg-150-24-led-driver-150-w-24-v-ip67-2"
+        }
+      ]
+    },
+    {
+      "key": "xiaomi-redmi-watch-5-lite-smart-watch-for-women-amoled-display-1-96-in-raya",
+      "category": "tvs",
+      "brand": "Xiaomi",
+      "model": "Redmi Watch 5 Lite Smart Watch for Women",
+      "titleAr": "ساعة ذكية شاومي Redmi 5 Lite for Women AMOLED Display 1.96 بوصة",
+      "titleEn": "Xiaomi Redmi Watch 5 Lite Smart Watch for Women, AMOLED Display, 1.96 Inch, 470 mAh, Light Gold - BHR8791GL",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/xiaomi-redmi-watch-5-lite-smart-watch-for-women-amoled-display-1-96-inch-470-mah-light-gold-bhr8791gl-5lite-bhr8791gl-gold-vx-6941812791554-dr-mobile-193820-talaat"
+        }
+      ]
+    },
+    {
+      "key": "apple-ipad-2025-11th-gen-tablet-256-gb-8-gb-yellow",
+      "category": "tablets",
+      "brand": "Apple",
+      "model": "iPad 2025 11th Gen Tablet",
+      "titleAr": "تابلت أبل iPad 2025 11th Gen Tablet 256 جيجا 8 جيجا أصفر",
+      "titleEn": "Apple iPad 2025 11th Gen Tablet ,256 GB ,8 GB ,Yellow",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-ipad-2025-11th-gen-tablet-256-gb-8-gb-yellow"
+        }
+      ]
+    },
+    {
+      "key": "kiriazi-zomoroda-refrigerator-no-frost-450-liter-silver-e470nv-2",
+      "category": "appliances",
+      "brand": "Kiriazi",
+      "model": "Zomoroda Refrigerator",
+      "titleAr": "ثلاجة كريازي Zomoroda No Frost 450 لتر فضي",
+      "titleEn": "Kiriazi Zomoroda Refrigerator, No Frost, 450 Liter, Silver - E470NV-2",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/kiriazi-zomoroda-refrigerator-no-frost-450-liter-silver-e470nv-2-15021"
+        }
+      ]
+    },
+    {
+      "key": "bosch-refrigerator-no-frost-450-liter-2-doors-silver-kdn55nl2e8",
+      "category": "appliances",
+      "brand": "BOSCH",
+      "model": "Refrigerator",
+      "titleAr": "ثلاجة بوش No Frost 450 لتر 2 Doors فضي",
+      "titleEn": "BOSCH Refrigerator, No Frost, 450 Liter, 2 Doors, Silver - KDN55NL2E8",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/bosch-refrigerator-no-frost-450-liter-2-doors-silver-kdn55nl2e8-17067"
+        }
+      ]
+    },
+    {
+      "key": "beko-defrost-mini-bar-refrigerator-116-liter-black-tse12340b",
+      "category": "appliances",
+      "brand": "Beko",
+      "model": "Defrost Mini Bar Refrigerator",
+      "titleAr": "ثلاجة بيكو Defrost Mini Bar 116 لتر أسود",
+      "titleEn": "Beko Defrost Mini Bar Refrigerator, 116 Liter, Black - TSE12340B",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/beko-defrost-mini-bar-refrigerator-116-liter-black-tse12340b-17112"
+        }
+      ]
+    },
+    {
+      "key": "beko-digital-refrigerator-no-frost-560-liter-2-doors-black-rcne560e35z",
+      "category": "appliances",
+      "brand": "Beko",
+      "model": "Digital Refrigerator",
+      "titleAr": "ثلاجة بيكو No Frost 560 لتر 2 Doors أسود",
+      "titleEn": "Beko Digital Refrigerator, No Frost, 560 Liter, 2 Doors, Black - RCNE560E35ZGB",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/beko-digital-refrigerator-no-frost-560-liter-2-doors-black-rcne560e35zgb-17114"
+        }
+      ]
+    },
+    {
+      "key": "fresh-refrigerator-defrost-302-liter-2-doors-silver-fddb315bs",
+      "category": "appliances",
+      "brand": "Fresh",
+      "model": "Refrigerator",
+      "titleAr": "ثلاجة فريش Defrost 302 لتر 2 Doors فضي",
+      "titleEn": "Fresh Refrigerator, Defrost, 302 Liter, 2 Doors, Silver - FDDB315BS",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/fresh-refrigerator-defrost-302-liter-2-doors-silver-fddb315bs-7726"
+        }
+      ]
+    },
+    {
+      "key": "apple-ipad-air-2026-8th-gen-tablet-256-gb-12-gb-wi-fi-purple",
+      "category": "tablets",
+      "brand": "Apple",
+      "model": "iPad Air 2026 (8th Gen) Tablet",
+      "titleAr": "تابلت أبل iPad Air 2026 Tablet 256 جيجا 12 جيجا Wi-Fi بنفسجي",
+      "titleEn": "Apple iPad Air 2026 (8th Gen) Tablet ,256 GB ,12 GB ,Wi-Fi ,Purple",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-ipad-air-2026-8th-gen-tablet-256-gb-12-gb-wi-fi-purple"
+        }
+      ]
+    },
+    {
+      "key": "fresh-manual-washing-machine-single-tub-smart-5-kg-white-pf2a0175-raya",
+      "category": "appliances",
+      "brand": "Fresh",
+      "model": "Manual Washing Machine Single Tub Smart",
+      "titleAr": "غسالة فريش Manual Single Tub سمارت 5 كيلو أبيض",
+      "titleEn": "Fresh Manual Washing Machine Single Tub Smart, 5 Kg, White - PF2A0175",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/fresh-top-load-half-automatic-washing-machine-single-tub-smart-5-kg-white-pf2a0175-8502"
+        }
+      ]
+    },
+    {
+      "key": "apple-ipad-air-2026-8th-gen-tablet-256-gb-12-gb-wi-fi-starlight",
+      "category": "tablets",
+      "brand": "Apple",
+      "model": "iPad Air 2026 (8th Gen) Tablet",
+      "titleAr": "تابلت أبل iPad Air 2026 Tablet 256 جيجا 12 جيجا Wi-Fi Starlight",
+      "titleEn": "Apple iPad Air 2026 (8th Gen) Tablet ,256 GB ,12 GB ,Wi-Fi ,Starlight",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-ipad-air-2026-8th-gen-tablet-256-gb-12-gb-wi-fi-starlight"
+        }
+      ]
+    },
+    {
+      "key": "toshiba-top-automatic-washing-machine-with-pump-11-kg-white-aew-e1150s",
+      "category": "appliances",
+      "brand": "TOSHIBA",
+      "model": "Top Automatic Washing Machine With Pump",
+      "titleAr": "غسالة توشيبا 11 كيلو أبيض",
+      "titleEn": "TOSHIBA Top Automatic Washing Machine With Pump, 11 Kg, White - AEW-E1150SUP",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/toshiba-top-automatic-washing-machine-with-pump-11-kg-white-aew-e1150sup"
+        }
+      ]
+    },
+    {
+      "key": "lg-vivace-digital-front-load-full-automatic-washing-machine-with-inver",
+      "category": "appliances",
+      "brand": "LG",
+      "model": "Vivace Digital Front Load Full Automatic Washing Machine Wit",
+      "titleAr": "غسالة إل جي Vivace 8 كيلو فضي",
+      "titleEn": "LG Vivace Digital Front Load Full Automatic Washing Machine With Inverter Technology, 8 Kg, Silver - F4R5TYG2T",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/lg-vivace-front-load-full-automatic-washing-machine-with-ai-dd-technology-8kg-silver-f4r5tyg2t-15036"
+        }
+      ]
+    },
+    {
+      "key": "apple-ipad-air-m4-tablet-128-gb-8-gb-wi-fi-starlight",
+      "category": "tablets",
+      "brand": "Apple",
+      "model": "iPad Air M4 Tablet",
+      "titleAr": "تابلت أبل iPad Air M4 Tablet 128 جيجا 8 جيجا Wi-Fi Starlight",
+      "titleEn": "Apple iPad Air M4 Tablet ,128 GB ,8 GB ,Wi-Fi ,Starlight",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-ipad-air-m4-tablet-128-gb-8-gb-wi-fi-starlight"
+        }
+      ]
+    },
+    {
+      "key": "samsung-digital-front-load-full-automatic-washing-machine-with-inverte",
+      "category": "appliances",
+      "brand": "SAMSUNG",
+      "model": "Digital Front Load Full Automatic Washing Machine With Inver",
+      "titleAr": "غسالة سامسونج 9 كيلو استانلس",
+      "titleEn": "SAMSUNG Digital Front Load Full Automatic Washing Machine With Inverter Technology, 9Kg, Inox - WW90T4040CX1AS",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-front-loading-digital-full-automatic-washing-machine-with-inverter-motor-9kg-grey-ww90t4040cx1as-15763"
+        }
+      ]
+    },
+    {
+      "key": "bosch-digital-dishwasher-13-place-settings-6-programs-silver-sms46ii10",
+      "category": "appliances",
+      "brand": "BOSCH",
+      "model": "Digital Dishwasher",
+      "titleAr": "غسالة أطباق بوش فضي",
+      "titleEn": "BOSCH Digital Dishwasher, 13 Place Settings, 6 Programs, Silver - SMS46II10Q",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/bosch-digital-dishwasher-13-place-settings-6-programs-silver-sms46ii10q-17090"
+        }
+      ]
+    },
+    {
+      "key": "lenovo-legion-m410-rgb-wireless-gaming-mouse-gy51p83012-black",
+      "category": "laptops",
+      "brand": "Lenovo",
+      "model": "Legion M410 RGB Wireless Gaming Mouse",
+      "titleAr": "لينوفو Legion M410 RGB لاسلكي Gaming Mouse - GY51P83012 - أسود",
+      "titleEn": "Lenovo Legion M410 RGB Wireless Gaming Mouse - GY51P83012 - Black",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/lenovo-legion-m410-rgb-wireless-gaming-mouse-gy51p83012-black.html"
+        }
+      ]
+    },
+    {
+      "key": "sharp-air-conditioner-with-plasma-cluster-cooling-and-heating-inverter",
+      "category": "appliances",
+      "brand": "SHARP",
+      "model": "Air Conditioner With Plasma Cluster Cooling and Heating Inve",
+      "titleAr": "تكييف شارب With Plasma Cluster Cooling and Heating Inverter",
+      "titleEn": "SHARP Air Conditioner With Plasma Cluster Cooling and Heating Inverter Digital, 2.25 HP, Silver - AY-XP18UHE",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/sharp-air-conditioner-with-plasma-cluster-cooling-and-heating-inverter-digital-225-hp-silver-ay-xp18uhe-17437"
+        }
+      ]
+    },
+    {
+      "key": "tornado-split-cooling-heating-air-conditioner-2-25hp-ty-c18wee",
+      "category": "appliances",
+      "brand": "TORNADO",
+      "model": "Split Cooling & Heating Air Conditioner",
+      "titleAr": "تكييف تورنيدو Split 2.25 حصان",
+      "titleEn": "TORNADO Split Cooling & Heating Air Conditioner, 2.25HP - TY-C18WEE",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/tornado-split-cooling-heating-air-conditioner-225hp-ty-c18wee-17469"
+        }
+      ]
+    },
+    {
+      "key": "akwrj-chopper-500-watt-1-5-liter-black-ac-45k",
+      "category": "appliances",
+      "brand": "Akwrj",
+      "model": "Chopper",
+      "titleAr": "Akwrj Chopper 500 وات 1.5 لتر أسود",
+      "titleEn": "Akwrj Chopper, 500 Watt, 1.5 Liter, Black - AC-45K",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/akwrj-chopper-500-watt-15-liter-black-ac-45k-9l"
+        }
+      ]
+    },
+    {
+      "key": "lg-dual-inverter-digital-air-conditioner-with-plasmaster-ionizer-plus-",
+      "category": "appliances",
+      "brand": "LG",
+      "model": "Dual Inverter Digital Air Conditioner With Plasmaster Ionize",
+      "titleAr": "تكييف إل جي Dual Inverter With Plasmaster Ionizer Plus",
+      "titleEn": "LG Dual Inverter Digital Air Conditioner With Plasmaster Ionizer Plus Technology, 1.5 HP, Cooling & Heating, White - S4UW12JA2MA",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/lg-dual-inverter-digital-air-conditioner-with-plasmaster-ionizer-plus-technology-15-hp-cooling-heating-white-s4uw12ja2ma-28357"
+        }
+      ]
+    },
+    {
+      "key": "beko-jet-cool-cooling-and-heating-split-air-conditioner-with-inverter-",
+      "category": "appliances",
+      "brand": "Beko",
+      "model": "Jet Cool Cooling And Heating Split Air Conditioner With Inve",
+      "titleAr": "تكييف بيكو Jet Cool Cooling And Heating Split 1.5 حصان",
+      "titleEn": "Beko Jet Cool Cooling And Heating Split Air Conditioner With Inverter Technology, 1.5 HP - BIHT1241",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/beko-jet-cool-cooling-and-heating-split-air-conditioner-with-inverter-technology-15-hp-biht1241-28758"
+        }
+      ]
+    },
+    {
+      "key": "sokany-air-fryer-4-8-liter-1500-watt-black-and-grey-hb-8009",
+      "category": "appliances",
+      "brand": "Sokany",
+      "model": "Air Fryer",
+      "titleAr": "قلاية هوائية Sokany Air Fryer 4.8 لتر 1500 وات أسود and رمادي",
+      "titleEn": "Sokany Air Fryer, 4.8 Liter, 1500 Watt, Black and Grey - HB-8009",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/sokany-air-fryer-48-liter-1500-watt-black-and-grey-hb-8009-8716"
+        }
+      ]
+    },
+    {
+      "key": "black-decker-cordless-handheld-vacuum-cleaner-5-4-watt-blue-nvc115wa",
+      "category": "appliances",
+      "brand": "BLACK+DECKER",
+      "model": "BLACK+DECKER Cordless Handheld Vacuum Cleaner",
+      "titleAr": "مكنسة كهربائية BLACK+DECKER Cordless Handheld 5.4 وات أزرق",
+      "titleEn": "BLACK+DECKER Cordless Handheld Vacuum Cleaner, 5.4 Watt, Blue - NVC115WA",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/blackdecker-cordless-handheld-vacuum-cleaner-54-watt-blue-nvc115wa-14005"
+        }
+      ]
+    },
+    {
+      "key": "sharp-pail-can-drum-vacuum-cleaner-2100-watt-21-liter-red-ec-ca2121-x",
+      "category": "appliances",
+      "brand": "SHARP",
+      "model": "Pail Can Drum Vacuum Cleaner",
+      "titleAr": "مكنسة كهربائية شارب Pail Can Drum 2100 وات 21 لتر أحمر",
+      "titleEn": "SHARP Pail Can Drum Vacuum Cleaner, 2100 Watt, 21 Liter, Red - EC-CA2121-X",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/sharp-pail-can-drum-vacuum-cleaner-2100-watt-21-liter-red-ec-ca2121-x-17283"
+        }
+      ]
+    },
+    {
+      "key": "tornado-air-fryer-1300-watt-3-liter-black-thf-133d",
+      "category": "appliances",
+      "brand": "TORNADO",
+      "model": "Air Fryer",
+      "titleAr": "قلاية هوائية تورنيدو Air Fryer 1300 وات 3 لتر أسود",
+      "titleEn": "TORNADO Air Fryer, 1300 Watt, 3 Liter, Black - THF-133D",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/tornado-air-fryer-1300-watt-3-liter-black-thf-133d-17326"
+        }
+      ]
+    },
+    {
+      "key": "acer-aspire-5-a515-57g-56dq-laptop-intel-core-i5-1235u-15-6-inch-512-g",
+      "category": "laptops",
+      "brand": "Acer",
+      "model": "Aspire 5 A515",
+      "titleAr": "لابتوب أيسر Aspire 5 A515-57G-56DQ Intel Core i5-1235U 15.6 بوصة 512 جيجا SSD 8",
+      "titleEn": "Acer Aspire 5 A515-57G-56DQ Laptop ,Intel Core i5-1235U 15.6 Inch ,512 GB SSD ,8 GB ,NVIDIA GeForce RTX 2050 ,FreeDos - Black",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/acer-aspire-5-a515-57g-56dq-i5-1235u-512gb-8gb-15-6-inch-rtx-2050-4gb-freedos-black"
+        }
+      ]
+    },
+    {
+      "key": "mienta-mega-air-fryer-5-5-liter-1700-watt-black-af47534a",
+      "category": "appliances",
+      "brand": "Mienta",
+      "model": "Mega Air Fryer",
+      "titleAr": "قلاية هوائية مينتا Mega Air Fryer 5.5 لتر 1700 وات أسود",
+      "titleEn": "Mienta Mega Air Fryer, 5.5 Liter, 1700 Watt, Black - AF47534A",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/mienta-mega-air-fryer-55-liter-1700-watt-black-af47534a-19320"
+        }
+      ]
+    },
+    {
+      "key": "anker-535-portable-power-station-power-house-512wh-a1751311-black",
+      "category": "audio",
+      "brand": "Anker",
+      "model": "535 Portable power station power House 512WH A1751311",
+      "titleAr": "محطة طاقة متنقلة أنكر 535 Portable power station power House 512WH A1751311 - أسود",
+      "titleEn": "Anker 535 Portable power station power House 512WH A1751311 - Black",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/anker-535-portable-power-station-power-house-512wh-a1751311-black.html"
+        }
+      ]
+    },
+    {
+      "key": "fresh-spider-canister-vacuum-cleaner-1500-watt-red-fb-1500a",
+      "category": "appliances",
+      "brand": "Fresh",
+      "model": "Spider Canister Vacuum Cleaner",
+      "titleAr": "مكنسة كهربائية فريش Spider 1500 وات أحمر",
+      "titleEn": "Fresh Spider Canister Vacuum Cleaner, 1500 Watt, Red - FB-1500A",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/fresh-spider-canister-vacuum-cleaner-1500-watt-red-fb-1500a-30"
+        }
+      ]
+    },
+    {
+      "key": "braun-multiquick-3-electric-kettle-1-7-liter-2200-watt-black-wk300",
+      "category": "kitchen",
+      "brand": "Braun",
+      "model": "MultiQuick 3 Electric Kettle",
+      "titleAr": "غلاية براون MultiQuick 3 Electric Kettle 1.7 لتر 2200 وات أسود",
+      "titleEn": "Braun MultiQuick 3 Electric Kettle, 1.7 Liter, 2200 Watt, Black - WK300",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/braun-multiquick-3-electric-kettle-17-liter-2200-watt-black-wk300-6449"
+        }
+      ]
+    },
+    {
+      "key": "fresh-electric-kettle-1-7-liter-1850-2200-watt-silver-esk17154",
+      "category": "kitchen",
+      "brand": "Fresh",
+      "model": "Electric Kettle",
+      "titleAr": "غلاية فريش Electric Kettle 1.7 لتر 1850-2200 وات فضي",
+      "titleEn": "Fresh Electric Kettle, 1.7 Liter, 1850-2200 Watt, Silver - ESK17154",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/fresh-electric-kettle-17-liter-1850-2200-watt-silver-esk17154-6606"
+        }
+      ]
+    },
+    {
+      "key": "de-longhi-deep-fryer-multi-cooker-1-7-l-1400-watt-black-and-grey-fh136",
+      "category": "kitchen",
+      "brand": "De’Longhi",
+      "model": "Deep Fryer",
+      "titleAr": "بوتاجاز De’Longhi Deep Fryer Multi Cooker 1.7 L 1400 وات أسود and رمادي",
+      "titleEn": "De’Longhi Deep Fryer, Multi Cooker, 1.7 L, 1400 Watt, Black and Grey - FH1363",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/delonghi-deep-fryer-multi-cooker-17-l-1400-watt-black-and-grey-fh1363-6737"
+        }
+      ]
+    },
+    {
+      "key": "acer-aspire-lite-al15-53p-57eq-laptop-intel-core-5-120u-15-6-inch-512-",
+      "category": "laptops",
+      "brand": "Acer",
+      "model": "Aspire Lite AL15",
+      "titleAr": "لابتوب أيسر Aspire Lite AL15-53P-57EQ Intel Core 5 120U 15.6 بوصة 512 جيجا SSD",
+      "titleEn": "Acer Aspire Lite AL15-53P-57EQ Laptop ,Intel Core 5 120U 15.6 Inch ,512 GB SSD ,16 GB ,Intel Graphics ,FreeDos - Silver",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/acer-aspire-lite-al15-53p-57eq-laptop-intel-core-5-120u-15-6-inch-512-gb-ssd-16-gb-intel-graphics-freedos-silver"
+        }
+      ]
+    },
+    {
+      "key": "home-blender-with-grinder-650-watt-1-5-liter-kl-408s",
+      "category": "kitchen",
+      "brand": "Home",
+      "model": "Blender With Grinder",
+      "titleAr": "خلاط Home Blender With Grinder 650 وات 1.5 لتر",
+      "titleEn": "Home Blender With Grinder, 650 Watt, 1.5 Liter - KL-408S",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/home-blender-with-grinder-650-watt-15-liter-kl-408s-8624"
+        }
+      ]
+    },
+    {
+      "key": "anker-522-portable-power-station-b2c-a1721311-black",
+      "category": "audio",
+      "brand": "Anker",
+      "model": "522 Portable Power Station B2C",
+      "titleAr": "محطة طاقة متنقلة أنكر 522 Portable Power Station B2C - A1721311 - أسود",
+      "titleEn": "Anker 522 Portable Power Station B2C - A1721311 - Black",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/anker-522-portable-power-station-b2c-a1721311-black.html"
+        }
+      ]
+    },
+    {
+      "key": "home-multi-functional-food-processor-1-2-liter-500-watt-green-ch5017",
+      "category": "kitchen",
+      "brand": "Home",
+      "model": "Multi Functional Food Processor",
+      "titleAr": "خلاط محضرة طعام Home Multi Functional Food Processor 1.2 لتر 500 وات أخضر",
+      "titleEn": "Home Multi Functional Food Processor, 1.2 Liter, 500 Watt, Green - CH5017",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/home-multi-functional-food-processor-12-liter-500-watt-green-ch5017-8838"
+        }
+      ]
+    },
+    {
+      "key": "moulinex-chopper-and-blender-1-5-liter-1000-watt-white-dpa241",
+      "category": "kitchen",
+      "brand": "Moulinex",
+      "model": "Chopper and Blender",
+      "titleAr": "خلاط مولينكس Chopper and Blender 1.5 لتر 1000 وات أبيض",
+      "titleEn": "Moulinex Chopper and Blender, 1.5 Liter, 1000 Watt, White - DPA241",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/moulinex-chopper-and-blender-15-liter-1000-watt-white-dpa241-9040"
+        }
+      ]
+    },
+    {
+      "key": "mienta-electric-kettle-1-7-liter-2150-watt-stainless-steel-ek20920a",
+      "category": "kitchen",
+      "brand": "Mienta",
+      "model": "Electric Kettle",
+      "titleAr": "غلاية مينتا Electric Kettle 1.7 لتر 2150 وات Stainless Steel",
+      "titleEn": "Mienta Electric Kettle, 1.7 Liter, 2150 Watt, Stainless Steel - EK20920A",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/mienta-electric-kettle-17-liter-2150-watt-stainless-steel-ek20920a-9058"
+        }
+      ]
+    },
+    {
+      "key": "apple-macbook-air-2026-international-version-mdh84-laptop-apple-m5-chi",
+      "category": "laptops",
+      "brand": "Apple",
+      "model": "MacBook Air 2026 International Version MDH84 Laptop",
+      "titleAr": "لابتوب أبل MacBook Air 2026 نسخة دولية MDH84 Apple M5 Chip with 10 Cores CPU",
+      "titleEn": "Apple MacBook Air 2026 International Version MDH84 Laptop ,Apple M5 Chip with 10 Cores CPU 13.6 Inch ,1 TB SSD ,16 GB ,Apple 10-Core GPU ,ma",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-macbook-air-2026-international-version-mdh84-laptop-apple-m5-chip-with-10-cores-cpu-13-6-inch-1-terabyte-ssd-16-gb-apple-10-core-gpu-macos-silver"
+        }
+      ]
+    },
+    {
+      "key": "apple-macbook-air-2026-international-version-mdhc4-laptop-apple-m5-chi",
+      "category": "laptops",
+      "brand": "Apple",
+      "model": "MacBook Air 2026 International Version MDHC4 Laptop",
+      "titleAr": "لابتوب أبل MacBook Air 2026 نسخة دولية MDHC4 Apple M5 Chip with 10 Cores CPU",
+      "titleEn": "Apple MacBook Air 2026 International Version MDHC4 Laptop ,Apple M5 Chip with 10 Cores CPU 13.6 Inch ,1 TB SSD ,16 GB ,Apple 10-Core GPU ,ma",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-macbook-air-2026-international-version-mdhc4-laptop-apple-m5-chip-with-10-cores-cpu-13-6-inch-1-terabyte-ssd-16-gb-apple-10-core-gpu-macos-starlight"
+        }
+      ]
+    },
+    {
+      "key": "apple-macbook-air-2026-international-version-mdhf4-laptop-apple-m5-chi",
+      "category": "laptops",
+      "brand": "Apple",
+      "model": "MacBook Air 2026 International Version MDHF4 Laptop",
+      "titleAr": "لابتوب أبل MacBook Air 2026 نسخة دولية MDHF4 Apple M5 Chip with 10 Cores CPU",
+      "titleEn": "Apple MacBook Air 2026 International Version MDHF4 Laptop ,Apple M5 Chip with 10 Cores CPU 13.6 Inch ,1 TB SSD ,16 GB ,Apple 10-Core GPU ,ma",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-macbook-air-2026-international-version-mdhf4-laptop-apple-m5-chip-with-10-cores-cpu-13-6-inch-1-terabyte-ssd-16-gb-apple-10-core-gpu-macos-midnight"
+        }
+      ]
+    },
+    {
+      "key": "apple-macbook-air-2026-international-version-mdhj4-laptop-apple-m5-chi",
+      "category": "laptops",
+      "brand": "Apple",
+      "model": "MacBook Air 2026 International Version MDHJ4 Laptop",
+      "titleAr": "لابتوب أبل MacBook Air 2026 نسخة دولية MDHJ4 Apple M5 Chip with 10 Cores CPU",
+      "titleEn": "Apple MacBook Air 2026 International Version MDHJ4 Laptop ,Apple M5 Chip with 10 Cores CPU 13.6 Inch ,1 TB SSD ,16 GB ,Apple 10-Core GPU ,ma",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-macbook-air-2026-international-version-mdhj4-laptop-apple-m5-chip-with-10-cores-cpu-13-6-inch-1-terabyte-ssd-16-gb-apple-10-core-gpu-macos-sky-blue"
+        }
+      ]
+    },
+    {
+      "key": "apple-macbook-air-2026-international-version-mdv94-laptop-apple-m5-chi",
+      "category": "laptops",
+      "brand": "Apple",
+      "model": "MacBook Air 2026 International Version MDV94 Laptop",
+      "titleAr": "لابتوب أبل MacBook Air 2026 نسخة دولية MDV94 Apple M5 Chip with 10 Cores CPU",
+      "titleEn": "Apple MacBook Air 2026 International Version MDV94 Laptop ,Apple M5 Chip with 10 Cores CPU 15.3 Inch ,512 GB SSD ,16 GB ,Apple 10-Core GPU ,",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-macbook-air-2026-international-version-mdv94-laptop-apple-m5-chip-with-10-cores-cpu-15-3-inch-512-gb-ssd-16-gb-apple-10-core-gpu-macos-silver"
+        }
+      ]
+    },
+    {
+      "key": "apple-macbook-air-2026-international-version-mdvd4-laptop-apple-m5-chi",
+      "category": "laptops",
+      "brand": "Apple",
+      "model": "MacBook Air 2026 International Version MDVD4 Laptop",
+      "titleAr": "لابتوب أبل MacBook Air 2026 نسخة دولية MDVD4 Apple M5 Chip with 10 Cores CPU",
+      "titleEn": "Apple MacBook Air 2026 International Version MDVD4 Laptop ,Apple M5 Chip with 10 Cores CPU 15.3 Inch ,512 GB SSD ,16 GB ,Apple 10-Core GPU ,",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-macbook-air-2026-international-version-mdvd4-laptop-amd-15-3-inch-512-gb-ssd-16-gb-apple-10-core-gpu-macos-starlight"
+        }
+      ]
+    },
+    {
+      "key": "jbl-go3-portable-waterproof-bluetooth-speaker-red",
+      "category": "audio",
+      "brand": "JBL",
+      "model": "GO3 Portable Waterproof Bluetooth Speaker",
+      "titleAr": "سماعة بلوتوث جي بي إل GO3 Portable Waterproof - أحمر",
+      "titleEn": "JBL GO3 Portable Waterproof Bluetooth Speaker - Red",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/jbl-go3-red.html"
+        }
+      ]
+    },
+    {
+      "key": "anker-535-powerhouse-ups-512-watt-hour-a1751311-bk",
+      "category": "audio",
+      "brand": "Anker",
+      "model": "535 PowerHouse UPS",
+      "titleAr": "أنكر 535 PowerHouse UPS 512 وات hour",
+      "titleEn": "Anker 535 PowerHouse UPS , 512 watt hour - A1751311-BK",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/anker-535-powerhouse-power-supply-16v-512wh-a1751311-bk"
+        }
+      ]
+    },
+    {
+      "key": "anker-maggo-slim-wired-and-wireless-power-bank-10000-mah-1-ports-white",
+      "category": "audio",
+      "brand": "Anker",
+      "model": "MagGo Slim Wired and Wireless Power Bank",
+      "titleAr": "أنكر MagGo Slim Wired and لاسلكي Power Bank 10000 mAh 1 Ports أبيض A1664",
+      "titleEn": "Anker MagGo Slim Wired and Wireless Power Bank , 10000 mAh 1 Ports , White , A1664",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/anker-maggo-slim-wired-and-wireless-power-bank-10000-mah-1-ports-white-a1664"
+        }
+      ]
+    },
+    {
+      "key": "anker-nano-wired-power-bank-10000-mah-2-ports-white-a1638",
+      "category": "audio",
+      "brand": "Anker",
+      "model": "Nano Wired Power Bank",
+      "titleAr": "أنكر Nano Wired Power Bank 10000 mAh 2 Ports أبيض A1638",
+      "titleEn": "Anker Nano Wired Power Bank , 10000 mAh 2 Ports , White , A1638",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/anker-nano-wired-power-bank-10000-mah-2-ports-white-a1638"
+        }
+      ]
+    },
+    {
+      "key": "anker-wired-wireless-power-bank-10000-mah-2-ports-black-a1617h11",
+      "category": "audio",
+      "brand": "Anker",
+      "model": "Wired",
+      "titleAr": "أنكر Wired لاسلكي Power Bank 10000 mAh 2 Ports أسود A1617H11",
+      "titleEn": "Anker Wired, Wireless Power Bank , 10000 mAh 2 Ports , Black , A1617H11",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/anker-wireless-power-bank-10000-mah-2-usb-ports-black-a1617h11"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-watch-ultra-2-smart-watch-47-millimeter-titanium-silver",
+      "category": "lifestyle",
+      "brand": "Samsung",
+      "model": "Galaxy Watch Ultra 2 Smart Watch",
+      "titleAr": "ساعة ذكية سامسونج Galaxy Ultra 2 47 Millimeter تيتانيوم فضي",
+      "titleEn": "Samsung Galaxy Watch Ultra 2 Smart Watch , 47 Millimeter Titanium Silver - SM-L715FZSAXSG",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-galaxy-watch-ultra-2-smart-watch-47-millimeter-titanium-silver-sm-l715fzsaxsg"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-watch-ultra-2025-smart-watch-47-millimeter-titanium-sil",
+      "category": "lifestyle",
+      "brand": "Samsung",
+      "model": "Galaxy Watch Ultra 2025 Smart Watch",
+      "titleAr": "ساعة ذكية سامسونج Galaxy Ultra 2025 47 Millimeter تيتانيوم فضي",
+      "titleEn": "Samsung Galaxy Watch Ultra 2025 Smart Watch , 47 Millimeter Titanium Silver",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-galaxy-watch-ultra-2025-smart-watch-47-millimeter-titanium-silver"
+        }
+      ]
+    },
+    {
+      "key": "sony-original-game-pad-dualsense-playstation-5-white",
+      "category": "gaming",
+      "brand": "Sony",
+      "model": "Original Game Pad DualSense PlayStation 5",
+      "titleAr": "دراع تحكم سوني DualSense PlayStation 5 - أبيض",
+      "titleEn": "Sony Original Game Pad DualSense PlayStation 5 - White",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/sony-original-game-pad-dual-sense-ps5.html"
+        }
+      ]
+    },
+    {
+      "key": "sony-original-game-pad-dualsense-playstation-5-black-3-month-warranty",
+      "category": "gaming",
+      "brand": "Sony",
+      "model": "Original Game Pad DualSense PlayStation 5",
+      "titleAr": "دراع تحكم سوني DualSense PlayStation 5 - أسود",
+      "titleEn": "Sony Original Game Pad DualSense PlayStation 5 - Black (3 Month Warranty)",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/sony-original-game-pad-dualsense-playstation-5-black-3-month-warranty.html"
+        }
+      ]
+    },
+    {
+      "key": "lenovo-legion-h600-wireless-gaming-headset-ps4-ps-5-pc-mac-mobile-nint",
+      "category": "gaming",
+      "brand": "Lenovo",
+      "model": "Legion H600 Wireless Gaming Headset PS4",
+      "titleAr": "سماعة رأس لينوفو Legion H600 لاسلكي Gaming Headset PS4 - PS 5 - PC - Mac",
+      "titleEn": "Lenovo Legion H600 Wireless Gaming Headset PS4 - PS 5 - PC - Mac - Mobile - Nintendo Switch - Xbox - GXD1A03963 - Black",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/lenovo-legion-h600-wireless-gaming-headset-ps4-ps-5-pc-mac-mobile-nintendo-switch-xbox-gxd1a03963-black.html"
+        }
+      ]
+    },
+    {
+      "key": "lenovo-legion-h500-pro-gaming-headset-ps4-ps-5-pc-mac-mobile-nintendo-",
+      "category": "gaming",
+      "brand": "Lenovo",
+      "model": "Legion H500 Pro Gaming Headset PS4",
+      "titleAr": "سماعة رأس لينوفو Legion H500 Pro Gaming Headset PS4 - PS 5 - PC - Mac - Mobile",
+      "titleEn": "Lenovo Legion H500 Pro Gaming Headset PS4 - PS 5 - PC - Mac - Mobile - Nintendo Switch - Xbox - GXD0T69864 - Iron Gray",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/lenovo-legion-h500-pro-gaming-headset-ps4-ps-5-pc-mac-mobile-nintendo-switch-xbox-gxd0t69864-iron-gray.html"
+        }
+      ]
+    },
+    {
+      "key": "lg-32-inch-tv-hd-led-lm550bpva",
+      "category": "tvs",
+      "brand": "LG",
+      "model": "32 Inch TV",
+      "titleAr": "شاشة إل جي 32 بوصة HD",
+      "titleEn": "LG 32 Inch TV , HD LED - LM550BPVA",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/lg-32hd-led-32lm550bpva"
+        }
+      ]
+    },
+    {
+      "key": "fresh-air-cooler-60-liter-smart-off-white-grey-fa-m60w-10908",
+      "category": "tvs",
+      "brand": "Fresh",
+      "model": "Air Cooler 60 Liter Smart",
+      "titleAr": "مبرد هواء فريش 60 لتر سمارت - Off أبيض*رمادي",
+      "titleEn": "Fresh Air Cooler 60 Liter Smart - Off White*Grey - FA M60W - 10908",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/fresh-air-cooler-60-liter-smart-offwhite-grey-fa-m60w-10908.html"
+        }
+      ]
+    },
+    {
+      "key": "tornado-32-inch-smart-tv-hd-led-built-in-receiver-32es1500e",
+      "category": "tvs",
+      "brand": "Tornado",
+      "model": "32 Inch Smart TV",
+      "titleAr": "شاشة تورنيدو 32 بوصة سمارت HD",
+      "titleEn": "Tornado 32 Inch Smart TV , HD LED Built-In Receiver - 32ES1500E",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/tornado-32-hd-smart-led-rec-32es1500e"
+        }
+      ]
+    },
+    {
+      "key": "tornado-43-inch-smart-tv-fhd-led-built-in-receiver-43es1500e",
+      "category": "tvs",
+      "brand": "Tornado",
+      "model": "43 Inch Smart TV",
+      "titleAr": "شاشة تورنيدو 43 بوصة سمارت FHD",
+      "titleEn": "Tornado 43 Inch Smart TV , FHD LED Built-In Receiver - 43ES1500E",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/tornado-43-fhd-smart-led-rec-43es1500e"
+        }
+      ]
+    },
+    {
+      "key": "tornado-58-inch-smart-tv-4k-uhd-led-built-in-receiver",
+      "category": "tvs",
+      "brand": "Tornado",
+      "model": "58 Inch Smart TV",
+      "titleAr": "شاشة تورنيدو 58 بوصة سمارت 4K UHD",
+      "titleEn": "Tornado 58 Inch Smart TV , 4K UHD LED Built-In Receiver",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/tornado-58-4k-uhd-smart-led-tv-58us1500e"
+        }
+      ]
+    },
+    {
+      "key": "fresh-upright-deep-freezer-6d-4d-2-shelves-stainless-fnu-mt271t-500012",
+      "category": "appliances",
+      "brand": "Fresh",
+      "model": "Upright Deep Freezer 6D (4D + 2 Shelves)",
+      "titleAr": "ديب فريزر فريش Upright 6D - Stainless",
+      "titleEn": "Fresh Upright Deep Freezer 6D (4D + 2 Shelves) - Stainless - FNU-MT271T - 500012315",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/fresh-upright-deep-freezer-6d-4d-2-shelves-stainless-fnu-mt271t-500012315.html"
+        }
+      ]
+    },
+    {
+      "key": "fresh-32-inch-tv-hd-led-32lh324d",
+      "category": "tvs",
+      "brand": "Fresh",
+      "model": "32 Inch TV",
+      "titleAr": "شاشة فريش 32 بوصة HD",
+      "titleEn": "Fresh 32 Inch TV , HD LED - 32LH324D",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/fresh-32-hd-led-tv-32lh324d"
+        }
+      ]
+    },
+    {
+      "key": "fresh-32-inch-tv-hd-led-32lh123e",
+      "category": "tvs",
+      "brand": "Fresh",
+      "model": "32 Inch TV",
+      "titleAr": "شاشة فريش 32 بوصة HD",
+      "titleEn": "Fresh 32 Inch TV , HD LED - 32LH123E",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/fresh-32-inch-hd-standard-led-tv-32lh123e"
+        }
+      ]
+    },
+    {
+      "key": "fresh-32-inch-tv-fhd-led-32lh135",
+      "category": "tvs",
+      "brand": "Fresh",
+      "model": "32 Inch TV",
+      "titleAr": "شاشة فريش 32 بوصة FHD",
+      "titleEn": "Fresh 32 Inch TV , FHD LED - 32LH135",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/fresh-32-inch-hd-standard-led-tv-32lh135"
+        }
+      ]
+    },
+    {
+      "key": "zanussi-refrigerator-320-liter-de-frost-11-ft-1-door-super-artic-silve",
+      "category": "appliances",
+      "brand": "Zanussi",
+      "model": "Refrigerator 320 Liter De Frost 11 FT 1 Door Super",
+      "titleAr": "ثلاجة زانوسي 320 لتر De Frost 11 FT 1 Door Super - Artic فضي",
+      "titleEn": "Zanussi Refrigerator 320 Liter De Frost 11 FT 1 Door Super - Artic Silver - ZRM3201A-A - 1016",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/zanussi-refrigerator-defrost-1-door-super-11-ft-320l-artic-silver-zrm3201a-a-1016.html"
+        }
+      ]
+    },
+    {
+      "key": "fresh-43-inch-smart-tv-fhd-led-43lf423ce",
+      "category": "tvs",
+      "brand": "Fresh",
+      "model": "43 Inch Smart TV",
+      "titleAr": "شاشة فريش 43 بوصة سمارت FHD",
+      "titleEn": "Fresh 43 Inch Smart TV , FHD LED - 43LF423CE",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/fresh-43-inch-fhd-smart-led-tv-43lf423ce"
+        }
+      ]
+    },
+    {
+      "key": "fresh-43-inch-smart-tv-fhd-led-built-in-receiver",
+      "category": "tvs",
+      "brand": "Fresh",
+      "model": "43 Inch Smart TV",
+      "titleAr": "شاشة فريش 43 بوصة سمارت FHD",
+      "titleEn": "Fresh 43 Inch Smart TV , FHD LED Built-In Receiver",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/fresh-43inch-fhd-smart-led-tv-receiver-43lf424rd"
+        }
+      ]
+    },
+    {
+      "key": "electrostar-defrost-one-door-refrigerator-315-liter-grey-lr315dwr00",
+      "category": "appliances",
+      "brand": "Electrostar",
+      "model": "Defrost One Door Refrigerator",
+      "titleAr": "ثلاجة إلكتروستار Defrost One Door 315 لتر رمادي",
+      "titleEn": "Electrostar Defrost One Door Refrigerator , 315 Liter , Grey - LR315DWR00",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/electrostar-defrost-one-door-refrigerator-315-liter-silver-lr315dwr00"
+        }
+      ]
+    },
+    {
+      "key": "electrostar-majesta-defrost-defrost-upright-deep-freezer-215-liter-sil",
+      "category": "appliances",
+      "brand": "Electrostar",
+      "model": "Majesta Defrost Defrost Upright Deep Freezer",
+      "titleAr": "ديب فريزر إلكتروستار Majesta Defrost Defrost Upright 215 لتر فضي",
+      "titleEn": "Electrostar Majesta Defrost Defrost Upright Deep Freezer , 215 Liter , Silver",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/electrostar-majesta-defrost-defrost-upright-deep-freezer-215-liter-silver"
+        }
+      ]
+    },
+    {
+      "key": "fresh-defrost-top-freezer-refrigerator-293-liter-silver-fdd-b315-s",
+      "category": "appliances",
+      "brand": "Fresh",
+      "model": "Defrost Top Freezer Refrigerator",
+      "titleAr": "ديب فريزر فريش Defrost Top Freezer 293 لتر فضي",
+      "titleEn": "Fresh Defrost Top Freezer Refrigerator , 293 Liter , Silver - FDD-B315 S",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/fresh-defrost-refrigerator-293-liters-silver-fdd-b315-s"
+        }
+      ]
+    },
+    {
+      "key": "beko-dishwasher-60-cm-15-set-6-programs-inverter-silver-bdfn26520xq",
+      "category": "appliances",
+      "brand": "Beko",
+      "model": "Dishwasher 60 Cm",
+      "titleAr": "غسالة أطباق بيكو 60 Cm - 15 Set - 6 - Inverter - فضي",
+      "titleEn": "Beko Dishwasher 60 Cm - 15 Set - 6 Programs - Inverter - Silver - BDFN26520XQ",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/beko-dishwasher-60-cm-15-set-6-programs-inverter-silver-bdfn26520xq.html"
+        }
+      ]
+    },
+    {
+      "key": "tornado-washing-machine-10kg-top-loading-pump-white-twt-tln10lwt",
+      "category": "appliances",
+      "brand": "Tornado",
+      "model": "Washing Machine 10Kg Top Loading Pump",
+      "titleAr": "غسالة تورنيدو 10 كيلو Top Loading Pump - أبيض",
+      "titleEn": "Tornado Washing Machine 10Kg Top Loading Pump - White - TWT-TLN10LWT",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/tornado-washing-machine-top-automatic-10-kg-pump-white-twt-tln10lwt.html"
+        }
+      ]
+    },
+    {
+      "key": "lg-std-air-conditioner-3-hp-cooling-only-dual-cool-inverter-white-s4-q",
+      "category": "appliances",
+      "brand": "LG",
+      "model": "STD Air Conditioner 3 HP Cooling Only Dual Cool Inverter",
+      "titleAr": "تكييف إل جي STD 3 حصان Dual Cool Inverter -أبيض",
+      "titleEn": "LG STD Air Conditioner 3 HP Cooling Only Dual Cool Inverter -White - S4-Q24K23AE",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/lg-std-air-conditioner-3-hp-cooling-only-dual-cool-inverter-white-s4-q24k23ae.html"
+        }
+      ]
+    },
+    {
+      "key": "ariston-dishwasher-15-persons-silver-lfo3p31wlx",
+      "category": "appliances",
+      "brand": "Ariston",
+      "model": "Dishwasher",
+      "titleAr": "غسالة أطباق أريستون 15 Persons فضي",
+      "titleEn": "Ariston Dishwasher , 15 Persons Silver - LFO3P31WLX",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/ariston-dishwasher-15-person-lfo3p31wlx"
+        }
+      ]
+    },
+    {
+      "key": "lg-s-plus-air-conditioner-2-25-hp-cooling-and-heating-dual-cool-invert",
+      "category": "appliances",
+      "brand": "LG",
+      "model": "S",
+      "titleAr": "تكييف إل جي S-Plus 2.25 حصان Cooling and Heating Dual Cool",
+      "titleEn": "LG S-Plus Air Conditioner 2.25 HP Cooling and Heating Dual Cool Inverter - White - S4-W18KL2MA",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/lg-s-plus-air-conditioner-2-25-hp-cooling-and-heating-dual-cool-inverter-white-s4-w18kl2ma.html"
+        }
+      ]
+    },
+    {
+      "key": "ariston-dishwasher-15-persons-inverter-motor-grey-lfp-5p31-wlt-x",
+      "category": "appliances",
+      "brand": "Ariston",
+      "model": "Dishwasher",
+      "titleAr": "غسالة أطباق أريستون 15 Persons Inverter Motor رمادي",
+      "titleEn": "Ariston Dishwasher , 15 Persons Inverter Motor Grey - LFP 5P31 WLT X",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/ariston-freestanding-dishwasher-15-persons-grey-lfp5p31wltx"
+        }
+      ]
+    },
+    {
+      "key": "ariston-dishwasher-15-persons-inverter-motor-silver-dfn856xq",
+      "category": "appliances",
+      "brand": "Ariston",
+      "model": "Dishwasher",
+      "titleAr": "غسالة أطباق أريستون 15 Persons Inverter Motor فضي",
+      "titleEn": "Ariston Dishwasher , 15 Persons Inverter Motor Silver - DFN856XQ",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/ariston-freestanding-dishwasher-15-persons-silver-dfn856xq"
+        }
+      ]
+    },
+    {
+      "key": "ariston-inverter-free-standing-dishwasher-15-persons-inverter-motor-in",
+      "category": "appliances",
+      "brand": "Ariston",
+      "model": "Inverter Free Standing Dishwasher",
+      "titleAr": "غسالة أطباق أريستون Inverter Free Standing 15 Persons Inverter Motor استانلس",
+      "titleEn": "Ariston Inverter Free Standing Dishwasher , 15 Persons Inverter Motor Inox - DFN866XQ",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/ariston-inverter-free-standing-dishwasher-15-persons-inverter-motor-silver-dfn866xq"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-17-256-gb-8-gb-5g-dual-sim-white",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 17",
+      "titleAr": "موبايل أبل iPhone 17 256 جيجا 8 جيجا 5G خطين - أبيض",
+      "titleEn": "Apple iPhone 17 , 256 GB , 8 GB , 5G , Dual-SIM - White",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-iphone-17-256gb-8gb-ram-5g-white"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-17-air-esim-256gb-12gb-ram-5g-sky-blue",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 17 Air eSIM",
+      "titleAr": "موبايل أبل iPhone 17 Air eSIM 256 جيجا 12 جيجا RAM 5G - Sky أزرق",
+      "titleEn": "Apple iPhone 17 Air eSIM, 256GB, 12GB RAM, 5G - Sky Blue",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/apple-iphone-17-air-esim-256gb-12gb-ram-5g-sky-blue-mg2p4af-a"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-16-plus-256gb-teal-official-warranty",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 16 Plus",
+      "titleAr": "موبايل أبل iPhone 16 Plus - 256 جيجا - Teal",
+      "titleEn": "Apple iPhone 16 Plus - 256GB - Teal (Official Warranty )",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/apple-iphone-16-plus-256gb-teal-official-warranty.html"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-air-256-gb-8-gb-5g-dual-sim-cloud-white",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone Air",
+      "titleAr": "موبايل أبل iPhone Air 256 جيجا 8 جيجا 5G خطين - Cloud أبيض",
+      "titleEn": "Apple iPhone Air , 256 GB , 8 GB , 5G , Dual-SIM - Cloud White",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-iphone-17-air-256gb-8gb-ram-5g-cloud-white"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-air-256-gb-8-gb-5g-dual-sim-light-gold",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone Air",
+      "titleAr": "موبايل أبل iPhone Air 256 جيجا 8 جيجا 5G خطين - Light ذهبي",
+      "titleEn": "Apple iPhone Air , 256 GB , 8 GB , 5G , Dual-SIM - Light Gold",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-iphone-17-air-256gb-8gb-ram-5g-light-gold"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-air-256-gb-8-gb-5g-dual-sim-sky-blue",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone Air",
+      "titleAr": "موبايل أبل iPhone Air 256 جيجا 8 جيجا 5G خطين - Sky أزرق",
+      "titleEn": "Apple iPhone Air , 256 GB , 8 GB , 5G , Dual-SIM - Sky Blue",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/apple-iphone-17-air-256gb-8gb-ram-5g-sky-blue"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-s25-fe-dual-sim-256gb-8gb-ram-5g-white",
+      "category": "phones",
+      "brand": "SAMSUNG",
+      "model": "Galaxy S25 FE Dual SIM",
+      "titleAr": "موبايل سامسونج Galaxy S25 FE خطين 256 جيجا 8 جيجا RAM 5G - أبيض",
+      "titleEn": "SAMSUNG Galaxy S25 FE Dual SIM, 256GB, 8GB RAM, 5G - White",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-galaxy-s25-fe-dual-sim-256gb-8gb-ram-5g-white"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-16-plus-256gb-white-official-warranty",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 16 Plus",
+      "titleAr": "موبايل أبل iPhone 16 Plus - 256 جيجا - أبيض",
+      "titleEn": "Apple iPhone 16 Plus - 256GB - White (Official Warranty )",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/apple-iphone-16-plus-256gb-white-official-warranty.html"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-s25-fe-dual-sim-512gb-8gb-ram-5g-icy-blue",
+      "category": "phones",
+      "brand": "SAMSUNG",
+      "model": "Galaxy S25 FE Dual SIM",
+      "titleAr": "موبايل سامسونج Galaxy S25 FE خطين 512 جيجا 8 جيجا RAM 5G - Icy أزرق",
+      "titleEn": "SAMSUNG Galaxy S25 FE Dual SIM, 512GB, 8GB RAM, 5G - Icy Blue",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-galaxy-s25-fe-dual-sim-512gb-8gb-ram-5g-icy-blue"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-16-128gb-teal-official-warranty",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 16",
+      "titleAr": "موبايل أبل iPhone 16 - 128 جيجا - Teal",
+      "titleEn": "Apple iPhone 16 - 128GB - Teal (Official Warranty)",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/apple-iphone-16-128gb-teal-official-warranty.html"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-s25-fe-dual-sim-512gb-8gb-ram-5g-jet-black",
+      "category": "phones",
+      "brand": "SAMSUNG",
+      "model": "Galaxy S25 FE Dual SIM",
+      "titleAr": "موبايل سامسونج Galaxy S25 FE خطين 512 جيجا 8 جيجا RAM 5G - Jet أسود",
+      "titleEn": "SAMSUNG Galaxy S25 FE Dual SIM, 512GB, 8GB RAM, 5G - Jet Black",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-galaxy-s25-fe-dual-sim-512gb-8gb-ram-5g-jet-black"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-s25-fe-dual-sim-256gb-8gb-ram-5g-navy",
+      "category": "phones",
+      "brand": "SAMSUNG",
+      "model": "Galaxy S25 FE Dual SIM",
+      "titleAr": "موبايل سامسونج Galaxy S25 FE خطين 256 جيجا 8 جيجا RAM 5G - كحلي",
+      "titleEn": "SAMSUNG Galaxy S25 FE Dual SIM, 256GB, 8GB RAM, 5G - Navy",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-galaxy-s25-fe-dual-sim-256gb-8gb-ram-5g-navy-1"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-s25-fe-dual-sim-512gb-8gb-ram-5g-navy",
+      "category": "phones",
+      "brand": "SAMSUNG",
+      "model": "Galaxy S25 FE Dual SIM",
+      "titleAr": "موبايل سامسونج Galaxy S25 FE خطين 512 جيجا 8 جيجا RAM 5G - كحلي",
+      "titleEn": "SAMSUNG Galaxy S25 FE Dual SIM, 512GB, 8GB RAM, 5G - Navy",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-galaxy-s25-fe-dual-sim-512gb-8gb-ram-5g-navy-2"
+        }
+      ]
+    },
+    {
+      "key": "apple-iphone-16-128gb-ultramarine-official-warranty",
+      "category": "phones",
+      "brand": "Apple",
+      "model": "iPhone 16",
+      "titleAr": "موبايل أبل iPhone 16 - 128 جيجا - Ultramarine",
+      "titleEn": "Apple iPhone 16 - 128GB - Ultramarine (Official Warranty)",
+      "offers": [
+        {
+          "store": "2b",
+          "url": "https://2b.com.eg/en/apple-iphone-16-128gb-ultramarine-official-warranty.html"
+        }
+      ]
+    },
+    {
+      "key": "xiaomi-essential-air-fryer-6-liter-1550-watt-white-maf13-international",
+      "category": "phones",
+      "brand": "Xiaomi",
+      "model": "Essential Air Fryer",
+      "titleAr": "قلاية هوائية شاومي Essential Air Fryer 6 لتر 1550 وات أبيض",
+      "titleEn": "Xiaomi Essential Air Fryer, 6 Liter, 1550 Watt, White - MAF13 ( International Warranty )",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/xiaomi-essential-air-fryer-6-liter-1550-watt-white-maf13-6941812785218-dream2000-6941812785218-iq-store"
+        }
+      ]
+    },
+    {
+      "key": "oppo-reno15-f-dual-sim-256gb-12gb-ram-5g-twilight-blue",
+      "category": "phones",
+      "brand": "OPPO",
+      "model": "Reno15 F Dual SIM",
+      "titleAr": "موبايل أوبو Reno15 F خطين 256 جيجا 12 جيجا RAM 5G - Twilight أزرق",
+      "titleEn": "OPPO Reno15 F Dual SIM, 256GB, 12GB RAM, 5G - Twilight Blue",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/oppo-reno15-f-dual-sim-256gb-12gb-ram-5g-twilight-blue-5"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-a17-128-gb-4-gb-4g-lte-dual-sim-light-blue",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy A17",
+      "titleAr": "موبايل سامسونج Galaxy A17 128 جيجا 4 جيجا 4G LTE خطين - Light أزرق",
+      "titleEn": "Samsung Galaxy A17 , 128 GB , 4 GB , 4G LTE , Dual-SIM - Light Blue",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-galaxy-a17-128gb-4gb-ram-4g-dual-sim-light-blue"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-a17-128-gb-6-gb-4g-lte-dual-sim-black",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy A17",
+      "titleAr": "موبايل سامسونج Galaxy A17 128 جيجا 6 جيجا 4G LTE خطين - أسود",
+      "titleEn": "Samsung Galaxy A17 , 128 GB , 6 GB , 4G LTE , Dual-SIM - Black",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-galaxy-a17-128gb-6gb-ram-4g-dual-sim-black"
+        }
+      ]
+    },
+    {
+      "key": "realme-c85-dual-sim-256gb-8gb-ram-4g-lte-kingfisher-blue",
+      "category": "phones",
+      "brand": "Realme",
+      "model": "C85 Dual SIM",
+      "titleAr": "موبايل ريلمي C85 خطين 256 جيجا 8 جيجا RAM 4G LTE - Kingfisher أزرق",
+      "titleEn": "Realme C85 Dual SIM, 256GB, 8GB RAM, 4G LTE - Kingfisher Blue",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/realme-c85-dual-sim-256gb-8gb-ram-4g-lte-blue-c85-256-8-blue-tbarak-6941764481275-dream2000-c85-blue"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-a17-128-gb-6-gb-4g-lte-dual-sim-grey",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy A17",
+      "titleAr": "موبايل سامسونج Galaxy A17 128 جيجا 6 جيجا 4G LTE خطين - رمادي",
+      "titleEn": "Samsung Galaxy A17 , 128 GB , 6 GB , 4G LTE , Dual-SIM - Grey",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-galaxy-a17-128gb-6gb-ram-4g-dual-sim-grey"
+        }
+      ]
+    },
+    {
+      "key": "infinix-xwatch-n4-pro-smart-watch-for-men-amoled-display-1-43-inch-bla",
+      "category": "phones",
+      "brand": "Infinix",
+      "model": "XWatch N4 Pro Smart Watch for Men",
+      "titleAr": "ساعة ذكية إنفينكس XWatch N4 Pro for Men Amoled Display 1.43 بوصة أسود",
+      "titleEn": "Infinix XWatch N4 Pro Smart Watch for Men, Amoled Display, 1.43 Inch, Black - XW4E",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/infinix-xwatch-n4-pro-smart-watch-for-men-amoled-display-143-inch-black-xw4e-1-6e6ac217"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-a17-128-gb-6-gb-4g-lte-dual-sim-light-blue",
+      "category": "phones",
+      "brand": "Samsung",
+      "model": "Galaxy A17",
+      "titleAr": "موبايل سامسونج Galaxy A17 128 جيجا 6 جيجا 4G LTE خطين - Light أزرق",
+      "titleEn": "Samsung Galaxy A17 , 128 GB , 6 GB , 4G LTE , Dual-SIM - Light Blue",
+      "offers": [
+        {
+          "store": "btech",
+          "url": "https://btech.com/en/p/samsung-galaxy-a17-128gb-6gb-ram-4g-dual-sim-light-blue"
+        }
+      ]
+    },
+    {
+      "key": "infinix-xwatch-h4-smart-watch-for-unisex-hd-display-2-04-inch-black-xw",
+      "category": "phones",
+      "brand": "Infinix",
+      "model": "XWatch H4 Smart Watch for Unisex",
+      "titleAr": "ساعة ذكية إنفينكس XWatch H4 HD Display 2.04 بوصة أسود",
+      "titleEn": "Infinix XWatch H4 Smart Watch for Unisex, HD Display, 2.04 Inch, Black - XW4L",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/infinix-xwatch-h4-smart-watch-for-unisex-hd-display-204-inch-black-xw4l-3-4e172f60-a34b1dd7"
+        }
+      ]
+    },
+    {
+      "key": "infinix-xwatch-h4-smart-watch-for-unisex-hd-display-2-04-inch-haze-gre",
+      "category": "phones",
+      "brand": "Infinix",
+      "model": "XWatch H4 Smart Watch for Unisex",
+      "titleAr": "ساعة ذكية إنفينكس XWatch H4 HD Display 2.04 بوصة Haze أخضر",
+      "titleEn": "Infinix XWatch H4 Smart Watch for Unisex, HD Display, 2.04 Inch, Haze Green - XW4L",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/infinix-xwatch-h4-smart-watch-for-unisex-hd-display-2-04-inch-haze-green-xw4l-55a6fba3-df4830ec-6b267a16-ca3ac64f"
+        }
+      ]
+    },
+    {
+      "key": "lenovo-loq-15irx9-gaming-laptop-intel-core-i7-13650hx-processor-15-6-i",
+      "category": "laptops",
+      "brand": "Lenovo",
+      "model": "LOQ 15IRX9 Gaming Laptop",
+      "titleAr": "لابتوب لينوفو LOQ 15IRX9 Gaming Intel Core i7 13650HX Processor 15.6 بوصة FHD",
+      "titleEn": "Lenovo LOQ 15IRX9 Gaming Laptop, Intel Core i7 13650HX Processor, 15.6 Inch FHD Display, 512 GB SSD, 16 GB RAM DDR5, NVIDIA GeForce RTX 3050",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/lenovo-loq-15irx9-gaming-laptop-intel-core-i7-13650hx-processor-156-inch-fhd-display-512-gb-ssd-16-gb-ram-ddr5-nvidia-geforce-rtx-3050-6-gb-graphics-dos-luna-grey-83dv008qed-13"
+        }
+      ]
+    },
+    {
+      "key": "asus-vivobook-s-14-m5406ua-qd055w-laptop-amd-ryzen-9-8945hs-processor--raya",
+      "category": "laptops",
+      "brand": "ASUS",
+      "model": "Vivobook S 14 M5406UA",
+      "titleAr": "لابتوب أسوس Vivobook S 14 M5406UA-QD055W AMD Ryzen 9 8945HS Processor 14 بوصة",
+      "titleEn": "ASUS Vivobook S 14 M5406UA-QD055W Laptop, AMD Ryzen 9 8945HS Processor, 14 Inch WUXGA Display, 512 GB SSD, 16 GB RAM LPDDR5X, AMD Radeon Gra",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/asus-vivobook-s-14-m5406ua-qd055w-laptop-amd-ryzen-9-8945hs-processor-14-inch-wuxga-display-512-gb-ssd-16-gb-ram-lpddr5x-amd-radeon-graphics-win11-cool-silver-90nb1461-m002z0"
+        }
+      ]
+    },
+    {
+      "key": "asus-vivobook-16-x1607qa-mb054w-laptop-qualcomm-snapdragon-x-x1-26-100",
+      "category": "laptops",
+      "brand": "ASUS",
+      "model": "Vivobook 16 X1607QA",
+      "titleAr": "لابتوب أسوس Vivobook 16 X1607QA-MB054W Qualcomm Snapdragon X X1 26 100",
+      "titleEn": "ASUS Vivobook 16 X1607QA-MB054W Laptop, Qualcomm Snapdragon X X1 26 100 Processor, 16 Inch WUXGA Display, 1 TB SSD, 16 GB RAM LPDDR5X, QUALC",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/asus-vivobook-16-x1607qa-mb054w-laptop-qualcomm-snapdragon-x-x1-26-100-processor-16-inch-wuxga-display-1-tb-ssd-16-gb-ram-lpddr5x-qualcomm-adreno-graphics-win11-home-cool-silver-90nb15z2-m003u0-7"
+        }
+      ]
+    },
+    {
+      "key": "asus-rog-strix-g16-g614fm-rv169w-gaming-laptop-amd-ryzen-9-9955hx-proc",
+      "category": "laptops",
+      "brand": "ASUS",
+      "model": "ROG Strix G16 ​G614FM",
+      "titleAr": "لابتوب أسوس ROG Strix G16 ​G614FM-RV169W Gaming AMD Ryzen 9 9955HX Processor 16",
+      "titleEn": "ASUS ROG Strix G16 ​G614FM-RV169W Gaming Laptop, AMD Ryzen 9 9955HX Processor, 16 Inch FHD+ Display, 1 TB SSD, 16 GB RAM DDR5, NVIDIA GeForc",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/asus-rog-strix-g16-g614fm-rv169w-gaming-laptop-amd-ryzen-9-9955hx-processor-16-inch-fhd-display-1-tb-ssd-16-gb-ram-ddr5-nvidia-geforce-rtx-5060-8-gb-graphics-win11-home-eclipse-grey-90nr0l17-m001b0-12"
+        }
+      ]
+    },
+    {
+      "key": "lenovo-loq-15iax9e-gaming-laptop-intel-core-i5-12450hx-processor-15-6-",
+      "category": "laptops",
+      "brand": "Lenovo",
+      "model": "LOQ 15IAX9E Gaming Laptop",
+      "titleAr": "لابتوب لينوفو LOQ 15IAX9E Gaming Intel Core i5 12450HX Processor 15.6 بوصة FHD",
+      "titleEn": "Lenovo LOQ 15IAX9E Gaming Laptop, Intel Core i5 12450HX Processor, 15.6 Inch FHD Display, 512 GB SSD, 16 GB RAM DDR5, NVIDIA GeForce RTX 205",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/lenovo-loq-15iax9e-gaming-laptop-intel-core-i5-12450hx-processor-15-6-inch-fhd-display-512-gb-ssd-16-gb-ram-ddr5-nvidia-geforce-rtx-2050-4-gb-graphics-dos-luna-grey-83lk0062ed"
+        }
+      ]
+    },
+    {
+      "key": "msi-vector-16-hx-ai-a2xwig-gaming-laptop-intel-core-ultra-9-275hx-proc",
+      "category": "laptops",
+      "brand": "MSI",
+      "model": "Vector 16 HX AI A2XWIG Gaming Laptop",
+      "titleAr": "لابتوب إم إس آي Vector 16 HX AI A2XWIG Gaming Intel Core Ultra 9 275HX",
+      "titleEn": "MSI Vector 16 HX AI A2XWIG Gaming Laptop, Intel Core Ultra 9 275HX Processor, 16 Inch QHD Display, 1 TB SSD, 32 GB RAM DDR5, NVIDIA GeForce ",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/msi-vector-16-hx-ai-a2xwig-gaming-laptop-intel-core-ultra-9-275hx-processor-16-inch-qhd-display-1-tb-ssd-32-gb-ram-ddr5-nvidia-geforce-rtx-5080-graphics-16-gb-graphics-win11-cosmos-grey-9s7-15m352-069-9s7-15m352-069-ultra-9-275hx-1tb-32gb-grey-elaptop"
+        }
+      ]
+    },
+    {
+      "key": "jbl-tune-310c-wired-type-c-in-ear-earphone-with-mic-red-jblt310credam",
+      "category": "audio",
+      "brand": "JBL",
+      "model": "Tune 310C Wired Type",
+      "titleAr": "سماعة جي بي إل Tune 310C Wired Type-C In-Ear Earphone with Mic أحمر",
+      "titleEn": "JBL Tune 310C Wired Type-C In-Ear Earphone with Mic, Red - JBLT310CREDAM",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/jbl-tune-310c-wired-type-c-in-ear-earphone-with-mic-red-jblt310credam-7-4968929221585-dr-mobile"
+        }
+      ]
+    },
+    {
+      "key": "jbl-tune-310c-wired-type-c-in-ear-earphone-with-mic-white-jblt310cwhta",
+      "category": "audio",
+      "brand": "JBL",
+      "model": "Tune 310C Wired Type",
+      "titleAr": "سماعة جي بي إل Tune 310C Wired Type-C In-Ear Earphone with Mic أبيض",
+      "titleEn": "JBL Tune 310C Wired Type-C In-Ear Earphone with Mic, White - JBLT310CWHTAM",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/jbl-tune-310c-wired-type-c-in-ear-earphone-with-mic-white-jblt310cwhtam-5-4968929221561-dr-mobile"
+        }
+      ]
+    },
+    {
+      "key": "jbl-tune-310c-wired-type-c-in-ear-earphone-with-mic-black-jblt310cblka",
+      "category": "audio",
+      "brand": "JBL",
+      "model": "Tune 310C Wired Type",
+      "titleAr": "سماعة جي بي إل Tune 310C Wired Type-C In-Ear Earphone with Mic أسود",
+      "titleEn": "JBL Tune 310C Wired Type-C In-Ear Earphone with Mic, Black - JBLT310CBLKAM",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/jbl-tune-310c-wired-type-c-in-ear-earphone-with-mic-black-jblt310cblkam-4-4968929221554-dr-mobile"
+        }
+      ]
+    },
+    {
+      "key": "jbl-partybox-encore-essential-2-wireless-bluetooth-speaker-up-to-15-ho",
+      "category": "audio",
+      "brand": "JBL",
+      "model": "PartyBox Encore Essential 2 Wireless Bluetooth Speaker",
+      "titleAr": "سماعة بلوتوث جي بي إل PartyBox Encore Essential 2 لاسلكي Up",
+      "titleEn": "JBL PartyBox Encore Essential 2 Wireless Bluetooth Speaker, Up to 15 Hours, Black -JBLPBENCOREESS2AM",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/jbl-partybox-encore-essential-2-wireless-bluetooth-speaker-up-to-15-hours-black-jblpbencoreess2am-2"
+        }
+      ]
+    },
+    {
+      "key": "jbl-partybox-encore-2-wireless-bluetooth-speaker-with-microphone-up-to",
+      "category": "audio",
+      "brand": "JBL",
+      "model": "PartyBox Encore 2 Wireless Bluetooth Speaker With Microphone",
+      "titleAr": "سماعة بلوتوث جي بي إل PartyBox Encore 2 لاسلكي",
+      "titleEn": "JBL PartyBox Encore 2 Wireless Bluetooth Speaker With Microphone, Up to 15 Hours - Black",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/jbl-partybox-encore-2-wireless-bluetooth-speaker-with-microphone-up-to-15-hours-black-3"
+        }
+      ]
+    },
+    {
+      "key": "jbl-live-beam-3-in-ear-earbuds-noise-cancellation-680-mah-black-intern",
+      "category": "audio",
+      "brand": "JBL",
+      "model": "Live Beam 3 In",
+      "titleAr": "سماعة لاسلكية جي بي إل Live Beam 3 In-Ear Earbuds Noise Cancellation 680 mAh",
+      "titleEn": "JBL Live Beam 3 In-Ear Earbuds, Noise Cancellation, 680 mAh - Black ( International Warranty )",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/jbl-live-beam-3-in-ear-earbuds-noise-cancellation-680-mah-black-international-warranty-4968929221707-iq-store"
+        }
+      ]
+    },
+    {
+      "key": "xiaomi-redmi-watch-5-lite-smart-watch-for-unisex-amoled-display-1-96-i",
+      "category": "lifestyle",
+      "brand": "Xiaomi",
+      "model": "Redmi Watch 5 Lite Smart Watch for Unisex",
+      "titleAr": "ساعة ذكية شاومي Redmi 5 Lite AMOLED Display 1.96 بوصة أسود",
+      "titleEn": "Xiaomi Redmi Watch 5 Lite Smart Watch for Unisex, AMOLED Display, 1.96 Inch, Black - BHR8789GL",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/xiaomi-redmi-watch-5-lite-smart-watch-196-inch-black-bhr8789gl-6941812791530-iq-store-6941812791530"
+        }
+      ]
+    },
+    {
+      "key": "huawei-watch-fit-4-smart-watch-for-unisex-amoled-display-1-82-inch-whi",
+      "category": "lifestyle",
+      "brand": "HUAWEI",
+      "model": "WATCH FIT 4 Smart Watch for Unisex",
+      "titleAr": "ساعة ذكية هواوي FIT 4 AMOLED Display 1.82 بوصة أبيض",
+      "titleEn": "HUAWEI WATCH FIT 4 Smart Watch for Unisex, AMOLED Display, 1.82 Inch, White - FIT4-WH",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/huawei-watch-fit-4-smart-watch-for-unisex-amoled-display-182-inch-white-fit4-wh-6942103155369-dream2000-3fc82982"
+        }
+      ]
+    },
+    {
+      "key": "huawei-watch-fit-4-smart-watch-for-unisex-amoled-display-1-82-inch-bla",
+      "category": "lifestyle",
+      "brand": "HUAWEI",
+      "model": "WATCH FIT 4 Smart Watch for Unisex",
+      "titleAr": "ساعة ذكية هواوي FIT 4 AMOLED Display 1.82 بوصة أسود",
+      "titleEn": "HUAWEI WATCH FIT 4 Smart Watch for Unisex, AMOLED Display, 1.82 Inch, Black - FIT4-BK",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/huawei-watch-fit-4-smart-watch-for-unisex-amoled-display-1-82-inch-up-to-10-days-black-fit4-bk-6942103155345-moreshop-fit4-bk-black-vooc-59ea0136-2191e1d1"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-watch8-40mm-smart-watch-for-unisex-super-amoled-display",
+      "category": "lifestyle",
+      "brand": "SAMSUNG",
+      "model": "Galaxy Watch8 40mm Smart Watch for Unisex",
+      "titleAr": "ساعة ذكية سامسونج Galaxy Watch8 40mm 40 mm جرافيت",
+      "titleEn": "SAMSUNG Galaxy Watch8 40mm Smart Watch for Unisex, Super AMOLED Display, 40 mm, Graphite - SM-L325FDAAEGY",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-galaxy-watch8-40mm-smart-watch-for-unisex-super-amoled-display-40-mm-graphite-sm-l325fdaaegy-8806099151553"
+        }
+      ]
+    },
+    {
+      "key": "samsung-galaxy-watch8-40mm-smart-watch-for-unisex-super-amoled-display-raya",
+      "category": "lifestyle",
+      "brand": "SAMSUNG",
+      "model": "Galaxy Watch8 40mm Smart Watch for Unisex",
+      "titleAr": "ساعة ذكية سامسونج Galaxy Watch8 40mm 40 mm فضي",
+      "titleEn": "SAMSUNG Galaxy Watch8 40mm Smart Watch for Unisex, Super AMOLED Display, 40 mm, Silver - SM-L325FZSAEGY",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-galaxy-watch8-40mm-smart-watch-for-unisex-super-amoled-display-40-mm-silver-sm-l325fzsaegy-8806099151546"
+        }
+      ]
+    },
+    {
+      "key": "sega-sonic-superstars-for-nintendo-switch",
+      "category": "gaming",
+      "brand": "SEGA",
+      "model": "Sonic Superstars for Nintendo Switch",
+      "titleAr": "ألعاب جهاز ألعاب SEGA Sonic Superstars for Nintendo Switch",
+      "titleEn": "SEGA Sonic Superstars for Nintendo Switch",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/sega-sonic-superstars-for-nintendo-switch-b0c9zzj15q-gcave"
+        }
+      ]
+    },
+    {
+      "key": "sony-dualsense-wireless-controller-for-playstation-5-starlight-blue-cf",
+      "category": "gaming",
+      "brand": "SONY",
+      "model": "DualSense Wireless Controller For PlayStation 5",
+      "titleAr": "دراع تحكم سوني DualSense لاسلكي Controller For PlayStation 5 Starlight أزرق",
+      "titleEn": "SONY DualSense Wireless Controller For PlayStation 5, Starlight Blue - CFI-ZCT1W",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/sony-dualsense-wireless-controller-for-playstation-5-starlight-blue-cfi-zct1w-711719546459-drmobile-eg1893-egy-gamer"
+        }
+      ]
+    },
+    {
+      "key": "sony-dualsense-wireless-controller-for-playstation-5-purple-cfi-zct1w",
+      "category": "gaming",
+      "brand": "SONY",
+      "model": "DualSense Wireless Controller For PlayStation 5",
+      "titleAr": "دراع تحكم سوني DualSense لاسلكي Controller For PlayStation 5 بنفسجي",
+      "titleEn": "SONY DualSense Wireless Controller For PlayStation 5, Purple - CFI-ZCT1W",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/sony-dualsense-wireless-controller-for-ps5-purple-cfi-zct1w-711719546610-drmobile-eg1911-egy-gamer"
+        }
+      ]
+    },
+    {
+      "key": "naughty-dog-uncharted-legacy-of-thieves-collection-for-playstation-5",
+      "category": "gaming",
+      "brand": "Naughty Dog",
+      "model": "UNCHARTED Legacy of Thieves Collection for PlayStation 5",
+      "titleAr": "ألعاب جهاز ألعاب Naughty Dog UNCHARTED Legacy of Thieves Collection for PlayStation 5",
+      "titleEn": "Naughty Dog UNCHARTED Legacy of Thieves Collection for PlayStation 5",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/naughty-dog-uncharted-legacy-of-thieves-collection-for-playstation-5-eg1710-egy-gamer"
+        }
+      ]
+    },
+    {
+      "key": "tornado-65-inch-frameless-4k-uhd-smart-led-tv-with-built-in-receiver-6",
+      "category": "tvs",
+      "brand": "TORNADO",
+      "model": "65 Inch Frameless 4K UHD Smart LED TV with Built In Receiver",
+      "titleAr": "شاشة تورنيدو 65 بوصة Frameless 4K UHD سمارت with Built In Receiver",
+      "titleEn": "TORNADO 65 Inch Frameless 4K UHD Smart LED TV with Built In Receiver - 65UA3400E",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/tornado-65-inch-frameless-4k-uhd-smart-led-tv-with-built-in-receiver-65ua3400e-266152"
+        }
+      ]
+    },
+    {
+      "key": "samsung-u8000f-55-inch-4k-uhd-smart-led-tv-with-built-in-receiver-ua55",
+      "category": "tvs",
+      "brand": "SAMSUNG",
+      "model": "U8000F 55 Inch 4K UHD Smart LED TV with Built In Receiver",
+      "titleAr": "شاشة سامسونج U8000F 55 بوصة 4K UHD سمارت with Built In Receiver",
+      "titleEn": "SAMSUNG U8000F 55 Inch 4K UHD Smart LED TV with Built In Receiver - UA55U8000F",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-u8000f-55-inch-4k-uhd-smart-led-tv-with-built-in-receiver-ua55u8000f-266155"
+        }
+      ]
+    },
+    {
+      "key": "fresh-smart-inverter-plasma-split-air-conditioner-with-inverter-techno",
+      "category": "tvs",
+      "brand": "Fresh",
+      "model": "Smart Inverter Plasma Split Air Conditioner With Inverter Te",
+      "titleAr": "تكييف فريش سمارت Inverter Plasma Split 2.25",
+      "titleEn": "Fresh Smart Inverter Plasma Split Air Conditioner With Inverter Technology, Cooling & Heating, 2.25 HP, White - Fresh-500015628",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/fresh-smart-inverter-plasma-split-air-conditioner-with-inverter-technology-cooling-heating-2-25-hp-white-fresh-500015628-fresh-500015628-fresh-500015627caboolyfor12k18k24k-acs-group"
+        }
+      ]
+    },
+    {
+      "key": "tornado-enamel-electric-water-heater-with-led-lamp-50-liter-white-teee",
+      "category": "tvs",
+      "brand": "TORNADO",
+      "model": "Enamel Electric Water Heater With LED Lamp",
+      "titleAr": "سخان تورنيدو Enamel Electric Water Heater With Lamp 50 لتر أبيض",
+      "titleEn": "TORNADO Enamel Electric Water Heater With LED Lamp, 50 Liter, White - TEEE-50MW",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/tornado-enamel-electric-water-heater-with-led-lamp-50-liter-white-teee-50mw-1701-58dfc552"
+        }
+      ]
+    },
+    {
+      "key": "samsung-43-inch-fhd-smart-led-tv-with-built-in-receiver-ua43f6000f",
+      "category": "tvs",
+      "brand": "SAMSUNG",
+      "model": "43 Inch FHD Smart LED TV with Built In Receiver",
+      "titleAr": "شاشة سامسونج 43 بوصة FHD سمارت with Built In Receiver",
+      "titleEn": "SAMSUNG 43 Inch FHD Smart LED TV with Built In Receiver - UA43F6000F",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-43-inch-fhd-smart-led-tv-with-built-in-receiver-ua43f6000f-2-15016cf5"
+        }
+      ]
+    },
+    {
+      "key": "xiaomi-s200-digital-body-smart-scale-150-kg-dark-grey-mjtzc02ym",
+      "category": "tvs",
+      "brand": "Xiaomi",
+      "model": "S200 Digital Body Smart Scale",
+      "titleAr": "شاومي S200 Body سمارت Scale 150 كيلو Dark رمادي",
+      "titleEn": "Xiaomi S200 Digital Body Smart Scale, 150 KG , Dark Grey - MJTZC02YM",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/xiaomi-s200-digital-body-smart-scale-150-kg-dark-grey-mjtzc02ym"
+        }
+      ]
+    },
+    {
+      "key": "xiaomi-s200-digital-body-smart-scale-150-kg-white-mjtzc02ym",
+      "category": "tvs",
+      "brand": "Xiaomi",
+      "model": "S200 Digital Body Smart Scale",
+      "titleAr": "شاومي S200 Body سمارت Scale 150 كيلو أبيض",
+      "titleEn": "Xiaomi S200 Digital Body Smart Scale, 150 KG , White - MJTZC02YM",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/xiaomi-s200-digital-body-smart-scale-150-kg-white-mjtzc02ym"
+        }
+      ]
+    },
+    {
+      "key": "lg-55-inch-4k-uhd-smart-qned-tv-with-built-in-receiver-55qned70a6a",
+      "category": "tvs",
+      "brand": "LG",
+      "model": "55 Inch 4K UHD Smart QNED TV with Built In Receiver",
+      "titleAr": "شاشة إل جي 55 بوصة 4K UHD سمارت QNED with Built In Receiver",
+      "titleEn": "LG 55 Inch 4K UHD Smart QNED TV with Built In Receiver - 55QNED70A6A",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/lg-55-inch-4k-uhd-smart-qned-tv-with-built-in-receiver-55qned70a6a-2-350050015-goldenha-ae86bcb8"
+        }
+      ]
+    },
+    {
+      "key": "samsung-m70h-55-inch-4k-uhd-smart-mini-led-tv-with-built-in-receiver-u",
+      "category": "tvs",
+      "brand": "SAMSUNG",
+      "model": "M70H 55 Inch 4K UHD Smart Mini LED TV with Built In Receiver",
+      "titleAr": "شاشة سامسونج M70H 55 بوصة 4K UHD سمارت Mini with Built In Receiver",
+      "titleEn": "Samsung M70H 55 Inch 4K UHD Smart Mini LED TV with Built In Receiver - UA55M70H",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-m70h-55-inch-4k-uhd-smart-mini-led-tv-with-built-in-receiver-ua55m70h-ua55m70h-a7156dbb"
+        }
+      ]
+    },
+    {
+      "key": "electrostar-chest-deep-freezer-150-liter-silver-lc150sal00",
+      "category": "appliances",
+      "brand": "Electrostar",
+      "model": "Chest Deep Freezer",
+      "titleAr": "ديب فريزر إلكتروستار 150 لتر فضي",
+      "titleEn": "Electrostar Chest Deep Freezer, 150 Liter, Silver - LC150SAL00",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/electrostar-chest-deep-freezer-150-liter-silver-lc150sal00-27306"
+        }
+      ]
+    },
+    {
+      "key": "electrostar-prestige-deep-freezer-nofrost-215-liter-5-drawers-silver-l",
+      "category": "appliances",
+      "brand": "Electrostar",
+      "model": "Prestige Deep Freezer",
+      "titleAr": "ديب فريزر إلكتروستار Prestige Nofrost 215 لتر 5 Drawers فضي",
+      "titleEn": "Electrostar Prestige Deep Freezer, Nofrost, 215 Liter, 5 Drawers, Silver - LD215NPR01",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/electrostar-prestige-deep-freezer-nofrost-215-liter-5-drawers-silver-ld215npr01-2u"
+        }
+      ]
+    },
+    {
+      "key": "hamburg-defrost-mini-bar-refrigerator-140-liter-silver-fb15",
+      "category": "appliances",
+      "brand": "Hamburg",
+      "model": "Defrost Mini Bar Refrigerator",
+      "titleAr": "ثلاجة Hamburg Defrost Mini Bar 140 لتر فضي",
+      "titleEn": "Hamburg Defrost Mini Bar Refrigerator, 140 Liter, Silver - FB15",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/hamburg-defrost-mini-bar-refrigerator-140-liter-silver-fb15-15"
+        }
+      ]
+    },
+    {
+      "key": "rich-home-chest-deep-freezer-defrost-170-liters-silver-rh-cfd-170ss",
+      "category": "appliances",
+      "brand": "Rich Home",
+      "model": "Chest Deep Freezer",
+      "titleAr": "ديب فريزر Rich Home Defrost 170 لتر فضي - RH-CFD 170ss",
+      "titleEn": "Rich Home Chest Deep Freezer, Defrost, 170 Liters, Silver - RH-CFD 170ss",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/rich-home-chest-deep-freezer-defrost-170-liters-silver-rh-cfd-170ss-1"
+        }
+      ]
+    },
+    {
+      "key": "siltal-defrost-mini-bar-refrigerator-140-liter-silver-fb15",
+      "category": "appliances",
+      "brand": "Siltal",
+      "model": "Defrost Mini Bar Refrigerator",
+      "titleAr": "ثلاجة Siltal Defrost Mini Bar 140 لتر فضي",
+      "titleEn": "Siltal Defrost Mini Bar Refrigerator, 140 Liter, Silver - FB15",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/siltal-defrost-mini-bar-refrigerator-140-liters-silver-fb15-1"
+        }
+      ]
+    },
+    {
+      "key": "samsung-digital-front-load-full-automatic-washing-machine-with-inverte-raya",
+      "category": "appliances",
+      "brand": "SAMSUNG",
+      "model": "Digital Front Load Full Automatic Washing Machine With Inver",
+      "titleAr": "غسالة سامسونج 8 كيلو Dark فضي",
+      "titleEn": "SAMSUNG Digital Front Load Full Automatic Washing Machine With Inverter Technology, 8 Kg, Dark Silver - WW80T4040CX1AS",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/samsung-digital-front-loading-full-automatic-washing-machine-with-inverter-motor-8-kg-grey-ww80t4040cx1as-17401"
+        }
+      ]
+    },
+    {
+      "key": "zanussi-perlamax-digital-front-load-full-automatic-washing-machine-7-k",
+      "category": "appliances",
+      "brand": "Zanussi",
+      "model": "PerlaMax Digital Front Load Full Automatic Washing Machine",
+      "titleAr": "غسالة زانوسي PerlaMax 7 كيلو أسود",
+      "titleEn": "Zanussi PerlaMax Digital Front Load Full Automatic Washing Machine, 7 Kg, Black - ZWF7240BS5",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/zanussi-front-loading-digital-full-automatic-washing-machine-7-kg-black-zwf7240bs5-17688"
+        }
+      ]
+    },
+    {
+      "key": "indesit-dishwasher-14-place-settings-5-programs-silver-dfe-1b19-s",
+      "category": "appliances",
+      "brand": "Indesit",
+      "model": "Dishwasher",
+      "titleAr": "غسالة أطباق Indesit فضي",
+      "titleEn": "Indesit Dishwasher, 14 Place Settings, 5 Programs, Silver - DFE 1B19 S",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/indesit-dishwasher-14-place-settings-5-programs-silver-dfe-1b19-s-17919"
+        }
+      ]
+    },
+    {
+      "key": "toshiba-top-automatic-washing-machine-with-pump-11-kg-white-aew-e1150s-raya",
+      "category": "appliances",
+      "brand": "TOSHIBA",
+      "model": "Top Automatic Washing Machine With Pump",
+      "titleAr": "غسالة توشيبا 11 كيلو أبيض",
+      "titleEn": "TOSHIBA Top Automatic Washing Machine With Pump, 11 Kg, White - AEW-E1150SUP",
+      "offers": [
+        {
+          "store": "raya",
+          "url": "https://www.rayashop.com/en/toshiba-top-automatic-washing-machine-with-pump-11-kg-white-aew-e1150sup-4551"
+        }
+      ]
+    }
   ]
 }

@@ -152,7 +152,7 @@ const hosts: Record<string, string> = {
   jumia: 'www.jumia.com.eg',
   btech: 'btech.com',
   '2b': '2b.com.eg',
-  raya: 'raya.com',
+  raya: 'rayashop.com',
   carrefour: 'www.carrefour.com.eg',
   elaraby: 'shop.elarabygroup.com',
   hyperone: 'www.hyperone.com.eg',

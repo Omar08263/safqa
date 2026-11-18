@@ -2,18 +2,38 @@
 """Convert crawled store gallery images to web-sized WebP for the static site.
 
 Input:  deploy/live/media.json + $SAFQA_STATE_DIR/media-raw/<productId>/<file>
-Output: <out>/media/<productId>/<n>.webp (1200px max) and <n>-t.webp (360px thumb)
+Output: <out>/media/<productId>/<n>.webp (1200px square) and <n>-t.webp (480px square thumb).
+Every image is trimmed of its own white margin and centred on the same white
+square tile with equal padding, so cards and galleries line up whatever the
+store photo looked like.
 Usage:  python3 deploy/hf/build-media.py <out-dir>
 """
 import json, os, sys
-from PIL import Image
+from PIL import Image, ImageChops
 
 root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 state = os.environ.get("SAFQA_STATE_DIR", "/home/box/.safqa")
 raw = os.path.join(state, "media-raw")
-cache = os.path.join(state, "media-web")
+cache = os.path.join(state, "media-web-v2")
 out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(root, "apps/web/public")
 media = json.load(open(os.path.join(root, "deploy/live/media.json")))["products"]
+
+
+def tile(im, size, pad=0.08):
+    """Trim the photo's own near-white border, then centre it on a white square."""
+    white = Image.new("RGB", im.size, (255, 255, 255))
+    diff = ImageChops.difference(im, white).convert("L").point(lambda v: 255 if v > 18 else 0)
+    box = diff.getbbox()
+    if box and (box[2] - box[0]) > im.width * 0.2 and (box[3] - box[1]) > im.height * 0.2:
+        im = im.crop(box)
+    inner = int(size * (1 - 2 * pad))
+    im = im.copy()
+    im.thumbnail((inner, inner), Image.LANCZOS)
+    canvas = Image.new("RGB", (size, size), (255, 255, 255))
+    canvas.paste(im, ((size - im.width) // 2, (size - im.height) // 2))
+    return canvas
+
+
 count = 0
 for pid, entry in media.items():
     for i, img in enumerate(entry.get("images", [])):
@@ -29,10 +49,11 @@ for pid, entry in media.items():
             im = im.convert("RGBA") if im.mode in ("P", "LA") else im
             bg = Image.new("RGB", im.size, (255, 255, 255))
             bg.paste(im, mask=im.split()[-1] if im.mode == "RGBA" else None)
-            big = bg.copy(); big.thumbnail((1200, 1200)); big.save(full, "WEBP", quality=82, method=5)
-            small = bg.copy(); small.thumbnail((360, 360)); small.save(thumb, "WEBP", quality=78, method=5)
+            tile(bg, 1200).save(full, "WEBP", quality=82, method=5)
+            tile(bg, 480).save(thumb, "WEBP", quality=80, method=5)
         count += 1
 target = os.path.join(out, "media")
+os.system(f"rm -rf '{target}'")
 os.makedirs(target, exist_ok=True)
 os.system(f"cp -r '{cache}/.' '{target}/'")
 print(f"media: {count} images -> {target}")

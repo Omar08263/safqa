@@ -116,7 +116,9 @@ function galleryFor(store: string, html: string, primary?: string): string[] {
       ? /https:\/\/media\.btech\.com\/catalogs\/[A-Za-z0-9/_\-.%]+\.(?:jpg|jpeg|png|webp)/g
       : store === '2b'
         ? /https:\/\/2b\.com\.eg\/media\/catalog\/product\/[A-Za-z0-9/_\-.]+\.(?:jpg|jpeg|png|webp)/g
-        : /https:\/\/[^"'\s)]+\.(?:jpg|jpeg|png|webp)/g;
+        : store === 'raya'
+          ? /https:\/\/prod-fastly\.rayashop\.com\/media\/catalog\/product\/[A-Za-z0-9/_\-.]+\.(?:jpg|jpeg|png|webp)/g
+          : /https:\/\/[^"'\s)]+\.(?:jpg|jpeg|png|webp)/g;
   const all = [...new Set(html.match(pattern) ?? [])];
   if (!primary) return all.slice(0, 1);
   const want = stem(primary);
@@ -190,12 +192,21 @@ async function download(url: string, file: string): Promise<boolean> {
 const catalog = JSON.parse(readFileSync(catalogPath, 'utf8')) as { products: CatalogProduct[] };
 const previous: Record<string, MediaEntry> = existsSync(outPath) ? JSON.parse(readFileSync(outPath, 'utf8')).products ?? {} : {};
 const out: Record<string, MediaEntry> = { ...previous };
-const storePriority = ['btech', '2b', 'amazon-eg', 'noon'];
+const storePriority = ['btech', '2b', 'raya', 'amazon-eg', 'noon'];
+// Time budget so the daily refresh stays short: products not reached today are
+// picked up tomorrow (they keep their previous media until then).
+const budgetMs = Number(process.env.SAFQA_MEDIA_BUDGET_S || 360) * 1000;
+const started = Date.now();
+let skippedForBudget = 0;
 
-for (const item of catalog.products) {
+async function crawlProduct(item: CatalogProduct): Promise<void> {
   const productId = stableId(`product:${item.key}`);
   const prev = previous[productId];
-  if (!force && prev && prev.images.length > 0 && Date.now() - Date.parse(prev.crawledAt) < maxAgeDays * 86_400_000) continue;
+  if (!force && prev && prev.images.length > 0 && Date.now() - Date.parse(prev.crawledAt) < maxAgeDays * 86_400_000) return;
+  if (Date.now() - started > budgetMs) {
+    skippedForBudget += 1;
+    return;
+  }
   const entry: MediaEntry = { key: item.key, productId, crawledAt: new Date().toISOString(), images: [], specs: [], ratings: [], sources: [] };
   const dir = resolve(rawDir, productId);
   mkdirSync(dir, { recursive: true });
@@ -242,6 +253,17 @@ for (const item of catalog.products) {
   out[productId] = entry;
   console.log(`${item.key}: ${entry.images.length} images, ${entry.specs.length} specs, desc ${entry.description ? entry.description.text.length : 0} chars, ${entry.sources.filter((s) => s.ok).length}/${entry.sources.length} pages`);
 }
+
+// One queue per lead store, run in parallel; each store keeps its own polite gap.
+const mediaQueues = new Map<string, CatalogProduct[]>();
+for (const item of catalog.products) {
+  const lead = [...item.offers].sort((a, b) => storePriority.indexOf(a.store) - storePriority.indexOf(b.store))[0]?.store ?? 'other';
+  mediaQueues.set(lead, [...(mediaQueues.get(lead) ?? []), item]);
+}
+await Promise.all([...mediaQueues.values()].map(async (list) => {
+  for (const item of list) await crawlProduct(item);
+}));
+if (skippedForBudget) console.log(`media: ${skippedForBudget} products left for the next run (time budget ${budgetMs / 1000}s)`);
 
 writeFileSync(
   outPath,

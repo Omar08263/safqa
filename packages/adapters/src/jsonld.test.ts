@@ -65,7 +65,7 @@ describe('store adapters', () => {
 
   it('marks stubs and still lets them parse JSON-LD when a site adds it', () => {
     const stubs = adapters.filter((adapter) => adapter.status === 'stub').map((adapter) => adapter.slug);
-    expect(stubs).toEqual(['btech', '2b', 'raya', 'elaraby', 'hyperone', 'dubizzle']);
+    expect(stubs).toEqual(['elaraby', 'hyperone', 'dubizzle']);
     expect(adapterBySlug('btech')?.parse(fixture('btech-empty.html'), 'https://btech.com/p')).toBeNull();
     const recovered = adapterBySlug('btech')?.parse(
       fixture('noon-iphone.html'),

@@ -32,6 +32,7 @@ export COREPACK_HOME="${COREPACK_HOME:-/home/box/.cache/node/corepack}"
 export SAFQA_PRICE_STATUS="$STATUS"
 
 mkdir -p "$STATE_DIR"
+# Daemons started below close fd 9 (9>&-) so they never keep holding this lock.
 exec 9>"$STATE_DIR/refresh.lock"
 if ! flock -n 9; then echo "another refresh is running; exiting" >&2; exit 0; fi
 exec > >(tee -a "$LOG") 2>&1
@@ -62,7 +63,7 @@ fi
 if ! pg_isready -h 127.0.0.1 -p 5432 -q; then
   echo "starting Postgres"
   rm -f "$PGDATA/postmaster.pid"
-  pg_ctl -D "$PGDATA" -l "$STATE_DIR/postgres.log" -o "-k /tmp -p 5432 -c listen_addresses=127.0.0.1" -w start >/dev/null
+  pg_ctl -D "$PGDATA" -l "$STATE_DIR/postgres.log" -o "-k /tmp -p 5432 -c listen_addresses=127.0.0.1" -w start >/dev/null 9>&-
 fi
 psql -h 127.0.0.1 -U safqa -d postgres -tAc "select 1 from pg_database where datname='safqa'" | grep -q 1 \
   || createdb -h 127.0.0.1 -U safqa safqa
@@ -73,7 +74,7 @@ redis_up() { (exec 3<>/dev/tcp/127.0.0.1/6379) 2>/dev/null; }
 if ! redis_up; then
   echo "starting Redis"
   if ! docker info >/dev/null 2>&1; then
-    (sudo -n /usr/local/bin/dockerd --config-file /etc/docker/daemon.json >"$STATE_DIR/dockerd.log" 2>&1 &) || true
+    (sudo -n /usr/local/bin/dockerd --config-file /etc/docker/daemon.json >"$STATE_DIR/dockerd.log" 2>&1 9>&- &) || true
     for _ in $(seq 1 30); do docker info >/dev/null 2>&1 && break; sleep 1; done
   fi
   docker start safqa-redis >/dev/null 2>&1 \
@@ -93,7 +94,7 @@ fi
 api_ok() { curl -fsS -m 5 "$API/api/health" >/dev/null 2>&1; }
 if ! api_ok; then
   echo "starting Safqa API on $API"
-  (cd apps/api && LLM_PROVIDER=mock SEED_ON_BOOT=false nohup npx tsx src/index.ts >"$STATE_DIR/api.log" 2>&1 &)
+  (cd apps/api && LLM_PROVIDER=mock SEED_ON_BOOT=false nohup npx tsx src/index.ts >"$STATE_DIR/api.log" 2>&1 9>&- &)
   for _ in $(seq 1 60); do api_ok && break; sleep 1; done
 fi
 api_ok && echo "api: up ($API)" || { echo "API did not start; see $STATE_DIR/api.log"; exit 1; }

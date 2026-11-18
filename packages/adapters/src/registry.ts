@@ -48,24 +48,29 @@ export const adapters: SiteAdapter[] = [
   createHtmlAdapter({
     slug: 'btech',
     domains: ['btech.com'],
+    // No Crawl-delay in robots.txt; one request every 3 s per host is still gentle.
+    minIntervalMs: 3000,
     displayName: { ar: 'بي.تك', en: 'B.TECH' },
-    status: 'stub',
-    notes:
-      'Stub. Public pages are not known to expose stable schema.org Product. JSON-LD is attempted and otherwise the offer is skipped.',
+    status: 'best-effort',
+    notes: 'JSON-LD on btech.com/en/p/... product pages (verified Nov 2026). Pages without schema.org Product are skipped.',
   }),
   createHtmlAdapter({
     slug: '2b',
     domains: ['2b.com.eg'],
+    // No Crawl-delay in robots.txt; one request every 3 s per host is still gentle.
+    minIntervalMs: 3000,
     displayName: { ar: 'تو بي', en: '2B' },
-    status: 'stub',
-    notes: 'Stub. No verified selectors. JSON-LD is the only parse path.',
+    status: 'best-effort',
+    notes: 'JSON-LD on 2b.com.eg product pages (verified Nov 2026). JSON-LD is the only parse path.',
   }),
   createHtmlAdapter({
     slug: 'raya',
-    domains: ['raya.com'],
+    domains: ['rayashop.com', 'raya.com'],
+    // No Crawl-delay in robots.txt; one request every 3 s per host is still gentle.
+    minIntervalMs: 3000,
     displayName: { ar: 'راية', en: 'Raya' },
-    status: 'stub',
-    notes: 'Stub. Domain is the public Raya storefront and may need a narrower host when the adapter is promoted.',
+    status: 'best-effort',
+    notes: 'JSON-LD on rayashop.com product pages (schema.org Product with price and availability). robots.txt allows product pages.',
   }),
   createHtmlAdapter({
     slug: 'elaraby',
