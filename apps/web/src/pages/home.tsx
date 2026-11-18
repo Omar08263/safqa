@@ -65,7 +65,7 @@ export function HomePage() {
             <Reveal>
               <span className="glass inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold">
                 <span className="pulse-dot h-2 w-2 rounded-full bg-[var(--palm)] text-[var(--palm)]" />
-                {tr(`بنتابع ${all.length} منتج و${offers} عرض في ${stores.data?.items.length ?? 0} متجر`, `Tracking ${all.length} products and ${offers} offers across ${stores.data?.items.length ?? 0} stores`)}
+                {tr(`بنتابع ${all.length} منتج و${offers} عرض في ${stores.data?.items.length ?? 0} ${(stores.data?.items.length ?? 0) >= 3 && (stores.data?.items.length ?? 0) <= 10 ? 'متاجر' : 'متجر'}`, `Tracking ${all.length} products and ${offers} offers across ${stores.data?.items.length ?? 0} stores`)}
               </span>
               <PriceFreshness className="ms-2 mt-2 sm:mt-0" />
             </Reveal>

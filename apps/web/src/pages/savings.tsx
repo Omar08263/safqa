@@ -64,14 +64,14 @@ export function SavingsPage() {
         <Button variant="outline" size="sm" onClick={() => downloadFile('safqa-savings.csv', toCsv([['date', 'item', 'paid_egp', 'reference_egp', 'saved_egp'], ...purchases.map((p) => [p.at.slice(0, 10), p.title, p.paidEgp, p.referenceEgp, Math.max(0, p.referenceEgp - p.paidEgp)])]), 'text/csv')}><Download className="h-4 w-4" />CSV</Button>
       </PageHeader>
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 [&>*]:min-w-0">
         <Card><p className="text-sm text-muted">{tr('إجمالي التوفير', 'Total saved')}</p><p className="mt-1 text-3xl font-bold text-palm"><CountUp value={saved} format={(n) => m(n)} /></p></Card>
         <Card><p className="text-sm text-muted">{tr('صرفت الشهر ده', 'Spent this month')}</p><p className="mt-1 text-3xl font-bold"><CountUp value={spentMonth} format={(n) => m(n)} /></p></Card>
         <Card><p className="text-sm text-muted">{tr('متبقي من الميزانية', 'Budget left')}</p><p className={`mt-1 text-3xl font-bold ${left < 0 ? 'text-destructive' : ''}`}>{m(left)}</p></Card>
         <Card className="flex items-center gap-3"><ScoreRing score={goalPct} /><div><p className="text-sm text-muted">{tr('هدف التوفير', 'Savings goal')}</p><p className="num font-bold">{m(budget.goalEgp)}</p></div></Card>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2 [&>*]:min-w-0">
         <Card>
           <h2 className="flex items-center gap-2 text-lg font-bold"><Wallet className="h-5 w-5 text-primary" />{tr('مخطط الميزانية', 'Budget planner')}</h2>
           <div className="mt-3 grid grid-cols-2 gap-3">

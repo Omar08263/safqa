@@ -117,10 +117,38 @@ In the static demo, accounts, watchlist, collections and reset codes live in you
 
 <p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/divider-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/divider-light.svg"><img alt="" src="docs/assets/divider-light.svg" width="100%"></picture></p>
 
+<h2 id="v4">✨ Safqa v4: native app, real backend, one design</h2>
+
+<p align="center">
+<a href="https://github.com/Omar08263/safqa/releases/download/v4.0.0/safqa.apk"><img alt="Download the native Android app" src="https://img.shields.io/badge/Android-Native%20app%20v4.0.0-3DDC84?style=for-the-badge&labelColor=1c1915&logo=android&logoColor=3DDC84"></a>
+<a href="https://safqa-eg-safqa.static.hf.space/#/plans"><img alt="Plans" src="https://img.shields.io/badge/Plans-4%20tiers-F5B524?style=for-the-badge&labelColor=1c1915"></a>
+<a href="https://t.me/SafqaDealsBot"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SafqaDealsBot-229ED9?style=for-the-badge&labelColor=1c1915&logo=telegram&logoColor=white"></a>
+</p>
+
+<table><tr>
+<td width="33%"><img src="docs/screenshots/v4-phone-home.webp" alt="Phone home with greeting and bottom bar" width="100%"></td>
+<td width="33%"><img src="docs/screenshots/v4-phone-plans.webp" alt="Plans on phone" width="100%"></td>
+<td width="33%"><img src="docs/screenshots/v4-phone-radar.webp" alt="Deal radar on phone" width="100%"></td>
+</tr></table>
+<table><tr>
+<td width="36%"><img src="docs/screenshots/v4-tablet-home.webp" alt="Tablet layout with side rail" width="100%"></td>
+<td width="64%"><img src="docs/screenshots/v4-desktop-home.webp" alt="Desktop" width="100%"><img src="docs/screenshots/v4-desktop-plans.webp" alt="Plans comparison on desktop" width="100%"></td>
+</tr></table>
+
+- **Native Android app** (`apps/mobile`, Expo SDK 58 / React Native 0.88, no WebView): deals, search, product with price chart, watchlist with local notifications, radar, tools, settings, onboarding. Reads the live backend first, then the static snapshot, and caches for offline. Email sign-in, tier from the server, watchlist sync. Build: `deploy/mobile/build-apk.sh` (keystore stays outside the repo).
+- **Real catalog: 229 products** with real prices from B.TECH, 2B, Raya and Amazon.eg (sitemaps + JSON-LD, robots.txt respected, honest `SafqaBot` user agent, one request per 3 s per host). Noon blocks bots and is not crawled. `deploy/hf/refresh-live.sh` runs the crawl, media, snapshot and deploy in about 7 minutes.
+- **One design across devices:** separate phone (auto-hiding 5-item bottom bar), tablet (side rail) and desktop layouts picked by width + pointer; square white product tiles; a type scale; Latin digits everywhere.
+- **New 4K logo** (SVG master, light/dark PNGs, favicons, PWA + Android adaptive icons) and **4 tiers** (🌱 مجاني · 🥈 فضّي 49 · 👑 ذهبي 99 · 💎 ماسي 199 ج.م/شهر via InstaPay at `#/pay`) with 4K badges, sounds and effects.
+- **Feel:** animated first-visit tour, WebAudio sounds (muted by default), haptics, undo toasts, friendly Egyptian Arabic microcopy, a Cairo-time greeting and a real 404. Checklist: [docs/polish.md](docs/polish.md).
+- **WhatsApp + Telegram:** `wa.me` share links everywhere, a «get deals» section, and `deploy/telegram/post-deals.ts` (posts the top real deals; dry-run without a token). A WhatsApp bot needs the paid Business API, so it is not offered.
+- QA: `deploy/qa/shots.cjs` screenshots every route at 360/390/412/768/1024/1440 and flags horizontal overflow and page errors.
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/divider-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/divider-light.svg"><img alt="" src="docs/assets/divider-light.svg" width="100%"></picture></p>
+
 <h2 id="v3">🚀 Safqa v3: a real shopping app</h2>
 
 <p align="center">
-<a href="https://github.com/Omar08263/safqa/releases/latest/download/safqa.apk"><img alt="Download the Android APK" src="https://img.shields.io/badge/Android-Download%20APK-3DDC84?style=for-the-badge&labelColor=1c1915&logo=android&logoColor=3DDC84"></a>
+<a href="https://github.com/Omar08263/safqa/releases/download/v4.0.0/safqa.apk"><img alt="Download the Android APK" src="https://img.shields.io/badge/Android-Download%20APK-3DDC84?style=for-the-badge&labelColor=1c1915&logo=android&logoColor=3DDC84"></a>
 <a href="https://safqa-eg-safqa.static.hf.space/#/app"><img alt="Install the PWA" src="https://img.shields.io/badge/PWA-Install-5A0FC8?style=for-the-badge&labelColor=1c1915&logo=pwa&logoColor=white"></a>
 <a href="https://safqa-eg-safqa.static.hf.space/#/toolbox"><img alt="402 offline tools" src="https://img.shields.io/badge/Toolbox-402%20offline%20tools-d99a1b?style=for-the-badge&labelColor=1c1915"></a>
 </p>
@@ -132,7 +160,7 @@ v3 takes the best ideas from Amazon, Noon, AliExpress, Google Shopping, Keepa, C
 <tr><td width="50%" valign="top"><img src="docs/screenshots/v3-community.webp" alt="Community feed" width="100%"><p align="center"><sub><b>Community.</b> Posts with photos and video, reactions, groups, XP, ranks, badges and a leaderboard. Seeded members are labelled <i>عضو تجريبي</i> (demo member).</sub></p></td><td width="50%" valign="top"><img src="docs/screenshots/v3-chat.webp" alt="Chat rooms and DMs" width="100%"><p align="center"><sub><b>Chat.</b> Rooms and DMs. AI agents answer from real prices and hand over when their shift ends.</sub></p></td></tr>
 <tr><td width="50%" valign="top"><img src="docs/screenshots/v3-agents.webp" alt="Agents HQ" width="100%"><p align="center"><sub><b>Agents HQ.</b> 28 clearly labelled AI bots in 7 teams. Each has a procedural 4K avatar, a personality, a shift and a task. Mood follows real signals.</sub></p></td><td width="50%" valign="top"><img src="docs/screenshots/v3-rules.webp" alt="Rules and moderation" width="100%"><p align="center"><sub><b>Rules and moderation.</b> Rules are accepted before posting. Automatic checks cite the rule broken, an escalation table sets the penalty, and appeals and a public log are included.</sub></p></td></tr>
 <tr><td width="50%" valign="top"><img src="docs/screenshots/v3-radar.webp" alt="Deal radar" width="100%"><p align="center"><sub><b>Deal radar (Keepa/CamelCamelCamel style).</b> Real drops, the lowest recorded price, suspicious discounts and gaps between stores. Alerts use catchy Arabic headlines, animated banners and browser notifications. The email digest is opt-in only.</sub></p></td><td width="50%" valign="top"><img src="docs/screenshots/v3-toolbox.webp" alt="Toolbox" width="100%"><p align="center"><sub><b>Toolbox.</b> 402 offline tools: installment true cost, appliance power cost on Egypt's tariff tiers, FX at cached daily rates, unit price, size guides, warranty and return dates, and converters (feddan and qirat included).</sub></p></td></tr>
-<tr><td width="50%" valign="top"><img src="docs/screenshots/v3-agent.webp" alt="Agent profile" width="100%"><p align="center"><sub>Agent profile: personality, current task, issues, log, a 4K avatar download, and a chat box.</sub></p></td><td width="50%" valign="top"><img src="docs/screenshots/v3-app.webp" alt="Get the app" width="100%"><p align="center"><sub><b>/app.</b> The Android APK (a Trusted Web Activity), PWA install, a QR code and live release info from GitHub.</sub></p></td></tr>
+<tr><td width="50%" valign="top"><img src="docs/screenshots/v3-agent.webp" alt="Agent profile" width="100%"><p align="center"><sub>Agent profile: personality, current task, issues, log, a 4K avatar download, and a chat box.</sub></p></td><td width="50%" valign="top"><img src="docs/screenshots/v3-app.webp" alt="Get the app" width="100%"><p align="center"><sub><b>/app.</b> The Android app (a TWA in v3; native since v4), PWA install, a QR code and live release info from GitHub.</sub></p></td></tr>
 </table>
 
 <table><tr>
@@ -487,7 +515,7 @@ Stub or best-effort, on purpose: live HTML for stores that block bots (amazon.eg
 
 **صفقة** بتتابع أسعار المتاجر المصرية (نون، أمازون مصر، جوميا، كارفور وغيرهم)، وبترسم تاريخ السعر لكل عرض، وبتكشف الخصم المضخّم لما سعر «كان» يبقى بعيد عن تاريخ البيع، وبتخلّي خمس وكلاء ذكاء اصطناعي يتناقشوا على كل صفقة قبل ما تدفع.
 
-**الجديد في v3:** صفحات منتجات زي أمازون ونون بصور ومواصفات حقيقية من المتاجر وملخص ذكي، مجتمع ودردشة بنقاط ورتب وشارات، قوانين وإشراف تلقائي بتظلمات، مقر لـ٢٨ وكيل ذكي (بوتات واضحة)، رادار عروض بتنبيهات للتخفيضات الحقيقية بس، صندوق عدة فيه ٤٠٢ أداة شغالة من غير نت، و[تطبيق أندرويد](https://github.com/Omar08263/safqa/releases/latest/download/safqa.apk) — كله مجاني ومن غير بيانات مزيفة: المحتوى التجريبي مكتوب عليه «تجريبي».
+**الجديد في v3:** صفحات منتجات زي أمازون ونون بصور ومواصفات حقيقية من المتاجر وملخص ذكي، مجتمع ودردشة بنقاط ورتب وشارات، قوانين وإشراف تلقائي بتظلمات، مقر لـ٢٨ وكيل ذكي (بوتات واضحة)، رادار عروض بتنبيهات للتخفيضات الحقيقية بس، صندوق عدة فيه ٤٠٢ أداة شغالة من غير نت، و[تطبيق أندرويد](https://github.com/Omar08263/safqa/releases/download/v4.0.0/safqa.apk) — كله مجاني ومن غير بيانات مزيفة: المحتوى التجريبي مكتوب عليه «تجريبي».
 
 <table>
 <tr>
