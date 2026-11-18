@@ -7,7 +7,9 @@ import { I18nManager, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ToastProvider } from '../components/toast';
 import { SnapshotProvider } from '../lib/snapshot';
-import { hydrate, useSettings } from '../lib/store';
+import { hydrate, setSyncErrorHandler, syncWatchlist, useSettings } from '../lib/store';
+import { hydrateAuth } from '../lib/api';
+import { useToast } from '../components/toast';
 import { useColors } from '../lib/theme';
 
 I18nManager.allowRTL(true);
@@ -21,7 +23,10 @@ export default function RootLayout() {
   const dark = settings.theme === 'dark' || (settings.theme === 'system' && system === 'dark');
 
   useEffect(() => {
-    void hydrate();
+    void hydrate().then(async () => {
+      await hydrateAuth();
+      await syncWatchlist();
+    });
     const sub = Notifications.addNotificationResponseReceivedListener((r) => {
       const id = r.notification.request.content.data?.productId;
       if (typeof id === 'string') router.push(`/product/${id}`);
@@ -40,6 +45,7 @@ export default function RootLayout() {
       <SnapshotProvider>
         <ToastProvider>
           <StatusBar style={dark ? 'light' : 'dark'} />
+          <SyncErrors />
           <Stack
             screenOptions={{
               headerStyle: { backgroundColor: c.bg },
@@ -55,9 +61,20 @@ export default function RootLayout() {
             <Stack.Screen name="product/[id]" options={{ title: 'تفاصيل المنتج' }} />
             <Stack.Screen name="tools" options={{ title: 'أدوات الشراء الذكي' }} />
             <Stack.Screen name="settings" options={{ title: 'الإعدادات' }} />
+            <Stack.Screen name="account" options={{ title: 'حسابي وباقتي' }} />
           </Stack>
         </ToastProvider>
       </SnapshotProvider>
     </SafeAreaProvider>
   );
+}
+
+/** Shows server-side refusals (e.g. tier limit) as a toast with a path to the plans. */
+function SyncErrors() {
+  const toast = useToast();
+  useEffect(() => {
+    setSyncErrorHandler((msg) => toast({ text: msg, action: { label: 'الباقات', onPress: () => router.push('/account') } }));
+    return () => setSyncErrorHandler(null);
+  }, [toast]);
+  return null;
 }

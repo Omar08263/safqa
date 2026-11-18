@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import { Pressable, ScrollView, Share, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, Share, Text, View } from 'react-native';
+import { TELEGRAM_URL, tierOf, useAuth } from '../../lib/api';
 import { Header } from '../../components/screen';
 import { Card } from '../../components/ui';
 import { SITE_URL } from '../../lib/data';
@@ -11,11 +12,15 @@ import { type as t, useColors } from '../../lib/theme';
 export default function More() {
   const c = useColors();
   const { gutter } = useGrid();
+  const auth = useAuth();
+  const tier = tierOf(auth);
   const rows: { emoji: string; title: string; hint: string; go: () => void }[] = [
+    { emoji: '👤', title: auth.user ? `حسابي · ${tier.emoji} ${tier.ar}` : 'سجّل دخول أو اعمل حساب', hint: auth.user ? 'الباقة والمزامنة' : 'زامن المراقبة مع الموقع وتيليجرام', go: () => router.push('/account') },
+    { emoji: '✈️', title: 'تابعنا على تيليجرام', hint: '@SafqaDealsBot · عروض اليوم وتنبيهاتك', go: () => void Linking.openURL(TELEGRAM_URL) },
     { emoji: '🧮', title: 'أدوات الشراء الذكي', hint: 'التقسيط، الخصم الحقيقي، تحويل العملات', go: () => router.push('/tools') },
     { emoji: '⚙️', title: 'الإعدادات', hint: 'المظهر، الاهتزاز، التنبيهات', go: () => router.push('/settings') },
     { emoji: '🌐', title: 'افتح موقع صفقة', hint: 'المقارنة والمجتمع ووكلاء الذكاء', go: () => void WebBrowser.openBrowserAsync(SITE_URL) },
-    { emoji: '💬', title: 'العروض على واتساب وتليجرام', hint: 'شارك أو تابع القناة', go: () => void WebBrowser.openBrowserAsync(`${SITE_URL}/#/channels`) },
+    { emoji: '💬', title: 'المجتمع المباشر', hint: 'الدردشة والمنشورات مع الوكلاء الأذكياء', go: () => void WebBrowser.openBrowserAsync(`${SITE_URL}/#/live`) },
     { emoji: '📣', title: 'ابعت صفقة لصاحبك', hint: 'شارك التطبيق', go: () => void Share.share({ message: `صفقة: بتكشف الخصومات الوهمية وبتقارن أسعار المتاجر المصرية 🇪🇬\n${SITE_URL}/#/app` }) },
     { emoji: '👋', title: 'شوف الجولة التعريفية تاني', hint: '30 ثانية', go: () => router.push('/onboarding') },
   ];
@@ -37,7 +42,7 @@ export default function More() {
         </Pressable>
       ))}
       <Text style={[t.meta, { color: c.muted, textAlign: 'center', marginTop: 12 }]}>
-        الأسعار حقيقية من صفحات المتاجر العامة. المحتوى التجريبي مكتوب عليه «تجريبي». مفيش دفع جوه التطبيق.
+        الأسعار حقيقية من صفحات المتاجر العامة. المحتوى التجريبي مكتوب عليه «تجريبي». الباقات المدفوعة بتتدفع بإنستاباي على الموقع.
       </Text>
     </ScrollView>
   );

@@ -22,7 +22,9 @@ if [[ "${SKIP_PREBUILD:-0}" != 1 ]]; then
   sed -i 's/^reactNativeArchitectures=.*/reactNativeArchitectures=arm64-v8a,armeabi-v7a,x86_64/; s/^org.gradle.jvmargs=.*/org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g/' android/gradle.properties
 fi
 cd android
-./gradlew --no-daemon assembleRelease
+# Keep the box responsive: cap Gradle workers and native (CMake/Ninja) jobs.
+export CMAKE_BUILD_PARALLEL_LEVEL="${CMAKE_BUILD_PARALLEL_LEVEL:-4}"
+nice -n 10 ./gradlew --no-daemon --max-workers="${GRADLE_WORKERS:-4}" assembleRelease
 OUT="$APP/android/app/build/outputs/apk/release/app-release.apk"
 mkdir -p "$ROOT/dist"
 cp "$OUT" "$ROOT/dist/safqa.apk"

@@ -6,6 +6,7 @@
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
+import { serverSnapshot } from './api';
 
 const extra = (Constants.expoConfig?.extra ?? {}) as { snapshotUrl?: string; siteUrl?: string };
 export const SITE_URL = (extra.siteUrl ?? 'https://safqa-eg-safqa.static.hf.space').replace(/\/$/, '');
@@ -55,8 +56,18 @@ export async function cached(): Promise<Loaded | null> {
   }
 }
 
-/** Network first (12 s timeout), cache fallback. Throws only when both fail. */
+/** Server API first (the live backend), then the static site, then the offline cache. */
 export async function loadSnapshot(): Promise<Loaded> {
+  try {
+    const fromApi = (await serverSnapshot()) as Snapshot;
+    if (Array.isArray(fromApi?.all) && fromApi.all.length >= 150) {
+      const fetchedAt = new Date().toISOString();
+      void AsyncStorage.setItem(CACHE_KEY, JSON.stringify({ snap: fromApi, fetchedAt }));
+      return { snap: fromApi, fetchedAt, fromCache: false };
+    }
+  } catch {
+    /* fall through to the static snapshot */
+  }
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 12_000);

@@ -9,7 +9,9 @@ import { egp, pct } from '../../lib/format';
 import { useGrid } from '../../lib/layout';
 import { checkWatchlist, ensurePermission } from '../../lib/notify';
 import { useSnapshot } from '../../lib/snapshot';
-import { useSettings, useWatch, WATCH_LIMIT } from '../../lib/store';
+import { useSettings, useWatch } from '../../lib/store';
+import { TELEGRAM_URL, tierOf, useAuth } from '../../lib/api';
+import { Linking } from 'react-native';
 import { type as t, useColors } from '../../lib/theme';
 
 export default function Watchlist() {
@@ -19,6 +21,8 @@ export default function Watchlist() {
   const watch = useWatch();
   const { settings, update } = useSettings();
   const toast = useToast();
+  const auth = useAuth();
+  const tier = tierOf(auth);
 
   const enable = async () => {
     const ok = await ensurePermission();
@@ -40,7 +44,16 @@ export default function Watchlist() {
       keyExtractor={(w) => w.id}
       ListHeaderComponent={
         <View style={{ gap: 12 }}>
-          <Header title="بتراقب 👀" subtitle={`${watch.items.length} من ${WATCH_LIMIT} منتج`} />
+          <Header title="بتراقب 👀" subtitle={`${watch.items.length} من ${watch.limit} منتج · باقة ${tier.ar} ${tier.emoji}`} />
+          <Card style={{ gap: 8, padding: 12 }}>
+            <Text style={[t.small, { color: c.ink }]}>
+              {auth.user ? `☁️ قايمتك متزامنة مع حسابك (${auth.user.email}) على الموقع وتيليجرام.` : '📱 القايمة محفوظة على الموبايل ده بس. سجّل دخول عشان تتزامن مع الموقع وتوصلك تنبيهات تيليجرام.'}
+            </Text>
+            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
+              {!auth.user ? <Button label="سجّل دخول" kind="ghost" onPress={() => router.push('/account')} /> : null}
+              <Button label="تابعنا على تيليجرام" icon="✈️" kind="ghost" accessibilityLabel="تابعنا على تيليجرام: بوت صفقة للعروض" onPress={() => void Linking.openURL(TELEGRAM_URL)} />
+            </View>
+          </Card>
           <Card style={{ gap: 10 }}>
             <Text style={[t.title, { color: c.ink }]}>{settings.notifications ? '🔔 التنبيهات شغالة' : '🔕 التنبيهات مقفولة'}</Text>
             <Text style={[t.small, { color: c.muted }]}>

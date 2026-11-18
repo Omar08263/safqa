@@ -53,7 +53,7 @@ export default function ProductScreen() {
     }
     const tgt = Number(target.replace(/[^\d.]/g, '')) || null;
     const r = watch.add(p.id, o?.priceEgp ?? null, tgt);
-    if (r === 'full') { warn(); toast({ text: 'وصلت للحد (30 منتج). شيل حاجة الأول من المراقبة.' }); return; }
+    if (r === 'full') { warn(); toast({ text: `باقتك بتسمح بـ ${watch.limit} منتج في المراقبة. رقّي باقتك أو شيل حاجة الأول.`, action: { label: 'الباقات', onPress: () => router.push('/account') } }); return; }
     success();
     toast({ text: tgt ? `هنقولك أول ما يوصل ${egp(tgt)} 🎯` : 'تمام، هنراقبه وهنقولك لو نزل 🔔', action: { label: 'تراجع', onPress: () => watch.remove(p.id) } });
     if (!settings.notifications) {
