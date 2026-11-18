@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3072 1024" role="img" aria-label="صفقة Safqa">
+  <g>
+  <defs>
+    <linearGradient id="mbg" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#1E1B16"/>
+      <stop offset="0.55" stop-color="#14120F"/>
+      <stop offset="1" stop-color="#0A0908"/>
+    </linearGradient>
+    <radialGradient id="msheen" cx="0.25" cy="0.12" r="0.75">
+      <stop offset="0" stop-color="#3DBE9A" stop-opacity="0.32"/>
+      <stop offset="0.55" stop-color="#7FFFD4" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="mgold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFE29A"/>
+      <stop offset="0.35" stop-color="#FFC233"/>
+      <stop offset="0.75" stop-color="#F59E0B"/>
+      <stop offset="1" stop-color="#E8590C"/>
+    </linearGradient>
+    <filter id="mlift" filterUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <feDropShadow dx="0" dy="22" stdDeviation="26" flood-color="#021a14" flood-opacity="0.55"/>
+    </filter>
+    <mask id="mhole" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+      <rect width="1024" height="1024" fill="#fff"/>
+      <circle cx="664" cy="300" r="34" fill="#000"/>
+    </mask>
+  </defs>
+  <rect x="32" y="32" width="960" height="960" rx="240" fill="url(#mbg)"/>
+  <rect x="32" y="32" width="960" height="960" rx="240" fill="url(#msheen)"/>
+  <rect x="36" y="36" width="952" height="952" rx="236" fill="none" stroke="#F0B429" stroke-opacity="0.28" stroke-width="6"/>
+  <g filter="url(#mlift)">
+    <g mask="url(#mhole)">
+      <path d="M 690 322 C 650 236 462 226 400 304 C 330 392 420 466 522 492 C 642 522 712 578 676 680 C 640 780 450 792 352 712"
+            fill="none" stroke="url(#mgold)" stroke-width="128" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+  <path d="M 812 640 C 817 680 829 692 869 697 C 829 702 817 714 812 754 C 807 714 795 702 755 697 C 795 692 807 680 812 640 Z" fill="#FFF4D6"/>
+  <path d="M 268 228 C 272 256 280 264 308 268 C 280 272 272 280 268 308 C 264 280 256 272 228 268 C 256 264 264 256 268 228 Z" fill="#FFF4D6" opacity="0.85"/>
+</g>
+  <text x="1130" y="600" font-family="Readex Pro, Segoe UI, Tahoma, sans-serif" font-weight="700" font-size="520" fill="#FFF7E8" direction="rtl" text-anchor="start" style="direction:ltr">صفقة</text>
+  <text x="1150" y="850" font-family="Readex Pro, Segoe UI, Tahoma, sans-serif" font-weight="600" font-size="170" letter-spacing="58" fill="#F0B429">SAFQA</text>
+</svg>

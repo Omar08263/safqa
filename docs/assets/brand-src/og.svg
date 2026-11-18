@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="obg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0E6B52"/><stop offset="0.6" stop-color="#083F31"/><stop offset="1" stop-color="#04201A"/></linearGradient>
+    <radialGradient id="og1" cx="0.85" cy="0.1" r="0.6"><stop offset="0" stop-color="#F0B429" stop-opacity="0.35"/><stop offset="1" stop-color="#F0B429" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#obg)"/><rect width="1200" height="630" fill="url(#og1)"/>
+  <image href="MARK" x="80" y="135" width="360" height="360"/>
+  <text direction="rtl" x="1120" y="250" font-family="Readex Pro" font-weight="700" font-size="140" fill="#FFF7E8" text-anchor="start">صفقة</text>
+  <text direction="rtl" x="1120" y="320" font-family="Readex Pro" font-weight="600" font-size="34" letter-spacing="14" fill="#F0B429">SAFQA · EGYPT</text>
+  <text direction="rtl" x="1120" y="410" font-family="Readex Pro" font-weight="500" font-size="40" fill="#E6F4EE">أسعار حقيقية من المتاجر المصرية كل يوم</text>
+  <text direction="rtl" x="1120" y="468" font-family="Readex Pro" font-weight="400" font-size="30" fill="#A7D8C6">B.TECH · 2B · Raya · Amazon.eg — كشف الخصومات الوهمية</text>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="free">
+  <defs>
+    <linearGradient id="b" x1="0.15" y1="0" x2="0.85" y2="1"><stop offset="0" stop-color="#7EE2B8"/><stop offset="0.5" stop-color="#1FA67A"/><stop offset="1" stop-color="#0B5A44"/></linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="1" stop-color="#ffffff" stop-opacity="0.15"/></linearGradient>
+    <radialGradient id="shine" cx="0.3" cy="0.2" r="0.7"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.6" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <filter id="s" filterUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024"><feDropShadow dx="0" dy="24" stdDeviation="28" flood-color="#0B5A44" flood-opacity="0.45"/></filter>
+  </defs>
+  <g filter="url(#s)">
+    <path d="M512 72 L 893 292 L 893 732 L 512 952 L 131 732 L 131 292 Z" fill="url(#b)" stroke="url(#rim)" stroke-width="18" stroke-linejoin="round"/>
+    <path d="M512 72 L 893 292 L 893 732 L 512 952 L 131 732 L 131 292 Z" fill="url(#shine)"/>
+    <path d="M512 150 L 826 331 L 826 693 L 512 874 L 198 693 L 198 331 Z" fill="none" stroke="#fff" stroke-opacity="0.35" stroke-width="6"/>
+  </g>
+  <g filter="url(#s)"><path d="M520 300 C 680 340 730 500 670 630 C 620 730 500 740 450 712 C 420 600 450 440 520 300 Z" fill="#E9FFF5"/><path d="M470 712 C 470 600 500 500 580 410" stroke="#0B5A44" stroke-width="24" fill="none" stroke-linecap="round" opacity="0.45"/><path d="M360 500 C 410 500 470 550 478 650 C 410 660 350 610 340 520 Z" fill="#E9FFF5" opacity="0.85"/></g>
+  <path d="M790 210 C 795 240 805 250 835 255 C 805 260 795 270 790 300 C 785 270 775 260 745 255 C 775 250 785 240 790 210 Z" fill="#fff" opacity="0.9"/>
+</svg>
