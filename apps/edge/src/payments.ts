@@ -22,7 +22,7 @@ export function payInfo(env: Env) {
 
 export async function checkCode(env: Env, a: Authed, body: Record<string, unknown>) {
   if (!(await rateLimit(env, `code:${a.user.id}`, 20, 3600))) fail(429, 'rate_limited', 'جرّبت أكواد كتير — استنى شوية');
-  const tier = (str(body.tier, 10) || 'plus') as TierId;
+  const tier = (str(body.tier, 10) || 'silver') as TierId;
   const t = tierById(tier);
   if (!t) fail(400, 'invalid_tier', 'باقة غير معروفة');
   const months = Math.min(12, Math.max(1, Number(body.months) || 1));
@@ -37,6 +37,21 @@ async function setTier(env: Env, userId: string, tier: string, days: number, sta
   return until;
 }
 export { setTier };
+
+/** After a revoke/reject: fall back to the best still-valid approved payment instead of dropping a paying member to free. */
+async function restoreTier(env: Env, userId: string, revokedTier: string, paymentId: string) {
+  const u = await env.DB.prepare('SELECT tier FROM users WHERE id=?').bind(userId).first<{ tier: string }>();
+  if (!u || u.tier !== revokedTier) return;
+  const rows = (await env.DB.prepare("SELECT tier, months, decided_at FROM payments WHERE user_id=? AND id<>? AND status='approved' AND decided_at IS NOT NULL").bind(userId, paymentId).all<{ tier: string; months: number; decided_at: string }>()).results;
+  let best: { tier: string; until: number; rank: number } | null = null;
+  for (const r of rows) {
+    const until = Date.parse(r.decided_at) + 30 * Number(r.months || 1) * 86400_000;
+    const rank = tierById(r.tier)?.rank ?? 0;
+    if (until > Date.now() && (!best || rank > best.rank)) best = { tier: r.tier, until, rank };
+  }
+  if (best) await env.DB.prepare("UPDATE users SET tier=?, tier_until=?, tier_status='active' WHERE id=?").bind(best.tier, new Date(best.until).toISOString(), userId).run();
+  else await env.DB.prepare("UPDATE users SET tier='free', tier_until=NULL, tier_status='active' WHERE id=?").bind(userId).run();
+}
 
 export async function redeemUpgrade(env: Env, a: Authed, body: Record<string, unknown>) {
   const code = str(body.code, 40);
@@ -60,6 +75,9 @@ export async function createPayment(env: Env, a: Authed, body: Record<string, un
   const t = tierById(tier);
   if (!t || t.price <= 0) fail(400, 'invalid_tier', 'اختار باقة مدفوعة');
   if (!(await rateLimit(env, `paycreate:${a.user.id}`, 10, 86400))) fail(429, 'rate_limited', 'طلبات دفع كتير النهارده');
+  const cur = await env.DB.prepare('SELECT tier, tier_until FROM users WHERE id=?').bind(a.user.id).first<{ tier: string; tier_until: string | null }>();
+  const curT = cur && cur.tier_until && Date.parse(cur.tier_until) > Date.now() ? tierById(cur.tier) : null;
+  if (curT && curT.rank > t!.rank) fail(400, 'higher_tier', `باقتك الحالية (${curT.ar}) أعلى من دي — لو عايز تجدد اختار ${curT.ar} 😉`);
   const months = Math.min(12, Math.max(1, Number(body.months) || 1));
   const list = t!.price * months;
   let amount = list;
@@ -158,7 +176,7 @@ export async function decidePayment(env: Env, adminEmail: string, id: string, ac
       await setTier(env, uidd, String(p.tier), 30 * Number(p.months || 1), 'active');
     } else await env.DB.prepare("UPDATE users SET tier_status='active' WHERE id=?").bind(uidd).run();
   } else if (p.status === 'provisional' || p.status === 'approved') {
-    await env.DB.prepare("UPDATE users SET tier='free', tier_until=NULL, tier_status='active' WHERE id=? AND tier=?").bind(uidd, p.tier).run();
+    await restoreTier(env, uidd, String(p.tier), id);
   }
   const status = action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'revoked';
   await env.DB.prepare('UPDATE payments SET status=?, note=?, decided_at=?, decided_by=? WHERE id=?').bind(status, note || null, nowIso(), adminEmail, id).run();

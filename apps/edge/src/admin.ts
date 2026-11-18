@@ -49,7 +49,7 @@ export async function upsertCode(env: Env, admin: string, b: Record<string, unkn
   const kind = ['percent', 'fixed', 'upgrade'].includes(String(b.kind)) ? String(b.kind) : 'percent';
   const value = Number(b.value) || 0;
   if (kind === 'percent' && (value <= 0 || value > 100)) fail(400, 'invalid_value', 'النسبة بين 1 و 100');
-  const upgradeTier = kind === 'upgrade' ? str(b.upgradeTier, 10) || 'plus' : null;
+  const upgradeTier = kind === 'upgrade' ? str(b.upgradeTier, 10) || 'silver' : null;
   if (upgradeTier && !tierById(upgradeTier)) fail(400, 'invalid_tier', 'باقة غلط');
   const tiers = Array.isArray(b.tiers) ? (b.tiers as string[]).filter((t) => tierById(t)) : [];
   await env.DB.prepare(`INSERT INTO codes (code,kind,value,tiers,expires_at,max_uses,per_user,upgrade_tier,upgrade_days,active,note,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)

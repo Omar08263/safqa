@@ -3,6 +3,7 @@ import { Apple, BellRing, Download, Globe, MonitorSmartphone, ShieldCheck, Smart
 import QRCode from 'qrcode';
 import { useEffect, useState } from 'react';
 import { useInstall } from '../components/chrome';
+import { TelegramFollowButton } from '../components/telegram-follow';
 import { Card, confetti, Reveal, useToast } from '../fx/fx';
 import { APK_URL, isStandalone, platform, RELEASES_URL, SITE_URL } from '../lib/app-links';
 import { useCatalog } from '../lib/catalog';
@@ -65,6 +66,7 @@ export function AppPage() {
               ) : (
                 <button type="button" onClick={async () => { if (pwa.available) { if (await pwa.install()) toast(tr('اتثبّت 🎉', 'Installed 🎉')); } else toast(p === 'ios' ? tr('على آيفون: زرار المشاركة ⬆️ ← إضافة إلى الشاشة الرئيسية', 'On iPhone: Share ⬆️ → Add to Home Screen') : tr('من قايمة المتصفح اختار «تثبيت التطبيق»', 'Use the browser menu → “Install app”')); }} className="inline-flex items-center gap-2 rounded-2xl border border-border bg-card px-5 py-3 font-semibold"><MonitorSmartphone className="h-5 w-5" />{tr('ثبّت من المتصفح (PWA)', 'Install from browser (PWA)')}</button>
               )}
+              <TelegramFollowButton />
             </div>
             <p className="text-xs text-muted">
               {rel.isLoading ? tr('بنشيك على آخر إصدار…', 'Checking the latest release…') : apk && rel.data ? tr(`آخر إصدار ${rel.data.tag_name} · ${(apk.size / 1048576).toFixed(1)} ميجا · ${new Date(rel.data.published_at).toLocaleDateString('ar-EG')} · اتنزّل ${apk.download_count} مرة`, `Latest ${rel.data.tag_name} · ${(apk.size / 1048576).toFixed(1)} MB · ${new Date(rel.data.published_at).toLocaleDateString()} · ${apk.download_count} downloads`) : tr('ملف الـ APK على GitHub Releases الخاص بالمشروع المفتوح المصدر.', 'The APK lives on the open-source project’s GitHub Releases.')}{' '}

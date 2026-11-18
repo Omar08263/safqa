@@ -130,11 +130,11 @@ on('POST', '/api/watchlist', async (c) => {
   const b = await body(c);
   const product = await cardOf(c.env, str(b.productId, 80));
   if (!product) fail(404, 'not_found', 'Product not found');
-  const limit = { free: 10, plus: 50 }[auth.effectiveTier(a.user)] ?? 100000;
+  const limit = tierById(auth.effectiveTier(a.user))?.limits.watchlist ?? 10;
   const n = await c.env.DB.prepare('SELECT COUNT(*) AS n FROM watchlist WHERE user_id=?').bind(a.user.id).first<{ n: number }>();
   const existing = await c.env.DB.prepare('SELECT * FROM watchlist WHERE user_id=? AND product_id=?').bind(a.user.id, b.productId).first<Record<string, any>>();
   if (existing) return { id: existing.id, targetPriceEgp: existing.target, createdAt: existing.created_at, product };
-  if ((n?.n ?? 0) >= limit) fail(402, 'tier_limit', `باقتك بتسمح بـ ${limit} منتج في المتابعة — رقّي باقتك عشان تتابع أكتر ⚡`);
+  if ((n?.n ?? 0) >= limit) fail(402, 'tier_limit', `باقتك بتسمح بـ ${limit} منتج في المراقبة — رقّي باقتك عشان تتابع أكتر 🥈👑💎`);
   const id = uid('w_');
   await c.env.DB.prepare('INSERT INTO watchlist (id,user_id,product_id,target,created_at) VALUES (?,?,?,?,?)').bind(id, a.user.id, b.productId, b.targetPriceEgp ?? null, nowIso()).run();
   return json({ id, targetPriceEgp: b.targetPriceEgp ?? null, createdAt: nowIso(), product }, 201);
@@ -339,7 +339,7 @@ on('POST', '/api/v2/community/react', async (c) => {
 on('POST', '/api/v2/groups', async (c) => {
   const a = await need(c);
   await requireRules(a);
-  if (auth.effectiveTier(a.user) === 'free' && a.user.xp < 150) fail(402, 'tier_limit', 'إنشاء جروب متاح من رتبة «صياد عروض» أو باقة بلس ⚡');
+  if (auth.effectiveTier(a.user) === 'free' && a.user.xp < 150) fail(402, 'tier_limit', 'إنشاء جروب متاح من رتبة «صياد عروض» أو الباقة الفضية 🥈');
   const b = await body(c);
   const name = str(b.name, 40);
   if (name.length < 3) fail(400, 'invalid', 'اسم الجروب قصير');

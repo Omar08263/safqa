@@ -1,3 +1,4 @@
+import './lib/admin-bounce';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from '@tanstack/react-router';
 import { StrictMode } from 'react';
@@ -24,6 +25,8 @@ if (!root) throw new Error('root missing');
 if (import.meta.env.VITE_DEMO_MODE === 'static') {
   const { installDemoApi } = await import('./lib/demo-api');
   await installDemoApi(`${import.meta.env.BASE_URL}demo/snapshot.json`);
+  // Real backend (Cloudflare) for accounts, sync, chat, payments; demo stays as the offline fallback.
+  (await import('./lib/edge')).installEdgeBridge();
   const google = await completeGoogleRedirectLogin();
   if (google?.ok) window.location.hash = '#/dashboard';
   else if (google && !google.ok) window.location.hash = '#/login';

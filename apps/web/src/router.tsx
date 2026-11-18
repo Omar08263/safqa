@@ -23,6 +23,8 @@ const lz = <M extends Record<string, unknown>>(load: () => Promise<M>, name: key
   lazy(async () => ({ default: (await load())[name] as React.ComponentType<any> }));
 const HelpPage = lz(() => import('./pages/help'), 'HelpPage');
 const AboutPage = lz(() => import('./pages/help'), 'AboutPage');
+const PayPage = lz(() => import('./pages/pay'), 'PayPage');
+const LivePage = lz(() => import('./pages/live'), 'LivePage');
 const PrivacyPage = lz(() => import('./pages/legal'), 'PrivacyPage');
 const TermsPage = lz(() => import('./pages/legal'), 'TermsPage');
 const CalendarPage = lz(() => import('./pages/explore'), 'CalendarPage');
@@ -227,6 +229,8 @@ const extraRoutes = [
   simple('/referral', () => <ReferralPage />),
   simple('/help', () => <HelpPage />),
   simple('/about', () => <AboutPage />),
+  simple('/pay', () => <PayPage />),
+  simple('/live', () => <LivePage />),
   simple('/privacy', () => <PrivacyPage />),
   simple('/terms', () => <TermsPage />),
 ];

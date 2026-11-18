@@ -1,4 +1,5 @@
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
+import { TelegramFollowButton } from './telegram-follow';
 import { PriceFreshness } from './price-freshness';
 import { Bell, Command, Menu, MoonStar, Sun, X } from 'lucide-react';
 import { FormEvent, ReactNode, useEffect, useRef, useState } from 'react';
@@ -181,7 +182,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <div>
             <Logo size={44} />
             <p className="mt-3 max-w-sm text-sm leading-6 text-muted">{tr('صفقة بتتابع أسعار المتاجر المصرية، بتكشف الخصومات المضخّمة، وبتقولك إمتى تشتري.', 'Safqa tracks Egyptian store prices, exposes inflated discounts, and tells you when to buy.')}</p>
-            <div className="mt-4 flex flex-wrap gap-2"><InstallButton /><Button variant="outline" size="sm" onClick={() => setShortcuts(true)}>{tr('اختصارات الكيبورد', 'Keyboard shortcuts')} <kbd className="text-[10px]">?</kbd></Button></div>
+            <div className="mt-4 flex flex-wrap gap-2"><InstallButton /><TelegramFollowButton compact /><Button variant="outline" size="sm" onClick={() => setShortcuts(true)}>{tr('اختصارات الكيبورد', 'Keyboard shortcuts')} <kbd className="text-[10px]">?</kbd></Button></div>
           </div>
           <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-3">
             {allNav.map((n) => (
@@ -195,6 +196,8 @@ export function Shell({ children }: { children: ReactNode }) {
           <Link to="/privacy" className="hover:text-foreground">{tr('الخصوصية داخل الموقع', 'In-app privacy')}</Link>
           <a href="/terms.html" className="hover:text-foreground">{tr('الشروط والأحكام', 'Terms of Service')}</a>
           <Link to="/terms" className="hover:text-foreground">{tr('قواعد المجتمع', 'Community rules')}</Link>
+          <a href="#/live" className="hover:text-foreground">{tr('المجتمع المباشر', 'Live community')}</a>
+          <a href="#/pay" className="hover:text-foreground">{tr('الباقات والدفع', 'Plans & payment')}</a>
           <a href="mailto:rxcc@agentmail.to" className="hover:text-foreground">rxcc@agentmail.to</a>
         </p>
         <p className="pb-6 text-center text-xs text-muted">© 2026 Safqa · {tr('صُنع في مصر', 'Made in Egypt')} 🇪🇬</p>

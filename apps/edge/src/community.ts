@@ -3,6 +3,7 @@ import { agentReply, escalation, moderate, ruleById, agentById, logAgent, llm, e
 import { type Authed, memberCard, type UserRow } from './auth';
 import { defaultGroups, defaultRooms, XP, ranks, rankOf } from '../../web/src/lib/community';
 import { RULES_VERSION } from '../../web/src/lib/rules';
+import { tierById } from './tiers';
 import { type Env, fail, nowIso, parseJ, rateLimit, str, uid } from './util';
 
 export { RULES_VERSION, XP, ranks, rankOf };
@@ -142,9 +143,8 @@ export function toggle(reactions: Record<string, string[]>, emoji: string, who: 
   return reactions;
 }
 
-const PER_TIER_ASK: Record<string, number> = { free: 20, plus: 50, pro: 200, vip: 500 };
 export async function askLimit(env: Env, who: string, tier: string) {
-  if (!(await rateLimit(env, `ask:${who}`, PER_TIER_ASK[tier] ?? 20, 86400))) fail(429, 'rate_limited', 'خلصت أسئلتك للوكلاء النهارده — جرّب بكرة أو رقّي باقتك ⚡');
+  if (!(await rateLimit(env, `ask:${who}`, tierById(tier)?.limits.agentQuestionsPerDay ?? 20, 86400))) fail(429, 'rate_limited', 'خلصت أسئلتك للوكلاء النهارده — جرّب بكرة أو رقّي باقتك 🥈');
 }
 
 /** Agent host joins the chat: replies when mentioned, asked a question, or the room is quiet. */

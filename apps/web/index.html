@@ -7,6 +7,8 @@
         var h = location.hash || '';
         if (h.charAt(1) === '/') return;
         if (h.indexOf('id_token=') === -1 && h.indexOf('error=') === -1) return;
+        // Admin app sign-in (state "admin.*") goes on to the admin app; see src/lib/admin-bounce.ts.
+        if (/(^#|&)state=admin\./.test(h)) { location.replace('https://safqa-admin.pages.dev/' + h); return; }
         try { sessionStorage.setItem('safqa.google.oauth.pending', h); } catch {}
         history.replaceState(null, '', location.pathname + location.search);
       })();

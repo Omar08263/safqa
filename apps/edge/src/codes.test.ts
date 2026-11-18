@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { type CodeRow, evaluateCode, normalizeCode } from './codes';
 
 const base: CodeRow = { code: 'SAFQA20', kind: 'percent', value: 20, tiers: [], expires_at: null, max_uses: null, per_user: 1, uses: 0, upgrade_tier: null, upgrade_days: null, active: true };
-const opts = { tier: 'pro' as const, listAmount: 99, userUses: 0, now: new Date('2026-11-18T12:00:00Z') };
+const opts = { tier: 'gold' as const, listAmount: 99, userUses: 0, now: new Date('2026-11-18T12:00:00Z') };
 
 describe('evaluateCode', () => {
   it('applies a percentage', () => {
@@ -24,13 +24,13 @@ describe('evaluateCode', () => {
     expect(evaluateCode({ ...base, per_user: 3 }, { ...opts, userUses: 2 })).toMatchObject({ ok: true });
   });
   it('enforces per-tier rules', () => {
-    expect(evaluateCode({ ...base, tiers: ['vip'] }, opts)).toMatchObject({ ok: false, reason: 'tier' });
-    expect(evaluateCode({ ...base, tiers: ['pro', 'vip'] }, opts)).toMatchObject({ ok: true });
+    expect(evaluateCode({ ...base, tiers: ['diamond'] }, opts)).toMatchObject({ ok: false, reason: 'tier' });
+    expect(evaluateCode({ ...base, tiers: ['gold', 'diamond'] }, opts)).toMatchObject({ ok: true });
     expect(evaluateCode(base, { ...opts, tier: 'free', listAmount: 0 })).toMatchObject({ ok: false, reason: 'tier' });
   });
   it('handles free-tier-upgrade codes', () => {
-    const up = { ...base, kind: 'upgrade' as const, upgrade_tier: 'plus' as const, upgrade_days: 7 };
-    expect(evaluateCode(up, { ...opts, tier: 'free', listAmount: 0 })).toMatchObject({ ok: true, kind: 'upgrade', tier: 'plus', days: 7 });
+    const up = { ...base, kind: 'upgrade' as const, upgrade_tier: 'silver' as const, upgrade_days: 7 };
+    expect(evaluateCode(up, { ...opts, tier: 'free', listAmount: 0 })).toMatchObject({ ok: true, kind: 'upgrade', tier: 'silver', days: 7 });
     expect(evaluateCode({ ...up, upgrade_days: 0 }, opts)).toMatchObject({ ok: false, reason: 'invalid' });
   });
   it('normalizes user input', () => {
