@@ -1,0 +1,28 @@
+{
+  "name": "@safqa/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "migrate": "tsx src/cli.ts migrate",
+    "seed": "tsx src/cli.ts seed"
+  },
+  "dependencies": {
+    "@safqa/adapters": "workspace:*",
+    "@safqa/agents": "workspace:*",
+    "@safqa/shared": "workspace:*",
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.45.1",
+    "postgres": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "tsx": "^4.20.6",
+    "typescript": "5.9.3"
+  }
+}

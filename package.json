@@ -1,0 +1,35 @@
+{
+  "name": "safqa",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.4",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo dev --filter=@safqa/api --filter=@safqa/worker --filter=@safqa/web",
+    "dev:api": "pnpm --filter @safqa/api dev",
+    "dev:worker": "pnpm --filter @safqa/worker dev",
+    "dev:web": "pnpm --filter @safqa/web dev",
+    "dev:mobile": "pnpm --filter @safqa/mobile start",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "typecheck": "turbo typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:migrate": "pnpm --filter @safqa/db migrate",
+    "db:seed": "pnpm --filter @safqa/db seed",
+    "sync:check": "pnpm --filter @safqa/web exec tsx scripts/sync-check.ts"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "msgpackr-extract"]
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.6",
+    "turbo": "2.11.10",
+    "@types/node": "22.19.1",
+    "tsx": "^4.20.6",
+    "typescript": "5.9.3",
+    "vitest": "5.1.0"
+  }
+}

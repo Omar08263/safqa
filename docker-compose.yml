@@ -1,0 +1,124 @@
+services:
+  postgres:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_USER: safqa
+      POSTGRES_PASSWORD: safqa
+      POSTGRES_DB: safqa
+    ports:
+      - "5432:5432"
+    volumes:
+      - safqa_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U safqa -d safqa"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: .
+    image: safqa-app
+    environment:
+      DATABASE_URL: postgres://safqa:safqa@postgres:5432/safqa
+      REDIS_URL: redis://redis:6379
+      AUTH_SECRET: dev-only-change-me-please-32b
+      SEED_ON_BOOT: "true"
+      API_PORT: "8787"
+      CRAWL_MODE: polite
+      WEB_ORIGIN: http://localhost:47321
+      LLM_PROVIDER: ${LLM_PROVIDER:-free}
+      LLM_DEBATE_TOKEN_BUDGET: ${LLM_DEBATE_TOKEN_BUDGET:-4000}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-nvidia/nemotron-3-ultra-550b-a55b:free}
+      OPENROUTER_MODELS: ${OPENROUTER_MODELS:-nvidia/nemotron-3-ultra-550b-a55b:free,nvidia/nemotron-3.5-super-vl:free,openrouter/free}
+      OPENROUTER_RPD: ${OPENROUTER_RPD:-50}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.8-flash}
+      GEMINI_MODELS: ${GEMINI_MODELS:-gemini-3.8-flash,gemini-3.7-flash,gemini-3-flash-preview,gemini-2.5-flash}
+      GEMINI_RPM: ${GEMINI_RPM:-5}
+      GEMINI_RPD: ${GEMINI_RPD:-20}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434/v1}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.1}
+      OLLAMA_DISABLED: ${OLLAMA_DISABLED:-}
+      XAI_API_KEY: ${XAI_API_KEY:-}
+      XAI_MODEL: ${XAI_MODEL:-grok-4.7}
+      XAI_BASE_URL: ${XAI_BASE_URL:-https://api.x.ai/v1}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GROQ_MODELS: ${GROQ_MODELS:-openai/gpt-oss-120b,qwen/qwen3.8-27b,openai/gpt-oss-20b}
+      GROQ_RPD: ${GROQ_RPD:-1000}
+      NVIDIA_API_KEY: ${NVIDIA_API_KEY:-}
+      NVIDIA_MODELS: ${NVIDIA_MODELS:-nvidia/nemotron-3-ultra-550b-a55b}
+      LLM_TIMEOUT_MS: ${LLM_TIMEOUT_MS:-30000}
+      LLM_HEDGE_MS: ${LLM_HEDGE_MS:-8000}
+      COHERE_API_KEY: ${COHERE_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      TOGETHER_API_KEY: ${TOGETHER_API_KEY:-}
+    ports:
+      - "8787:8787"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    image: safqa-app
+    command: pnpm --filter @safqa/worker exec tsx src/index.ts
+    environment:
+      DATABASE_URL: postgres://safqa:safqa@postgres:5432/safqa
+      REDIS_URL: redis://redis:6379
+      AUTH_SECRET: dev-only-change-me-please-32b
+      CRAWL_MODE: polite
+      LLM_PROVIDER: ${LLM_PROVIDER:-free}
+      LLM_DEBATE_TOKEN_BUDGET: ${LLM_DEBATE_TOKEN_BUDGET:-4000}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-nvidia/nemotron-3-ultra-550b-a55b:free}
+      OPENROUTER_MODELS: ${OPENROUTER_MODELS:-nvidia/nemotron-3-ultra-550b-a55b:free,nvidia/nemotron-3.5-super-vl:free,openrouter/free}
+      OPENROUTER_RPD: ${OPENROUTER_RPD:-50}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.8-flash}
+      GEMINI_MODELS: ${GEMINI_MODELS:-gemini-3.8-flash,gemini-3.7-flash,gemini-3-flash-preview,gemini-2.5-flash}
+      GEMINI_RPM: ${GEMINI_RPM:-5}
+      GEMINI_RPD: ${GEMINI_RPD:-20}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434/v1}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.1}
+      OLLAMA_DISABLED: ${OLLAMA_DISABLED:-}
+      XAI_API_KEY: ${XAI_API_KEY:-}
+      XAI_MODEL: ${XAI_MODEL:-grok-4.7}
+      XAI_BASE_URL: ${XAI_BASE_URL:-https://api.x.ai/v1}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GROQ_MODELS: ${GROQ_MODELS:-openai/gpt-oss-120b,qwen/qwen3.8-27b,openai/gpt-oss-20b}
+      GROQ_RPD: ${GROQ_RPD:-1000}
+      NVIDIA_API_KEY: ${NVIDIA_API_KEY:-}
+      NVIDIA_MODELS: ${NVIDIA_MODELS:-nvidia/nemotron-3-ultra-550b-a55b}
+      LLM_TIMEOUT_MS: ${LLM_TIMEOUT_MS:-30000}
+      LLM_HEDGE_MS: ${LLM_HEDGE_MS:-8000}
+      COHERE_API_KEY: ${COHERE_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      TOGETHER_API_KEY: ${TOGETHER_API_KEY:-}
+    depends_on:
+      api:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  safqa_pg:

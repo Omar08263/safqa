@@ -1,0 +1,14 @@
+{
+  "name": "صفقة Safqa",
+  "short_name": "صفقة",
+  "description": "تتبع أسعار المتاجر في مصر.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4efe6",
+  "theme_color": "#c9840a",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

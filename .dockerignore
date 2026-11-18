@@ -1,0 +1,13 @@
+node_modules
+**/node_modules
+dist
+**/dist
+.git
+.turbo
+**/.turbo
+**/.expo
+coverage
+apps/web/dist
+*.md
+.env
+.env.local

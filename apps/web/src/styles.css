@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --font-sans: "Readex Pro", "Segoe UI", Tahoma, sans-serif;
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --color-card: var(--elev);
+  --color-muted: var(--muted);
+  --color-border: var(--line);
+  --color-primary: var(--saffron);
+  --color-primary-foreground: #1c1915;
+  --color-destructive: var(--clay);
+  --color-accent: var(--chip);
+  --color-palm: var(--palm);
+  --radius-lg: 1rem;
+}
+
+:root {
+  --bg: #f3eee4;
+  --elev: #fffaf3;
+  --ink: #1c1915;
+  --muted: #6e665b;
+  --line: #e4d8c6;
+  --saffron: #c9840a;
+  --palm: #0e6b52;
+  --clay: #b8432f;
+  --chip: #efe4d2;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #12110e;
+  --elev: #1c1915;
+  --ink: #f6f0e6;
+  --muted: #b7ab9c;
+  --line: #322c25;
+  --saffron: #f0b429;
+  --palm: #3dbe9a;
+  --clay: #f07167;
+  --chip: #2a251e;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(1200px 500px at 100% -10%, color-mix(in srgb, var(--saffron) 18%, transparent), transparent 60%),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.score-ring {
+  display: grid;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 999px;
+  flex: none;
+}
+
+.score-ring span {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: var(--elev);
+  font-size: 0.85rem;
+  font-weight: 700;
+}

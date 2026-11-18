@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "صفقة Safqa",
+  "version": "0.1.0",
+  "description": "Shows Safqa price history for a store page when the URL is tracked. Does not bypass store bot checks.",
+  "action": { "default_popup": "popup.html", "default_title": "صفقة" },
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": ["http://localhost:8787/*", "https://*/*"],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.amazon.eg/*",
+        "https://www.noon.com/*",
+        "https://www.jumia.com.eg/*",
+        "https://btech.com/*",
+        "https://2b.com.eg/*",
+        "https://raya.com/*",
+        "https://www.carrefour.com.eg/*",
+        "https://shop.elarabygroup.com/*",
+        "https://www.hyperone.com.eg/*",
+        "https://www.dubizzle.com.eg/*"
+      ],
+      "js": ["content.js"]
+    }
+  ]
+}
