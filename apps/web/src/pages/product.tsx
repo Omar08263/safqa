@@ -74,7 +74,7 @@ export function ProductPage({ id }: { id: string }) {
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.1fr_0.9fr] [&>*]:min-w-0">
       <section>
         <p className="text-sm text-muted">{item.brand}</p>
         <div className="mt-1 flex items-start justify-between gap-4">
@@ -252,7 +252,7 @@ export function ProductPage({ id }: { id: string }) {
                       </span>
                     ) : null}
                   </p>
-                  <div className="mt-1 text-sm">
+                  <div className="mt-1 text-sm [overflow-wrap:anywhere]">
                     <Markdown text={turn.content} />
                   </div>
                 </article>
