@@ -81,7 +81,7 @@ export function SavingsPage() {
           <div className="mt-4 h-3 overflow-hidden rounded-full bg-accent"><div className="bar-grow h-full rounded-full" style={{ width: `${Math.min(100, ((spentMonth + plannedOpen) / (budget.monthlyEgp || 1)) * 100)}%`, background: left < 0 ? 'var(--clay)' : 'var(--saffron)' }} /></div>
           <p className="mt-1 text-xs text-muted">{tr(`مصروف ${m(spentMonth)} + مخطط ${m(plannedOpen)} من ${m(budget.monthlyEgp)}`, `Spent ${m(spentMonth)} + planned ${m(plannedOpen)} of ${m(budget.monthlyEgp)}`)}</p>
           <form onSubmit={addPlanned} className="mt-4 flex flex-wrap gap-2">
-            <select name="product" className="h-10 flex-1 rounded-full border border-border bg-card px-3 text-sm" aria-label={tr('منتج', 'Product')}>
+            <select name="product" className="h-10 min-w-0 w-full max-w-full flex-1 basis-full truncate rounded-full border border-border bg-card px-3 text-sm" aria-label={tr('منتج', 'Product')}>
               <option value="">{tr('اختار منتج من صفقة…', 'Pick a Safqa product…')}</option>
               {(catalog.data?.items ?? []).map((p) => <option key={p.id} value={p.id}>{localized(locale, { ar: p.titleAr, en: p.titleEn })}</option>)}
             </select>
