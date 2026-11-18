@@ -456,7 +456,9 @@ export function useRelated(item: ProductDetail | undefined, all: ProductCard[]) 
 export function SpecDiff({ item, media, rivals, loadMedia }: { item: ProductDetail; media: ProductMedia | null | undefined; rivals: ProductCard[]; loadMedia: (id: string) => Promise<{ detail: ProductDetail | null; media: ProductMedia | null }> }) {
   const tr = useTr();
   const { locale } = usePrefs();
-  const [rid, setRid] = useState(rivals[0]?.id ?? '');
+  const [picked, setRid] = useState('');
+  // Rivals arrive after the catalog loads, so default to the first one lazily.
+  const rid = picked || rivals[0]?.id || '';
   const [rival, setRival] = useState<{ detail: ProductDetail | null; media: ProductMedia | null } | null>(null);
   useEffect(() => { if (rid) void loadMedia(rid).then(setRival); }, [rid, loadMedia]);
   if (!rivals.length) return null;
