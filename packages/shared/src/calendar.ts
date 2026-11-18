@@ -31,7 +31,7 @@ export const RETAIL_EVENTS: RetailEvent[] = [
   },
   {
     id: '11.11',
-    nameAr: '١١/١١',
+    nameAr: '11/11',
     nameEn: '11.11',
     month: 11,
     day: 11,

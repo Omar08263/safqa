@@ -47,7 +47,7 @@ export function predictBuyTiming(input: {
   const stillFalling = slope < -input.current * 0.003;
 
   let recommendation: BuyRecommendation = 'buy_now';
-  let reasonAr = 'السعر قريب من قاع ٩٠ يوم ومش بينزل بسرعة. الشراء دلوقتي منطقي.';
+  let reasonAr = 'السعر قريب من قاع 90 يوم ومش بينزل بسرعة. الشراء دلوقتي منطقي.';
   let reasonEn =
     'The price is near the 90-day low and is not falling fast. Buying now is reasonable.';
   if (eventSoon && !nearLow) {
@@ -62,7 +62,7 @@ export function predictBuyTiming(input: {
       'The series is still falling. Waiting a few days can meet a lower price if you are not in a hurry.';
   } else if (med != null && input.current > med * 1.05 && !nearLow) {
     recommendation = 'wait';
-    reasonAr = 'السعر أعلى من وسيط ٩٠ يوم. مفيش سبب للاستعجال.';
+    reasonAr = 'السعر أعلى من وسيط 90 يوم. مفيش سبب للاستعجال.';
     reasonEn =
       'The price is above the 90-day median. There is no reason to rush.';
   }

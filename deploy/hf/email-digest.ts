@@ -20,7 +20,7 @@ const fakes = signals.filter((s) => s.kind === 'fake_discount');
 const top = [...items].filter((p: any) => p.bestOffer).sort((a: any, b: any) => b.bestOffer.dealScore - a.bestOffer.dealScore).slice(0, 5);
 const fmt = (n: number) => Math.round(n).toLocaleString('en-US');
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c] as string);
-const date = new Date(snap.recordedAt).toLocaleDateString('ar-EG', { timeZone: 'Africa/Cairo', day: 'numeric', month: 'long' });
+const date = new Date(snap.recordedAt).toLocaleDateString('ar-EG-u-nu-latn', { timeZone: 'Africa/Cairo', day: 'numeric', month: 'long' });
 const subject = drops.length ? `🔥 ${drops.length} تخفيض حقيقي النهارده — ملخص صفقة ${date}` : `📊 ملخص صفقة ${date}: أحسن ${top.length} صفقات دلوقتي`;
 const link = (id: string) => `${SITE}/#/product/${id}`;
 const row = (title: string, sub: string, href: string, img?: string | null) => `<tr><td style="padding:10px 0;border-top:1px solid #eee">${img ? `<img src="${SITE}${img}" width="64" height="64" style="border-radius:12px;object-fit:contain;background:#f6f1e7;vertical-align:middle;margin-left:10px" alt="">` : ''}<a href="${href}" style="color:#1c1915;font-weight:700;text-decoration:none">${esc(title)}</a><div style="color:#6b6257;font-size:13px">${esc(sub)}</div></td></tr>`;
