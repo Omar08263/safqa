@@ -4,7 +4,6 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { PrefsProvider } from './lib/prefs';
 import { SessionProvider } from './lib/session';
-import { router } from './router';
 import './styles.css';
 
 const queryClient = new QueryClient({
@@ -13,6 +12,12 @@ const queryClient = new QueryClient({
 
 const root = document.getElementById('root');
 if (!root) throw new Error('root missing');
+
+if (import.meta.env.VITE_DEMO_MODE === 'static') {
+  const { installDemoApi } = await import('./lib/demo-api');
+  await installDemoApi(`${import.meta.env.BASE_URL}demo/snapshot.json`);
+}
+const { router } = await import('./router');
 
 createRoot(root).render(
   <StrictMode>

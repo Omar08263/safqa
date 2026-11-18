@@ -1,4 +1,11 @@
-import { createRootRoute, createRoute, createRouter, Link, Outlet } from '@tanstack/react-router';
+import {
+  createHashHistory,
+  createRootRoute,
+  createRoute,
+  createRouter,
+  Link,
+  Outlet,
+} from '@tanstack/react-router';
 import { Shell } from './components/shell';
 import { AdminPage } from './pages/admin';
 import { AlertsPage } from './pages/alerts';
@@ -33,9 +40,20 @@ const searchRoute = createRoute({
     minDiscount: numberOrUndefined(search.minDiscount),
     minPrice: numberOrUndefined(search.minPrice),
     maxPrice: numberOrUndefined(search.maxPrice),
-    inStock: search.inStock === true || search.inStock === '1' || search.inStock === 'true',
-    hideFake: search.hideFake === true || search.hideFake === '1' || search.hideFake === 'true',
-    sort: search.sort === 'price_asc' || search.sort === 'discount' || search.sort === 'score' ? search.sort : 'score',
+    inStock:
+      search.inStock === true ||
+      search.inStock === '1' ||
+      search.inStock === 'true',
+    hideFake:
+      search.hideFake === true ||
+      search.hideFake === '1' ||
+      search.hideFake === 'true',
+    sort:
+      search.sort === 'price_asc' ||
+      search.sort === 'discount' ||
+      search.sort === 'score'
+        ? search.sort
+        : 'score',
   }),
   component: function SearchRoute() {
     const search = searchRoute.useSearch();
@@ -104,6 +122,11 @@ const routeTree = rootRoute.addChildren([
 
 export const router = createRouter({
   routeTree,
+  // The static demo (no server rewrites) uses #/ URLs so deep links survive reloads.
+  history:
+    import.meta.env.VITE_DEMO_MODE === 'static'
+      ? createHashHistory()
+      : undefined,
   defaultNotFoundComponent: () => (
     <p className="text-center">
       <Link to="/">صفقة</Link>
