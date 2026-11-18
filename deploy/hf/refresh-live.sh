@@ -24,7 +24,10 @@ STATUS="${SAFQA_PRICE_STATUS:-/workspace/safqa-refresh-status.json}"
 STATE_DIR="${SAFQA_STATE_DIR:-/home/box/.safqa}"
 PGDATA="${SAFQA_PGDATA:-$STATE_DIR/pgdata}"
 PGBIN_DIR="${SAFQA_PGBIN:-$STATE_DIR/pgsql/bin}"
-API="${SAFQA_API:-http://localhost:8787}"
+# 8788: this checkout's API (port 8787 may be taken by another, older Safqa API on the box).
+API="${SAFQA_API:-http://localhost:8788}"
+API_PORT="${API##*:}"
+export SAFQA_API="$API"
 SPACE="${SPACE:-safqa-eg/safqa}"
 HF_ENV="${HF_ENV:-/home/box/.hf_env}"
 export PATH="$PGBIN_DIR:/home/box/.local/bin:/usr/local/bin:$PATH"
@@ -94,7 +97,7 @@ fi
 api_ok() { curl -fsS -m 5 "$API/api/health" >/dev/null 2>&1; }
 if ! api_ok; then
   echo "starting Safqa API on $API"
-  (cd apps/api && LLM_PROVIDER=mock SEED_ON_BOOT=false nohup npx tsx src/index.ts >"$STATE_DIR/api.log" 2>&1 9>&- &)
+  (cd apps/api && PORT="$API_PORT" LLM_PROVIDER=mock SEED_ON_BOOT=false nohup npx tsx src/index.ts >"$STATE_DIR/api.log" 2>&1 9>&- &)
   for _ in $(seq 1 60); do api_ok && break; sleep 1; done
 fi
 api_ok && echo "api: up ($API)" || { echo "API did not start; see $STATE_DIR/api.log"; exit 1; }

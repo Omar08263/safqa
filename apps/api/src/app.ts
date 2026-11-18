@@ -248,7 +248,7 @@ export function createApp({ database, redis }: AppDeps) {
   app.get('/api/products/search', async (c) => {
     const query = searchQuerySchema.parse(c.req.query());
     const limit =
-      query.limit && query.limit > 0 ? Math.min(query.limit, 48) : 24;
+      query.limit && query.limit > 0 ? Math.min(query.limit, 500) : 24;
     const items = (
       await searchProducts(database, {
         q: query.q,

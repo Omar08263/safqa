@@ -37,7 +37,7 @@ if (statusFile && existsSync(statusFile)) {
   };
 }
 const deals = routes['/api/deals'];
-const all = await get('/api/products/search?limit=48');
+const all = await get('/api/products/search?limit=500');
 const ids = new Set([...all.items, ...deals.items, ...deals.suspicious].map((p) => p.id));
 const products = {};
 for (const id of ids) {
