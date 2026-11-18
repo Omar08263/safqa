@@ -160,6 +160,19 @@ No fake coupons, no invented bank offers, no fake reviews.
 [`/.well-known/assetlinks.json`](https://safqa-eg-safqa.static.hf.space/.well-known/assetlinks.json), so the app opens full-screen without a URL bar. Google sign-in, notifications and offline mode run in Chrome, as on the web. The keystore stays outside the repo. Releases are on [GitHub Releases](https://github.com/Omar08263/safqa/releases/latest).
 </details>
 
+<h2 id="backend">🛰️ Real backend: Cloudflare edge (free tier)</h2>
+
+Accounts, sync, the live community and chat, real AI agents, moderation, **InstaPay payments with AI receipt checks**, discount codes and the Telegram bot run on a free Cloudflare Worker + D1 + KV + Workers AI. The static site falls back to its snapshot if the backend is down.
+
+| | |
+|---|---|
+| API | https://safqa-api.safqaeg.workers.dev |
+| Admin (owner only, Google + allowlist) | https://safqa-admin.pages.dev · [Android APK](https://github.com/Omar08263/safqa/releases/download/admin-v1.0.0/safqa-admin.apk) |
+| Telegram | [@SafqaDealsBot](https://t.me/SafqaDealsBot) — deals, price-drop alerts, daily digest, AI price answers in Egyptian Arabic |
+| On the site | [`#/pay`](https://safqa-eg-safqa.static.hf.space/#/pay) plans + InstaPay · [`#/live`](https://safqa-eg-safqa.static.hf.space/#/live) live community |
+
+Details, models, payment flow, limits and what is still demo: **[docs/backend.md](docs/backend.md)**.
+
 <h2 id="how-it-works">⚙️ How it works</h2>
 
 <p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/pipeline-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/pipeline-light.svg"><img alt="Crawl, JSON-LD price, MarkItDown, agent debate, score and alert" src="docs/assets/pipeline-light.svg" width="100%"></picture></p>
@@ -488,6 +501,8 @@ Stub or best-effort, on purpose: live HTML for stores that block bots (amazon.eg
 <td width="33%" valign="top"><b>📱 ويب وموبايل وإضافة متصفح</b><br/>نفس الحساب ونفس البيانات على كل الأجهزة، عربي أولًا مع وضع داكن.</td>
 </tr>
 </table>
+
+**الجديد في v4:** سيرفر حقيقي ببلاش على Cloudflare: حسابات متزامنة، مجتمع ودردشة مباشرة، وكلاء ذكاء اصطناعي حقيقيين بيردوا بأسعار حقيقية، إشراف تلقائي، **اشتراكات بإنستاباي** بمراجعة الإيصال بالذكاء الاصطناعي وأكواد خصم («عندك كود؟»)، [بوت تيليجرام](https://t.me/SafqaDealsBot) لتنبيهات التخفيضات، ولوحة إدارة لصاحب الموقع. التفاصيل في [docs/backend.md](docs/backend.md).
 
 <details>
 <summary><b>📚 التفاصيل الكاملة بالعربي</b> (المعمارية، التشغيل، إضافة متجر، الخطة، النشر)</summary>
