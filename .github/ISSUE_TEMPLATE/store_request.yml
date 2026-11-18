@@ -1,0 +1,25 @@
+name: "🏬 Store request · طلب متجر"
+description: Ask for a new Egyptian store adapter.
+labels: ["store-adapter"]
+body:
+  - type: input
+    id: store
+    attributes:
+      label: Store name and domain
+      placeholder: "Example Store · example.com.eg"
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: A sample product URL
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: The store's robots.txt allows product pages.
+        - label: The product page includes schema.org Product JSON-LD (if you know).
+        - label: The store has an official affiliate or catalog API (if you know).

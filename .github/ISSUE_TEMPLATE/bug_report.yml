@@ -1,0 +1,52 @@
+name: "🐞 Bug report · بلاغ عن مشكلة"
+description: Something in Safqa does not work as expected.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Please remove any API keys, tokens, or passwords before you submit.
+        شكرًا على البلاغ. امسح أي مفاتيح أو باسوردات قبل الإرسال.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Web (apps/web)
+        - API (apps/api)
+        - Worker / crawler (apps/worker)
+        - Mobile (apps/mobile)
+        - Browser extension (apps/extension)
+        - Store adapter (packages/adapters)
+        - Agent debate / LLM router (packages/agents)
+        - Deploy (Docker / Render)
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open http://localhost:47321/product/...
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: "Node 22, pnpm 10, Docker Compose, Chrome 141, LLM_PROVIDER=mock"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      render: shell

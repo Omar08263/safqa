@@ -1,48 +1,131 @@
-# صفقة · Safqa
+<!-- Safqa README · hand-made SVGs in docs/assets, real screenshots in docs/screenshots -->
+<div align="center">
 
-Price tracking for Egyptian stores. One TypeScript monorepo, three running parts: an API and crawl worker, an Arabic-first website, and an Expo app. They share Zod schemas and one API client, so a watchlist edit on the web shows up on mobile for the same account.
+<a href="#readme"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/hero-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/hero-light.svg"><img alt="صفقة · Safqa — Know a fair price before you pay" src="docs/assets/hero-light.svg" width="100%"></picture></a>
 
-## English
+<br/>
 
-### Architecture
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/typing-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/typing-light.svg"><img alt="Safqa highlights" src="docs/assets/typing-light.svg" width="760"></picture>
 
-```mermaid
-flowchart LR
-  subgraph clients
-    Web["apps/web<br/>Vite + React"]
-    Mobile["apps/mobile<br/>Expo Router"]
-  end
-  Client["packages/api-client"]
-  Web --> Client
-  Mobile --> Client
-  Client --> API["apps/api<br/>Hono + OpenAPI"]
-  API --> DB[("PostgreSQL<br/>price_points")]
-  API --> Redis[(Redis)]
-  API -. SSE .-> Client
-  Worker["apps/worker<br/>BullMQ"] --> Redis
-  Worker --> DB
-  Worker --> Adapters["packages/adapters"]
-  Adapters --> Sites["Store pages or a future official API"]
-  Shared["packages/shared<br/>scores, matcher, i18n"]
-  API --> Shared
-  Worker --> Shared
-  Web --> Shared
-  Mobile --> Shared
-```
+<p>
+<img alt="TypeScript 5.9" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&labelColor=1c1915&logo=typescript&logoColor=white">
+<img alt="React 19" src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&labelColor=1c1915&logo=react&logoColor=61DAFB">
+<img alt="Vite 8" src="https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&labelColor=1c1915&logo=vite&logoColor=white">
+<img alt="Tailwind 4" src="https://img.shields.io/badge/Tailwind-4-38BDF8?style=for-the-badge&labelColor=1c1915&logo=tailwindcss&logoColor=white">
+<img alt="Node.js 22" src="https://img.shields.io/badge/Node.js-22-5FA04E?style=for-the-badge&labelColor=1c1915&logo=nodedotjs&logoColor=white">
+<img alt="Hono 4" src="https://img.shields.io/badge/Hono-4-E36002?style=for-the-badge&labelColor=1c1915&logo=hono&logoColor=white">
+<img alt="PostgreSQL 16" src="https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&labelColor=1c1915&logo=postgresql&logoColor=white">
+<br/>
+<img alt="Redis BullMQ" src="https://img.shields.io/badge/Redis-BullMQ-DC382D?style=for-the-badge&labelColor=1c1915&logo=redis&logoColor=white">
+<img alt="Drizzle ORM" src="https://img.shields.io/badge/Drizzle-ORM-C5F74F?style=for-the-badge&labelColor=1c1915&logo=drizzle&logoColor=C5F74F">
+<img alt="Expo 58" src="https://img.shields.io/badge/Expo-58-000020?style=for-the-badge&labelColor=1c1915&logo=expo&logoColor=white">
+<img alt="Docker ready" src="https://img.shields.io/badge/Docker-ready-2496ED?style=for-the-badge&labelColor=1c1915&logo=docker&logoColor=white">
+<img alt="pnpm 10" src="https://img.shields.io/badge/pnpm-10-F69220?style=for-the-badge&labelColor=1c1915&logo=pnpm&logoColor=white">
+<img alt="Turborepo 2" src="https://img.shields.io/badge/Turborepo-2-EF4444?style=for-the-badge&labelColor=1c1915&logo=turborepo&logoColor=white">
+</p>
+<p>
+<a href="LICENSE"><img alt="license MIT" src="https://img.shields.io/badge/license-MIT-c9840a?style=for-the-badge&labelColor=1c1915"></a>
+<img alt="UI Arabic + English" src="https://img.shields.io/badge/UI-Arabic%20%2B%20English-0e6b52?style=for-the-badge&labelColor=1c1915">
+<a href="https://render.com/deploy?repo=https://github.com/Omar08263/safqa"><img alt="deploy Render" src="https://img.shields.io/badge/deploy-Render-46E3B7?style=for-the-badge&labelColor=1c1915&logo=render&logoColor=46E3B7"></a>
+<a href="CONTRIBUTING.md"><img alt="PRs welcome" src="https://img.shields.io/badge/PRs-welcome-c9840a?style=for-the-badge&labelColor=1c1915"></a>
+</p>
 
-| Piece | Role |
-| --- | --- |
-| `packages/shared` | Deal score, fake-discount detector, Arabic/English matcher, Zod contracts, copy |
-| `packages/adapters` | One adapter interface, JSON-LD parser, 10 store adapters, robots.txt, per-host gaps |
-| `packages/db` | Drizzle schema, SQL migrate, seed, queries. `price_points` is hypertable-ready |
-| `packages/notify` | Web Push, Expo push, Telegram. Each channel reports `not_configured` until its env is set |
-| `packages/api-client` | Typed client plus an SSE subscriber used by web and mobile |
-| `apps/api` | REST, OpenAPI at `/docs`, auth, watchlist, alerts, `GET /api/events` |
-| `apps/worker` | Minute tick. Hot products hourly, warm every 6 hours, cold every 48 hours |
-| `apps/web` | Arabic RTL by default, English toggle, dark mode, PWA shell |
-| `apps/mobile` | Same deals, search, product chart, watchlist, Expo push registration |
+<p><b>Safqa (صفقة, “a deal”)</b> tracks prices across Egyptian stores, spots inflated “was” prices,<br/>and has a panel of AI agents argue about every deal before you spend a pound.</p>
 
-### Agents
+<p>
+  <a href="https://safqa-eg-safqa.static.hf.space"><img alt="Open the live demo" src="https://img.shields.io/badge/%E2%96%B6%20%20Open%20the%20live%20demo-%D8%AC%D8%B1%D9%91%D8%A8%20%D8%B5%D9%81%D9%82%D8%A9-c9840a?style=for-the-badge&labelColor=1c1915"></a>
+</p>
+
+<p><a href="#showcase"><b>Showcase</b></a> · <a href="#features"><b>Features</b></a> · <a href="#how-it-works"><b>How it works</b></a> · <a href="#agent-debate"><b>Agents</b></a> · <a href="#architecture"><b>Architecture</b></a> · <a href="#quick-start"><b>Quick start</b></a> · <a href="#deploy"><b>Deploy</b></a> · <a href="#roadmap"><b>Roadmap</b></a> · <a href="#العربية"><b>العربية</b></a></p>
+
+</div>
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/divider-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/divider-light.svg"><img alt="" src="docs/assets/divider-light.svg" width="100%"></picture></p>
+
+<h2 id="showcase">🎬 Showcase</h2>
+
+<p align="center">
+  <img src="docs/screenshots/walkthrough.gif" alt="Safqa walkthrough: deals, suspicious discounts, a product with price history, the agent debate, dark mode, the Arabic shopping assistant and the English UI" width="100%">
+</p>
+<p align="center"><sub>Real recording of the running app: deals → inflated discounts → price history → agent debate → dark mode → assistant → English.</sub></p>
+
+<table>
+<tr><td width="50%" valign="top"><img src="docs/screenshots/home-light.webp" alt="Home, Arabic, light" width="100%"><p align="center"><sub>Deals ranked by score · Arabic RTL · light</sub></p></td><td width="50%" valign="top"><img src="docs/screenshots/home-dark.webp" alt="Home, Arabic, dark" width="100%"><p align="center"><sub>Same page in dark mode</sub></p></td></tr>
+<tr><td width="50%" valign="top"><img src="docs/screenshots/product-light.webp" alt="Product page with multi-store price history" width="100%"><p align="center"><sub>Price history per store, 30-day median and 90-day low</sub></p></td><td width="50%" valign="top"><img src="docs/screenshots/debate-dark-crop.webp" alt="Agent debate transcript" width="100%"><p align="center"><sub>Agent debate: each role’s evidence and the judge’s verdict</sub></p></td></tr>
+<tr><td width="50%" valign="top"><img src="docs/screenshots/suspicious-light.webp" alt="Inflated discounts section" width="100%"><p align="center"><sub>Discounts that look inflated, flagged against price history</sub></p></td><td width="50%" valign="top"><img src="docs/screenshots/assistant-dark-crop.webp" alt="Shopping assistant" width="100%"><p align="center"><sub>Shopping assistant: ask in Egyptian Arabic, get product cards back</sub></p></td></tr>
+</table>
+
+<h3 align="center">📱 On a phone</h3>
+
+<table>
+<tr>
+<td width="25%"><img src="docs/screenshots/mobile-home-light.webp" alt="Mobile home" width="100%"></td>
+<td width="25%"><img src="docs/screenshots/mobile-product-dark.webp" alt="Mobile product" width="100%"></td>
+<td width="25%"><img src="docs/screenshots/mobile-debate-light.webp" alt="Mobile debate" width="100%"></td>
+<td width="25%"><img src="docs/screenshots/mobile-search-dark.webp" alt="Mobile search filters" width="100%"></td>
+</tr>
+</table>
+
+<details>
+<summary><b>🖼️ More screens</b> (English UI, search, admin, watchlist, alerts, sign-in)</summary>
+<br/>
+<table>
+<tr><td width="50%" valign="top"><img src="docs/screenshots/home-en.webp" alt="English UI" width="100%"><p align="center"><sub>English toggle, left-to-right</sub></p></td><td width="50%" valign="top"><img src="docs/screenshots/product-en.webp" alt="Product page in English" width="100%"><p align="center"><sub>Product page in English</sub></p></td></tr>
+<tr><td width="50%" valign="top"><img src="docs/screenshots/search-light.webp" alt="Search with filters" width="100%"><p align="center"><sub>Search: store, category, discount, price range, hide fake discounts</sub></p></td><td width="50%" valign="top"><img src="docs/screenshots/admin-dark.webp" alt="Admin page" width="100%"><p align="center"><sub>/admin: store adapters, crawl heat, debates, LLM providers and free-tier notes</sub></p></td></tr>
+<tr><td width="50%" valign="top"><img src="docs/screenshots/watchlist-light.webp" alt="Watchlist" width="100%"><p align="center"><sub>Watchlist with target prices</sub></p></td><td width="50%" valign="top"><img src="docs/screenshots/alerts-dark.webp" alt="Alerts" width="100%"><p align="center"><sub>Alert channels and rules</sub></p></td></tr>
+<tr><td width="50%" valign="top"><img src="docs/screenshots/login-light.webp" alt="Sign in" width="100%"><p align="center"><sub>Email sign-in with the demo account</sub></p></td><td width="50%" valign="top"><img src="docs/screenshots/suspicious-dark.webp" alt="Inflated discounts, dark" width="100%"><p align="center"><sub>Inflated discounts in dark mode</sub></p></td></tr>
+</table>
+</details>
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/divider-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/divider-light.svg"><img alt="" src="docs/assets/divider-light.svg" width="100%"></picture></p>
+
+<h2 id="features">✨ Features</h2>
+
+<table>
+<tr><td width="33%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/icons/chart-dark.svg"><img src="docs/assets/icons/chart-light.svg" width="44" height="44" alt=""></picture><h3>Price history that tells the truth</h3><p>Every offer becomes a time series. The score (0–100) rewards a real drop versus the 30-day median and a touch of the 90-day low.</p></td><td width="33%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/icons/shield-dark.svg"><img src="docs/assets/icons/shield-light.svg" width="44" height="44" alt=""></picture><h3>Fake-discount radar</h3><p>A struck-through “was” price far above the selling history costs 30 points and gets an <b>inflated</b> badge. The judge can never call it <code>buy_now</code>.</p></td><td width="33%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/icons/agents-dark.svg"><img src="docs/assets/icons/agents-light.svg" width="44" height="44" alt=""></picture><h3>Five-role AI debate</h3><p>Historian, market analyst, trust analyst and skeptic call typed tools, then a judge returns a score, <code>buy_now</code> / <code>wait</code> / <code>skip</code>, and an Arabic explanation.</p></td></tr>
+<tr><td width="33%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/icons/doc-dark.svg"><img src="docs/assets/icons/doc-light.svg" width="44" height="44" alt=""></picture><h3>MarkItDown page cleaning</h3><p>A full Noon page goes from 530,311 to 12,490 characters (97.6% smaller) before any model reads it. JSON-LD stays the only price source.</p></td><td width="33%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/icons/zap-dark.svg"><img src="docs/assets/icons/zap-light.svg" width="44" height="44" alt=""></picture><h3>Free-tier LLM router</h3><p>A load balancer across Groq, Gemini, NVIDIA NIM, OpenRouter, Ollama and a mock, with 30 s timeouts, hedged requests and 60 s circuit breakers.</p></td><td width="33%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/icons/bell-dark.svg"><img src="docs/assets/icons/bell-light.svg" width="44" height="44" alt=""></picture><h3>Alerts everywhere</h3><p>Watchlist targets, alert rules, Server-Sent Events, Web Push, Expo push and Telegram. Each channel says <code>not_configured</code> until you set it up.</p></td></tr>
+<tr><td width="33%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/icons/lang-dark.svg"><img src="docs/assets/icons/lang-light.svg" width="44" height="44" alt=""></picture><h3>Arabic first, English too</h3><p>RTL by default, an English toggle, Egyptian-Arabic copy, a bilingual product matcher, dark mode and a PWA shell.</p></td><td width="33%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/icons/phone-dark.svg"><img src="docs/assets/icons/phone-light.svg" width="44" height="44" alt=""></picture><h3>Web, mobile, extension</h3><p>A Vite + React site, an Expo Router app on the same typed API client, and an unpacked browser extension that shows history on store pages.</p></td><td width="33%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/icons/globe-dark.svg"><img src="docs/assets/icons/globe-light.svg" width="44" height="44" alt=""></picture><h3>A polite crawler</h3><p><code>SafqaBot/0.1</code> reads <code>robots.txt</code>, waits 5 s per host (8 s on amazon.eg) and stops on a captcha or 403/429. No impersonation, no captcha solver.</p></td></tr>
+</table>
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/divider-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/divider-light.svg"><img alt="" src="docs/assets/divider-light.svg" width="100%"></picture></p>
+
+<h2 id="how-it-works">⚙️ How it works</h2>
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/pipeline-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/pipeline-light.svg"><img alt="Crawl, JSON-LD price, MarkItDown, agent debate, score and alert" src="docs/assets/pipeline-light.svg" width="100%"></picture></p>
+
+1. **Crawl.** The worker ticks every minute. Hot products are fetched hourly, warm ones every 6 hours, cold ones every 48 hours, with BullMQ priority in that order. Unchanged HTML (sha256) writes no new price point.
+2. **Parse.** `parseJsonLdOffer` reads schema.org `Product` data. It is the only place a price or title comes from.
+3. **Clean.** `htmlToLlmMarkdown` strips the chrome, starts at the H1 and calls the MarkItDown CLI. The text is stored on the offer as page context for the agents. It can never overwrite the JSON-LD price.
+4. **Debate.** When a crawl changes the page hash, the `safqa-debate` queue runs the five-role debate. A fresh transcript is reused for six hours while the price fingerprint is unchanged.
+5. **Score and alert.** The deal score, the fake-discount flag and the verdict reach the web, mobile and extension clients over the typed API and SSE.
+
+<details>
+<summary><b>📉 MarkItDown, measured on a real Noon page</b></summary>
+<br/>
+
+| | Characters | ≈ Tokens |
+| --- | ---: | ---: |
+| Raw Noon HTML | 530,311 | ~132,578 |
+| After `htmlToLlmMarkdown` | 12,490 | ~3,123 |
+| **Saved** | **97.6%** | |
+
+Numbers come from `packages/adapters/src/markitdown.test.ts` (“MarkItDown on the full Noon capture”), which also checks that the title and the price survive the cleaning.
+
+</details>
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/divider-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/divider-light.svg"><img alt="" src="docs/assets/divider-light.svg" width="100%"></picture></p>
+
+<h2 id="agent-debate">🧠 Agent debate</h2>
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/agents-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/agents-light.svg"><img alt="Historian, market, trust and skeptic feed the judge" src="docs/assets/agents-light.svg" width="100%"></picture></p>
+
+The historian, market analyst, trust analyst and skeptic each call typed tools (`get_price_history`, `get_seasonality`, `get_ratings`) before they speak. The skeptic must call the history tool itself, so it can disagree with the historian. The judge calls no tools. It reads the transcript and returns JSON: a score, `buy_now` / `wait` / `skip`, and explanations in Arabic and English. A fake discount can never be `buy_now`.
+
+> **Example.** Inflated washer list price: the historian cites median ≈ current, the skeptic says `STANCE=challenge`, and the judge returns `skip`.
+
+<details>
+<summary><b>🔀 The LLM router, providers and free tiers</b> (full notes)</summary>
+<br/>
 
 Five roles share one transcript and a tool loop. The historian, market analyst, trust analyst, and skeptic each call typed tools (`get_price_history`, `get_seasonality`, `get_ratings`) before they speak. The judge does not call tools. It reads what the others said and returns a score, `buy_now` / `wait` / `skip`, and an Arabic explanation. The skeptic is required to call the history tool itself, so it can disagree with the historian.
 
@@ -102,7 +185,95 @@ Also in this pass: a buy-now versus wait forecast, bank-code and coupon stacking
 
 The crawler sends `SafqaBot/0.1`, reads `robots.txt`, and waits between requests to a host (5s, 8s for amazon.eg). A captcha or HTTP 403/429 stops that URL. There is no browser impersonation and no captcha solver. Amazon.eg is a best-effort JSON-LD adapter with a Creators API seam in `packages/adapters/src/providers/amazon-creators.ts`.
 
-### Run it locally
+</details>
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/divider-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/divider-light.svg"><img alt="" src="docs/assets/divider-light.svg" width="100%"></picture></p>
+
+<h2 id="architecture">🏗️ Architecture</h2>
+
+One TypeScript monorepo, three running parts: an API and crawl worker, an Arabic-first website, and an Expo app. They share Zod schemas and one API client, so a watchlist edit on the web shows up on mobile for the same account.
+
+```mermaid
+flowchart LR
+  subgraph clients
+    Web["apps/web<br/>Vite + React"]
+    Mobile["apps/mobile<br/>Expo Router"]
+  end
+  Client["packages/api-client"]
+  Web --> Client
+  Mobile --> Client
+  Client --> API["apps/api<br/>Hono + OpenAPI"]
+  API --> DB[("PostgreSQL<br/>price_points")]
+  API --> Redis[(Redis)]
+  API -. SSE .-> Client
+  Worker["apps/worker<br/>BullMQ"] --> Redis
+  Worker --> DB
+  Worker --> Adapters["packages/adapters"]
+  Adapters --> Sites["Store pages or a future official API"]
+  Shared["packages/shared<br/>scores, matcher, i18n"]
+  API --> Shared
+  Worker --> Shared
+  Web --> Shared
+  Mobile --> Shared
+```
+
+| Piece | Role |
+| --- | --- |
+| `packages/shared` | Deal score, fake-discount detector, Arabic/English matcher, Zod contracts, copy |
+| `packages/adapters` | One adapter interface, JSON-LD parser, 10 store adapters, robots.txt, per-host gaps |
+| `packages/db` | Drizzle schema, SQL migrate, seed, queries. `price_points` is hypertable-ready |
+| `packages/notify` | Web Push, Expo push, Telegram. Each channel reports `not_configured` until its env is set |
+| `packages/api-client` | Typed client plus an SSE subscriber used by web and mobile |
+| `apps/api` | REST, OpenAPI at `/docs`, auth, watchlist, alerts, `GET /api/events` |
+| `apps/worker` | Minute tick. Hot products hourly, warm every 6 hours, cold every 48 hours |
+| `apps/web` | Arabic RTL by default, English toggle, dark mode, PWA shell |
+| `apps/mobile` | Same deals, search, product chart, watchlist, Expo push registration |
+
+<details>
+<summary><b>🗂️ Repository layout</b></summary>
+
+```text
+safqa/
+├── apps/
+│   ├── api/         Hono + OpenAPI, auth, watchlist, alerts, SSE, debate & assistant routes
+│   ├── worker/      BullMQ crawl scheduler (hot / warm / cold) and the safqa-debate queue
+│   ├── web/         Vite + React 19 + Tailwind 4, TanStack Router & Query, Recharts
+│   ├── mobile/      Expo Router app on the shared API client
+│   └── extension/   Unpacked MV3 browser extension (price history on store pages)
+├── packages/
+│   ├── shared/      deal score, fake-discount detector, matcher, i18n, Zod contracts
+│   ├── adapters/    store adapters, JSON-LD parser, MarkItDown cleaner, robots.txt
+│   ├── agents/      debate roles, typed tools, LLM router with circuits and quotas
+│   ├── db/          Drizzle schema, migrations, seed, queries
+│   ├── notify/      Web Push, Expo push, Telegram
+│   ├── api-client/  typed client + SSE subscriber
+│   └── obs/         JSON logs and optional OTLP spans
+├── docs/            README art (hand-written SVGs) and screenshots
+├── Dockerfile · docker-compose.yml · render.yaml
+└── turbo.json · pnpm-workspace.yaml · biome.json · vitest.config.ts
+```
+
+</details>
+
+<h3>🧰 Tech stack</h3>
+
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=ts,react,vite,tailwind,nodejs,postgres,redis,docker,pnpm&theme=dark" alt="TypeScript, React, Vite, Tailwind, Node.js, PostgreSQL, Redis, Docker, pnpm">
+</p>
+
+| Layer | Tools |
+| --- | --- |
+| Web | React 19, Vite 8, Tailwind CSS 4, TanStack Router + Query, Radix, Recharts, PWA shell |
+| Mobile | Expo 58, Expo Router, React Native 0.88, Expo push |
+| API | Node 22, Hono 4 with Zod OpenAPI (`/docs`), jose JWT + refresh tokens, Server-Sent Events |
+| Data | PostgreSQL 16 (TimescaleDB-ready `price_points`), Drizzle ORM, Redis cache |
+| Jobs | BullMQ worker with hot / warm / cold priorities |
+| AI | Multi-provider router (Groq, Gemini, NVIDIA NIM, OpenRouter, Ollama, mock), MarkItDown 0.1.7 |
+| Tooling | pnpm 10 workspaces, Turborepo, Biome, Vitest, Docker, Render Blueprint |
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/divider-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/divider-light.svg"><img alt="" src="docs/assets/divider-light.svg" width="100%"></picture></p>
+
+<h2 id="quick-start">🚀 Quick start</h2>
 
 Requirements: Node 22, pnpm 10, Docker.
 
@@ -139,7 +310,9 @@ pnpm dev:web
 
 If TimescaleDB is not installed, migration keeps `price_points` as a normal table. The primary key is `(offer_id, captured_at)`, which is what `create_hypertable` needs. Turn the extension on later and re-run migrate.
 
-### Checks
+<details>
+<summary><b>✅ Checks</b></summary>
+<br/>
 
 ```bash
 pnpm lint
@@ -148,7 +321,11 @@ pnpm test
 pnpm sync:check   # web client writes a watch, mobile client reads it, SSE fires
 ```
 
-### Add a store adapter
+</details>
+
+<details>
+<summary><b>🧩 Add a store adapter</b></summary>
+<br/>
 
 1. Add a draft in `packages/adapters/src/registry.ts` with `createHtmlAdapter`.
 2. Set `status` to `stub` until you have a fixture that proves the parse, then `best-effort`, then `structured` only when the source is an official feed.
@@ -161,7 +338,52 @@ pnpm sync:check   # web client writes a watch, mobile client reads it, SSE fires
 
 After a fetch, JSON-LD (`parseJsonLdOffer`) is the only price/title extractor. MarkItDown is a sidecar CLI (`MARKITDOWN_BIN`, default `markitdown`) that turns the page into compact markdown for the debate: the worker always requests it, stores it on the offer, and `runDebate` receives `formatProductLlmContexts()` as `pageContext`. A price that appears only in the markdown never overrides JSON-LD. The production image installs MarkItDown 0.1.7 in `/opt/markitdown`. If the CLI is missing, the crawl continues without page text.
 
-### Roadmap, 10 stores to 100+
+</details>
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/divider-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/divider-light.svg"><img alt="" src="docs/assets/divider-light.svg" width="100%"></picture></p>
+
+<h2 id="deploy">☁️ Deploy</h2>
+
+<p align="center">
+  <a href="https://render.com/deploy?repo=https://github.com/Omar08263/safqa"><img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" height="44"></a>
+</p>
+
+- **Live demo (free Hugging Face static Space):** <https://safqa-eg-safqa.static.hf.space>. It is the normal web app built with `VITE_DEMO_MODE=static`, answering `/api/*` in the browser from a snapshot recorded from a seeded API. Sign-in, watchlist and alerts are emulated per browser; admin and live events are off. See [`deploy/hf`](deploy/hf/README.md), which also has a single-container image (Postgres, Redis and the API on port 7860).
+- **Free Render demo:** `render.yaml` at the repo root provisions a free web API (Docker), a free static site, free Postgres, and free Key Value. After pushing to GitHub, open `https://dashboard.render.com/blueprint/new?repo=https://github.com/Omar08263/safqa`, connect GitHub if asked, and click Apply. The public site URL is the `safqa-web` service; demo login is `demo@safqa.app` / `demo1234`. Free Postgres expires after 30 days, free web services spin down after 15 minutes idle, and the background worker is not included (workers are not free). `LLM_PROVIDER=mock` so no model keys are required.
+- **Web (other hosts):** Vercel (or any static host). Build command `pnpm --filter @safqa/web build`, output `apps/web/dist`. Set `VITE_API_URL` to the public API origin. The service worker registers in production builds.
+- **API and worker:** a small VPS (Hetzner or similar). Copy the repo, set a real `AUTH_SECRET`, and run `docker compose up -d`. Put Caddy or nginx in front of port 8787 for TLS. Do not publish Postgres or Redis.
+- **Backups:** `pg_dump` the volume nightly. `price_points` grows with every observation; a hypertable plus a retention policy is the next step once Timescale is on.
+- **Push:** generate VAPID keys for Web Push. Telegram and Expo stay off until `TELEGRAM_BOT_TOKEN` / a device token exist. Google login needs the three `GOOGLE_*` variables. Apple is a route that returns `oauth_not_configured` until the p8 client secret is implemented.
+
+<details>
+<summary><b>🔎 What is real, and what is still a stub</b></summary>
+<br/>
+
+Real in this foundation: schema and seed, deal score, fake-discount flags, bilingual matcher, JSON-LD parser, robots and rate limits, email auth with refresh tokens, Google OAuth when configured, watchlist, alert rules, SSE, Expo and Telegram and Web Push senders, website, and Expo screens.
+
+Stub or best-effort, on purpose: live HTML for stores that block bots (amazon.eg, and several others), six adapters marked `stub` because they have no verified selectors, Amazon request signing, and Sign in with Apple's client-secret JWT. The worker will not evade a block. Sample prices are seeded so the UI does not depend on a live crawl.
+
+</details>
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/divider-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/divider-light.svg"><img alt="" src="docs/assets/divider-light.svg" width="100%"></picture></p>
+
+<h2 id="roadmap">🗺️ Roadmap</h2>
+
+- [x] Ten store adapters with JSON-LD by default; stubs clearly labeled
+- [x] Deal score, fake-discount flags, Arabic/English matcher
+- [x] Five-role agent debate with a free-tier LLM router
+- [x] MarkItDown page context for the agents
+- [x] Web, Expo app and browser extension on one typed API
+- [ ] Official feeds: Amazon Creators API, then Noon and Jumia affiliate catalogs
+- [ ] A checked-in HTML fixture and test for every promoted adapter
+- [ ] URL discovery from allowed `robots.txt` sitemaps
+- [ ] Adapter manifests to grow from 10 stores to 100+
+- [ ] Nightly EAN and fuzzy-title matching jobs
+- [ ] Per-domain error rates, a kill switch per adapter, Postgres backups
+
+<details>
+<summary><b>The full plan: 10 stores to 100+</b></summary>
+<br/>
 
 1. **Now.** Ten adapters. JSON-LD is the default. Stubs are labeled. Seed data runs the product without live crawling.
 2. **Official feeds.** Amazon Creators API, then Noon and Jumia affiliate catalogs. HTML stays a fallback only when the partner API is not configured.
@@ -171,25 +393,34 @@ After a fetch, JSON-LD (`parseJsonLdOffer`) is the only price/title extractor. M
 6. **Matching jobs.** Nightly EAN and fuzzy title passes (Arabic and English) merge new listings onto canonical products. Dubizzle stays `used` and never wins “best new price”.
 7. **Operations.** Per-domain error rates, a kill switch per adapter, and Postgres backups. Do not raise rate limits to get past a block.
 
-### Deploy
+</details>
 
-- **Free Render demo:** `render.yaml` at the repo root provisions a free web API (Docker), a free static site, free Postgres, and free Key Value. After pushing to GitHub, open `https://dashboard.render.com/blueprint/new?repo=https://github.com/Omar08263/safqa`, connect GitHub if asked, and click Apply. The public site URL is the `safqa-web` service; demo login is `demo@safqa.app` / `demo1234`. Free Postgres expires after 30 days, free web services spin down after 15 minutes idle, and the background worker is not included (workers are not free). `LLM_PROVIDER=mock` so no model keys are required.
-- **Web (other hosts):** Vercel (or any static host). Build command `pnpm --filter @safqa/web build`, output `apps/web/dist`. Set `VITE_API_URL` to the public API origin. The service worker registers in production builds.
-- **API and worker:** a small VPS (Hetzner or similar). Copy the repo, set a real `AUTH_SECRET`, and run `docker compose up -d`. Put Caddy or nginx in front of port 8787 for TLS. Do not publish Postgres or Redis.
-- **Backups:** `pg_dump` the volume nightly. `price_points` grows with every observation; a hypertable plus a retention policy is the next step once Timescale is on.
-- **Push:** generate VAPID keys for Web Push. Telegram and Expo stay off until `TELEGRAM_BOT_TOKEN` / a device token exist. Google login needs the three `GOOGLE_*` variables. Apple is a route that returns `oauth_not_configured` until the p8 client secret is implemented.
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/divider-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/divider-light.svg"><img alt="" src="docs/assets/divider-light.svg" width="100%"></picture></p>
 
-### What is real, and what is still a stub
+<h2 id="العربية" align="right">🇪🇬 العربية</h2>
 
-Real in this foundation: schema and seed, deal score, fake-discount flags, bilingual matcher, JSON-LD parser, robots and rate limits, email auth with refresh tokens, Google OAuth when configured, watchlist, alert rules, SSE, Expo and Telegram and Web Push senders, website, and Expo screens.
+<div dir="rtl" align="right">
 
-Stub or best-effort, on purpose: live HTML for stores that block bots (amazon.eg, and several others), six adapters marked `stub` because they have no verified selectors, Amazon request signing, and Sign in with Apple's client-secret JWT. The worker will not evade a block. Sample prices are seeded so the UI does not depend on a live crawl.
+**صفقة** بتتابع أسعار المتاجر المصرية (نون، أمازون مصر، جوميا، كارفور وغيرهم)، وبترسم تاريخ السعر لكل عرض، وبتكشف الخصم المضخّم لما سعر «كان» يبقى بعيد عن تاريخ البيع، وبتخلّي خمس وكلاء ذكاء اصطناعي يتناقشوا على كل صفقة قبل ما تدفع.
 
----
+<table>
+<tr>
+<td width="33%" valign="top"><b>📈 تاريخ السعر</b><br/>انخفاض حقيقي عن وسيط آخر ٣٠ يوم يرفع الدرجة، والاقتراب من أقل سعر في ٩٠ يوم بيضيف نقاط.</td>
+<td width="33%" valign="top"><b>🛡️ كاشف الخصم المضخّم</b><br/>سعر «كان» بعيد عن تاريخ البيع يخصم ٣٠ نقطة ويتعلّم «خصم مضخّم».</td>
+<td width="33%" valign="top"><b>🧠 نقاش الوكلاء</b><br/>المؤرخ ومحلل السوق ومحلل الثقة والمشكّك بيجيبوا الأدلة، والقاضي بيقول: اشتري دلوقتي، استنى، أو سيبها.</td>
+</tr>
+<tr>
+<td width="33%" valign="top"><b>📄 تنضيف الصفحة بـ MarkItDown</b><br/>صفحة نون كاملة بتصغر ٩٧٫٦٪ قبل ما أي موديل يقراها، والسعر المعتمد يفضل من JSON-LD.</td>
+<td width="33%" valign="top"><b>🔔 تنبيهات</b><br/>قائمة مراقبة بسعر مستهدف، وإشعارات على المتصفح والموبايل وتليجرام.</td>
+<td width="33%" valign="top"><b>📱 ويب وموبايل وإضافة متصفح</b><br/>نفس الحساب ونفس البيانات على كل الأجهزة، عربي أولًا مع وضع داكن.</td>
+</tr>
+</table>
 
-## العربية
+<details>
+<summary><b>📚 التفاصيل الكاملة بالعربي</b> (المعمارية، التشغيل، إضافة متجر، الخطة، النشر)</summary>
+<br/>
 
-### المعمارية
+#### المعمارية
 
 المخطط فوق يوضّح نفس المسار: الويب والموبايل بيستخدموا عميل واحد (`packages/api-client`)، والـ API بيحفظ في Postgres وبيبعت التغييرات على Redis كـ Server-Sent Events. العامل (`apps/worker`) بيجدول الزيارات وبيحترم `robots.txt`.
 
@@ -199,7 +430,7 @@ Stub or best-effort, on purpose: live HTML for stores that block bots (amazon.eg
 
 `XAI_API_KEY` اختياري للتشغيل المحلي. `ADMIN_TOKEN` مطلوب لصفحة الإدارة. تليجرام و Web Push و Expo و Google و أمازون كرييتورز كلهم اختياريين. الزحف لسه بيحترم robots.txt ومفيش حل للكابتشا.
 
-### التشغيل المحلي
+#### التشغيل المحلي
 
 ```bash
 cp .env.example .env
@@ -215,18 +446,40 @@ pnpm dev:mobile
 
 من غير Docker: ظبّط `DATABASE_URL` و `REDIS_URL` ثم `pnpm db:migrate && pnpm db:seed` وبعدين `pnpm dev:api` و `pnpm dev:worker` و `pnpm dev:web`.
 
-### إضافة متجر
+#### إضافة متجر
 
 في `packages/adapters/src/registry.ts` ضيف محوّل بـ `createHtmlAdapter`. خلّي الحالة `stub` لحد ما يبقى عندك ملف HTML مثبت في الاختبارات. لو الموقع بينشر schema.org Product، المحلل العام بيكفي. لو الموقع بيرفض البوت، متكتبش التفاف. اربط واجهة الشراكة الرسمية في `CatalogAwait` زي أمازون.
 
 بعد الجلب، التحليل الأساسي للسعر والعنوان هو JSON-LD (`parseJsonLdOffer`). العامل بيطلب MarkItDown بعد كل جلب، بيخزّن النص على العرض، والنقاش بياخد السياق ده عن طريق `pageContext`. `htmlToLlmMarkdown` بتنضّف الهيدر والصور وبتبدأ من الـ H1 وبعدين بتستدعي أداة MarkItDown كأمر سطر (`MARKITDOWN_BIN`، الافتراضي `markitdown`) من غير ما تدمج بايثون جوه التطبيق. صورة Docker بتسطّب MarkItDown 0.1.7 في `/opt/markitdown`. السعر المعتمد يفضل من JSON-LD، والنص ما بيقدرش يغيّره.
 
-### من ١٠ متاجر لأكتر من ١٠٠
+#### من ١٠ متاجر لأكتر من ١٠٠
 
 الأساس هو محوّل بيانات (دومين، مهلة، عملة، حالة) مش كود خاص لكل موقع. الترقية بتتم لما يبقى في فيكستر واختبار، أو عقد رسمي. خرائط الموقع المسموح بيها في robots.txt هي مصدر الروابط، مش صفحات البحث. إعلانات دوبيزل بتفضل «مستعمل» وما بتكسبش أحسن سعر جديد.
 
-### النشر
+#### النشر
 
 للتجربة المجانية على Render: بعد رفع المستودع، افتح `https://dashboard.render.com/blueprint/new?repo=https://github.com/Omar08263/safqa` واضغط Apply. رابط الموقع هو خدمة `safqa-web`. الدخول التجريبي `demo@safqa.app` / `demo1234`. قاعدة Postgres المجانية تنتهي بعد ٣٠ يوم، والخدمة بتنام بعد ١٥ دقيقة من غير زيارات، والعامل الخلفي مش مشمول لأن الخطة المجانية ما فيهاش workers.
 
 بدائل أخرى: الويب على Vercel مع `VITE_API_URL`. الـ API والعامل على VPS صغير بـ Docker. سيب Postgres و Redis جوه الشبكة الداخلية، وغير `AUTH_SECRET`، واعمل نسخة احتياطية بـ `pg_dump`.
+
+</details>
+
+</div>
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/divider-dark.svg"><source media="(prefers-color-scheme: light)" srcset="docs/assets/divider-light.svg"><img alt="" src="docs/assets/divider-light.svg" width="100%"></picture></p>
+
+<div align="center">
+
+<h3>🤝 Contributing · 🔐 Security · 📄 License</h3>
+
+<p>Read <a href="CONTRIBUTING.md">CONTRIBUTING.md</a> before opening a pull request, report vulnerabilities privately as described in <a href="SECURITY.md">SECURITY.md</a>,<br/>and use Safqa under the <a href="LICENSE">MIT License</a>.</p>
+
+<p><sub>Prices in the screenshots come from the seeded demo data, not a live crawl. Store names belong to their owners; Safqa is not affiliated with any store.</sub></p>
+
+<p><a href="#readme">⬆ Back to top</a></p>
+
+<img src="docs/assets/divider-light.svg" width="60%" alt="">
+
+<p><b>صفقة</b> · اعرف السعر العادل قبل ما تدفع</p>
+
+</div>
