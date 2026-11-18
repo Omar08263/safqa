@@ -71,7 +71,7 @@ export function SearchTop({ search, count }: { search: SearchFilters; count?: nu
       <div className="flex flex-wrap items-center gap-2 text-xs">
         {count != null ? <span className="font-semibold">{tr(`${count} نتيجة`, `${count} results`)}</span> : null}
         <span className="text-muted">·</span>
-        {[[tr('أقل من ٥٠٠٠', 'Under 5,000'), { maxPrice: 5000, minPrice: undefined }], [tr('٥٠٠٠–٢٠٠٠٠', '5,000–20,000'), { minPrice: 5000, maxPrice: 20000 }], [tr('فوق ٢٠٠٠٠', 'Over 20,000'), { minPrice: 20000, maxPrice: undefined }]].map(([label, patch]) => (
+        {[[tr('أقل من 5000', 'Under 5,000'), { maxPrice: 5000, minPrice: undefined }], [tr('5000–20000', '5,000–20,000'), { minPrice: 5000, maxPrice: 20000 }], [tr('فوق 20000', 'Over 20,000'), { minPrice: 20000, maxPrice: undefined }]].map(([label, patch]) => (
           <button key={String(label)} type="button" onClick={() => void navigate({ to: '/search', search: { ...search, ...(patch as SearchFilters) } })} className="rounded-full border border-border bg-card px-3 py-1 hover:border-primary">{String(label)}</button>
         ))}
         <button type="button" onClick={save} className="flex items-center gap-1 rounded-full border border-primary/50 px-3 py-1 font-semibold text-primary"><BookmarkPlus className="h-3.5 w-3.5" />{tr('احفظ البحث', 'Save search')}</button>

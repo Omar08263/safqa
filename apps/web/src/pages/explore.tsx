@@ -49,7 +49,7 @@ export function CalendarPage() {
             <Card className="relative overflow-hidden">
               <div className="flex flex-wrap items-center justify-between gap-5">
                 <div>
-                  <p className="text-sm text-muted">{new Date(ev.date).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                  <p className="text-sm text-muted">{new Date(ev.date).toLocaleDateString(locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>
                   <h2 className="text-2xl font-bold">{locale === 'ar' ? ev.nameAr : ev.nameEn}</h2>
                   <Button size="sm" variant="outline" className="mt-3" onClick={() => downloadFile(`safqa-${ev.id}.ics`, ics(locale === 'ar' ? ev.nameAr : ev.nameEn, ev.date), 'text/calendar')}><CalendarPlus className="h-4 w-4" />{tr('ضيف لتقويمي', 'Add to my calendar')}</Button>
                 </div>

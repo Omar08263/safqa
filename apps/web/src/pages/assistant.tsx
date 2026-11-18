@@ -91,7 +91,7 @@ export function AssistantPage() {
               <p className="mt-2 text-xs text-muted">{turn.provider}</p>
             ) : null}
             {turn.products && turn.products.length > 0 ? (
-              <div className="mt-3 grid gap-3">
+              <div className="deal-grid mt-3">
                 {turn.products.map((product) => (
                   <DealCard key={product.id} product={product} />
                 ))}

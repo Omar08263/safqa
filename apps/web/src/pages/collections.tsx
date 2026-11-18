@@ -119,7 +119,7 @@ export function SharedPage({ d }: { d?: string }) {
       <PageHeader kicker={tr('مجموعة متشاركة معاك', 'A collection shared with you')} title={`${data.emoji} ${data.name}`} lede={tr(`${items.length} منتج · إجمالي ${formatEGP(total, locale)} بأحسن الأسعار دلوقتي`, `${items.length} items · ${formatEGP(total, locale)} total at today's best prices`)}>
         <Button onClick={() => { setList([{ id: crypto.randomUUID(), name: data.name, emoji: data.emoji, ids: data.ids, createdAt: new Date().toISOString() }, ...list]); toast(tr('اتحفظت في مجموعاتك', 'Saved to your collections')); void navigate({ to: '/collections' }); }}><Plus className="h-4 w-4" />{tr('احفظها عندي', 'Save a copy')}</Button>
       </PageHeader>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{items.map((p, i) => <DealCard key={p.id} product={p} index={i} />)}</div>
+      <div className="deal-grid">{items.map((p, i) => <DealCard key={p.id} product={p} index={i} />)}</div>
     </div>
   );
 }

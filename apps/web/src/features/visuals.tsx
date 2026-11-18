@@ -14,29 +14,33 @@ export function visualFor(slug?: string | null) {
   return categoryVisual[slug ?? ''] ?? { icon: Package, from: '#c9840a', to: '#0e6b52' };
 }
 
-/** Generated product illustration: gradient tile + category glyph + soft orbs. */
-export function ProductArt({ slug, className = 'h-28', seed = 0 }: { slug?: string | null; className?: string; seed?: number }) {
+/** Generated placeholder in the same square tile as real photos (labelled as no photo). */
+export function ProductArt({ slug, className = 'w-full', seed = 0 }: { slug?: string | null; className?: string; seed?: number }) {
   const v = visualFor(slug);
   const Icon = v.icon;
   return (
-    <div className={`relative overflow-hidden rounded-2xl ${className}`} style={{ background: `linear-gradient(135deg, ${v.from}, ${v.to})` }} aria-hidden="true">
+    <div className={`media-tile is-art ${className}`} style={{ background: `linear-gradient(135deg, ${v.from}, ${v.to})` }} aria-hidden="true">
       <span className="absolute -start-6 -top-8 h-24 w-24 rounded-full bg-white/20 blur-md" />
-      <span className="absolute -bottom-10 end-4 h-28 w-28 rounded-full bg-black/10 blur-lg" style={{ transform: `translateX(${(seed % 5) * 8}px)` }} />
       <span className="grid-bg absolute inset-0 opacity-20" />
-      <Icon className="float absolute inset-0 m-auto h-1/2 w-1/2 text-white drop-shadow-[0_10px_20px_rgba(0,0,0,0.25)]" strokeWidth={1.4} style={{ animationDelay: `${(seed % 7) * 0.4}s` }} />
+      <Icon className="relative h-2/5 w-2/5 text-white drop-shadow-[0_10px_20px_rgba(0,0,0,0.25)]" strokeWidth={1.4} style={{ animationDelay: `${(seed % 7) * 0.4}s` }} />
     </div>
   );
 }
 
-/** Real store photo when the crawler captured one, else the generated art. */
-export function ProductThumb({ id, slug, className = 'h-28', seed = 0, alt = '' }: { id: string; slug?: string | null; className?: string; seed?: number; alt?: string }) {
+/**
+ * Real store photo when the crawler captured one, else the generated art.
+ * Always the same square white tile (images are pre-padded to squares by
+ * deploy/hf/build-media.py, and object-fit: contain covers any stragglers).
+ * Size it with width classes only (e.g. "w-full", "w-14 flex-none").
+ */
+export function ProductThumb({ id, slug, className = 'w-full', seed = 0, alt = '' }: { id: string; slug?: string | null; className?: string; seed?: number; alt?: string }) {
   const media = useMediaMap();
   const img = media.data?.[id];
   if (!img) return <ProductArt slug={slug} className={className} seed={seed} />;
   return (
-    <div className={`relative grid place-items-center overflow-hidden rounded-2xl bg-white ${className}`}>
-      <img src={img.thumb} alt={alt} loading="lazy" decoding="async" className="h-full w-full object-contain p-2 transition duration-500 group-hover:scale-105" />
-      {img.count > 1 ? <span className="absolute bottom-1.5 end-1.5 rounded-full bg-black/55 px-1.5 text-[10px] font-bold text-white">{img.count} 📷</span> : null}
+    <div className={`media-tile group/tile ${className}`}>
+      <img src={img.thumb} alt={alt} loading="lazy" decoding="async" width={480} height={480} className="transition duration-500 group-hover:scale-[1.04]" />
+      {img.count > 1 ? <span className="num absolute bottom-1.5 end-1.5 rounded-full bg-black/55 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white" aria-label={`${img.count} photos`}>{img.count} 📷</span> : null}
     </div>
   );
 }

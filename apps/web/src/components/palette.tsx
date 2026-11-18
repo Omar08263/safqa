@@ -52,7 +52,7 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
       id: `product:${p.id}`,
       group: tr('المنتجات', 'Products'),
       label: localized(locale, { ar: p.titleAr, en: p.titleEn }),
-      hint: p.bestOffer ? `${p.bestOffer.priceEgp.toLocaleString()} EGP` : undefined,
+      hint: p.bestOffer ? `${p.bestOffer.priceEgp.toLocaleString('en-US')} EGP` : undefined,
       icon: <Package className="h-4 w-4" />,
       run: close(() => void navigate({ to: '/product/$id', params: { id: p.id } })),
     }));

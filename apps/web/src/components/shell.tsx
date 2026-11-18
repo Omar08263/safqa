@@ -1,10 +1,9 @@
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
 import { TelegramFollowButton } from './telegram-follow';
 import { PriceFreshness } from './price-freshness';
-import { Bell, Command, Menu, MoonStar, Sun, X } from 'lucide-react';
+import { Bell, Command, Menu, MoonStar, Search, Sun, X } from 'lucide-react';
 import { FormEvent, ReactNode, useEffect, useRef, useState } from 'react';
 import { allNav, primaryNav } from '../features/nav';
-import { features } from '../features/registry';
 import { BackToTop, Logo, ScrollProgress } from '../fx/fx';
 import { track } from '../lib/activity';
 import { AppearanceEffect } from '../lib/appearance';
@@ -13,7 +12,10 @@ import { usePrefs } from '../lib/prefs';
 import { useSession } from '../lib/session';
 import { useTr } from '../lib/tr';
 import { useQuery } from '@tanstack/react-query';
-import { CompareTray, InstallButton, OfflineBanner, OnboardingTour } from './chrome';
+import { CompareTray, InstallButton, OfflineBanner } from './chrome';
+import { BottomNav, NavRail } from './bottom-nav';
+import { MenuSheet } from './menu-sheet';
+import { WelcomeTour } from './welcome';
 import { AgentsRuntime } from './agents-runtime';
 import { SmartInstallBanner } from './install-banner';
 import { CommandPalette, ShortcutsDialog } from './palette';
@@ -100,7 +102,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const label = (n: { ar: string; en: string }) => (locale === 'ar' ? n.ar : n.en);
 
   return (
-    <div className="min-h-screen pb-20 md:pb-0">
+    <div className="min-h-screen" style={{ paddingBottom: 'var(--bottom-bar, 0px)' }}>
       <AppearanceEffect />
       <ScrollProgress />
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:start-3 focus:top-3 focus:z-[100] focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground">{tr('تخطّى للمحتوى', 'Skip to content')}</a>
@@ -110,7 +112,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <Link to="/" className="flex-none" data-tour="logo" aria-label="Safqa">
             <Logo size={38} sub={tr('ذكاء الأسعار في مصر', 'Price intelligence for Egypt')} />
           </Link>
-          <form onSubmit={onSearch} className="hidden flex-1 md:block" data-tour="search">
+          <form onSubmit={onSearch} className="not-phone min-w-0 flex-1" data-tour="search" role="search">
             <div className="relative mx-auto max-w-md">
               <input ref={searchRef} name="q" placeholder={tr('ابحث عن منتج… (اضغط /)', 'Search products… (press /)')} className="h-10 w-full rounded-full border border-border bg-card/80 px-4 pe-16 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15" />
               <button type="button" onClick={() => setPalette(true)} className="absolute end-1.5 top-1/2 flex -translate-y-1/2 items-center gap-1 rounded-full border border-border px-2 py-1 text-[10px] text-muted" aria-label={tr('لوحة الأوامر', 'Command palette')}>
@@ -118,16 +120,15 @@ export function Shell({ children }: { children: ReactNode }) {
               </button>
             </div>
           </form>
-          <nav className="hidden items-center gap-0.5 text-sm lg:flex" data-tour="nav" aria-label={tr('القائمة الرئيسية', 'Main')}>
+          <nav className="only-desktop items-center gap-0.5 text-sm" data-tour="nav" aria-label={tr('القائمة الرئيسية', 'Main')}>
             {primaryNav.slice(1).map((n) => (
-              <Link key={n.to} to={n.to as '/'} className={`relative rounded-full px-3 py-1.5 transition ${path === n.to ? 'bg-accent font-semibold' : 'text-muted hover:text-foreground'}`}>
+              <Link key={n.to} to={n.to as '/'} className={`relative whitespace-nowrap rounded-full px-3 py-1.5 transition ${path.startsWith(n.to) ? 'bg-accent font-semibold text-foreground' : 'text-muted hover:text-foreground'}`} aria-current={path.startsWith(n.to) ? 'page' : undefined}>
                 {label(n)}
-                {n.to === '/features' ? <span className="ms-1 rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">{features.length}</span> : null}
               </Link>
             ))}
           </nav>
           <div className="ms-auto flex items-center gap-1" data-tour="prefs">
-            <button type="button" className="grid h-9 w-9 place-items-center rounded-full hover:bg-accent md:hidden" onClick={() => setPalette(true)} aria-label={tr('بحث وأوامر', 'Search & commands')}><Command className="h-4 w-4" /></button>
+            <button type="button" className="only-phone h-9 w-9 place-items-center rounded-full hover:bg-accent" onClick={() => setPalette(true)} aria-label={tr('دوّر على منتج', 'Search products')} title={tr('دوّر على منتج', 'Search products')}><Search className="h-[18px] w-[18px]" /></button>
             <Button variant="ghost" size="sm" onClick={() => setLocale(locale === 'ar' ? 'en' : 'ar')} aria-label="language">{locale === 'ar' ? 'EN' : 'ع'}</Button>
             <button type="button" onClick={toggleTheme} className="grid h-9 w-9 place-items-center rounded-full hover:bg-accent" aria-label={theme === 'dark' ? tr('الوضع النهاري', 'Light mode') : tr('الوضع الليلي', 'Dark mode')}>
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <MoonStar className="h-4 w-4" />}
@@ -159,25 +160,20 @@ export function Shell({ children }: { children: ReactNode }) {
                 </div>
               ) : null}
             </div>
-            <button type="button" className="grid h-9 w-9 place-items-center rounded-full hover:bg-accent lg:hidden" onClick={() => setMenu(!menu)} aria-label={tr('القائمة', 'Menu')} aria-expanded={menu}>
+            <button type="button" className="not-desktop h-9 w-9 place-items-center rounded-full hover:bg-accent" onClick={() => setMenu(!menu)} aria-label={tr('القائمة', 'Menu')} aria-expanded={menu}>
               {menu ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
-        {menu ? (
-          <nav className="page-enter mx-auto grid max-w-7xl grid-cols-2 gap-1 border-t border-border px-4 py-3 sm:grid-cols-3 lg:hidden">
-            {allNav.map((n) => (
-              <Link key={n.to} to={n.to as '/'} className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm ${path === n.to ? 'bg-accent font-semibold' : ''}`}><n.icon className="h-4 w-4 text-primary" />{label(n)}</Link>
-            ))}
-          </nav>
-        ) : null}
       </header>
 
-      <main id="main" className="mx-auto max-w-7xl px-4 py-8">
+      <MenuSheet open={menu} onClose={() => setMenu(false)} />
+      <NavRail />
+      <main id="main" className="rail-pad mx-auto max-w-7xl px-4 py-6 sm:py-8">
         <div key={path} className="page-enter">{children}</div>
       </main>
 
-      <footer className="no-print mt-16 border-t border-border/70 bg-card/40">
+      <footer className="rail-pad no-print mt-16 border-t border-border/70 bg-card/40">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-[1.2fr_2fr]">
           <div>
             <Logo size={44} />
@@ -203,20 +199,13 @@ export function Shell({ children }: { children: ReactNode }) {
         <p className="pb-6 text-center text-xs text-muted">© 2026 Safqa · {tr('صُنع في مصر', 'Made in Egypt')} 🇪🇬</p>
       </footer>
 
-      <nav className="no-print fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-border bg-background/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden" aria-label={tr('تنقل سريع', 'Quick nav')}>
-        {primaryNav.map((n) => (
-          <Link key={n.to} to={n.to as '/'} className={`flex flex-col items-center gap-0.5 py-2 text-[11px] ${path === n.to ? 'font-semibold text-primary' : 'text-muted'}`}>
-            <n.icon className="h-5 w-5" />
-            {label(n)}
-          </Link>
-        ))}
-      </nav>
+      <BottomNav onMore={() => setMenu((m) => !m)} moreOpen={menu} />
 
       <CompareTray />
       <BackToTop label={tr('لفوق', 'Back to top')} />
       <CommandPalette open={palette} onOpenChange={setPalette} />
       <ShortcutsDialog open={shortcuts} onOpenChange={setShortcuts} />
-      <OnboardingTour />
+      <WelcomeTour />
       <AgentsRuntime />
       <SmartInstallBanner />
     </div>

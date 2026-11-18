@@ -18,7 +18,7 @@ export function CompareTray() {
   if (ids.length === 0 || path === '/compare') return null;
   const items = ids.map((id) => catalog.data?.items.find((p) => p.id === id)).filter(Boolean);
   return (
-    <div className="no-print fixed inset-x-3 bottom-20 z-40 mx-auto max-w-2xl md:bottom-4">
+    <div className="compare-tray no-print fixed inset-x-3 z-40 mx-auto max-w-2xl">
       <div className="glass page-enter flex flex-wrap items-center gap-2 rounded-2xl p-3 shadow-2xl">
         <GitCompare className="h-5 w-5 text-primary" />
         <span className="text-sm font-semibold">{tr('المقارنة', 'Compare')} ({ids.length}/4)</span>

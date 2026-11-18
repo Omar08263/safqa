@@ -125,5 +125,5 @@ function Check({ name, label, defaultChecked }: { name: string; label: string; d
 }
 
 function localeTag() {
-  return document.documentElement.lang === 'ar' ? 'ar-EG' : 'en-GB';
+  return document.documentElement.lang === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB';
 }

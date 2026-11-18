@@ -69,7 +69,7 @@ export function AppPage() {
               <TelegramFollowButton />
             </div>
             <p className="text-xs text-muted">
-              {rel.isLoading ? tr('بنشيك على آخر إصدار…', 'Checking the latest release…') : apk && rel.data ? tr(`آخر إصدار ${rel.data.tag_name} · ${(apk.size / 1048576).toFixed(1)} ميجا · ${new Date(rel.data.published_at).toLocaleDateString('ar-EG')} · اتنزّل ${apk.download_count} مرة`, `Latest ${rel.data.tag_name} · ${(apk.size / 1048576).toFixed(1)} MB · ${new Date(rel.data.published_at).toLocaleDateString()} · ${apk.download_count} downloads`) : tr('ملف الـ APK على GitHub Releases الخاص بالمشروع المفتوح المصدر.', 'The APK lives on the open-source project’s GitHub Releases.')}{' '}
+              {rel.isLoading ? tr('بنشيك على آخر إصدار…', 'Checking the latest release…') : apk && rel.data ? tr(`آخر إصدار ${rel.data.tag_name} · ${(apk.size / 1048576).toFixed(1)} ميجا · ${new Date(rel.data.published_at).toLocaleDateString('ar-EG-u-nu-latn')} · اتنزّل ${apk.download_count} مرة`, `Latest ${rel.data.tag_name} · ${(apk.size / 1048576).toFixed(1)} MB · ${new Date(rel.data.published_at).toLocaleDateString()} · ${apk.download_count} downloads`) : tr('ملف الـ APK على GitHub Releases الخاص بالمشروع المفتوح المصدر.', 'The APK lives on the open-source project’s GitHub Releases.')}{' '}
               <a href={RELEASES_URL} target="_blank" rel="noreferrer" className="text-primary underline">{tr('كل الإصدارات', 'All releases')}</a>
             </p>
           </div>

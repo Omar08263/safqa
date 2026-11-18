@@ -1,4 +1,7 @@
-import { useNavigate } from '@tanstack/react-router';
+import { useBottomBarMode } from '../components/bottom-nav';
+import { feedback, setSoundEnabled, useHaptics, useSound } from '../lib/sound';
+import { useTier } from '../lib/tiers';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { Bell, Camera, Database, Download, Gift, KeyRound, LogOut, Palette, Settings, Smartphone, Trash2, Upload, UserCircle } from 'lucide-react';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { InstallButton, useInstall } from '../components/chrome';
@@ -136,12 +139,25 @@ export function ProfilePage() {
 
 const BACKUP_KEYS = ['safqa.activity.v1', keys.purchases, keys.collections, keys.budget, keys.compare, keys.savedSearches, keys.profile, 'safqa.appearance.v1', 'safqa.fx.v1'];
 
+function Switch({ on, onClick, label, hint }: { on: boolean; onClick: () => void; label: string; hint: string }) {
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-2xl bg-accent p-3">
+      <span><span className="block text-sm font-semibold">{label}</span><span className="text-xs text-muted">{hint}</span></span>
+      <button type="button" role="switch" aria-checked={on} aria-label={label} onClick={onClick} className={`relative h-7 w-12 flex-none rounded-full transition ${on ? 'bg-primary' : 'bg-border'}`}><span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-all ${on ? 'start-6' : 'start-1'}`} /></button>
+    </div>
+  );
+}
+
 export function SettingsPage() {
   const tr = useTr();
   const toast = useToast();
   const { locale, setLocale, theme, setTheme } = usePrefs();
   const [a, setA] = useAppearance();
-  const [, setTour] = useLocal<boolean>('safqa.tourDone.v1', false);
+  const [, setTour] = useLocal<boolean>('safqa.welcome.v4', false);
+  const [sound] = useSound();
+  const [haptics, setHaptics] = useHaptics();
+  const [bar, setBar] = useBottomBarMode();
+  const { tier } = useTier();
   const install = useInstall();
   const [perm, setPerm] = useState(() => (typeof Notification !== 'undefined' ? Notification.permission : 'unsupported'));
   const set = <K extends keyof Appearance>(k: K, v: Appearance[K]) => setA({ ...a, [k]: v });
@@ -220,6 +236,21 @@ export function SettingsPage() {
           <Button variant="ghost" onClick={() => setA(defaultAppearance)}>{tr('رجّع الافتراضي', 'Reset to default')}</Button>
         </Card>
         <Card className="space-y-3">
+          <h2 className="flex items-center gap-2 text-lg font-bold">🎚️ {tr('الصوت والاهتزاز والتنقل', 'Sound, haptics & navigation')}</h2>
+          <Switch on={sound} onClick={() => setSoundEnabled(!sound)} label={tr('أصوات خفيفة', 'Subtle sounds')} hint={tr('صوت صغير لما تضيف للمقارنة أو تفعّل باقة. مقفول افتراضيًا.', 'A tiny sound on key actions. Off by default.')} />
+          <Switch on={haptics} onClick={() => { setHaptics(!haptics); feedback('tap', 'medium'); }} label={tr('اهتزاز خفيف (موبايل)', 'Haptics (phones)')} hint={tr('اهتزاز صغير مع الأزرار المهمة', 'A short buzz on important taps')} />
+          <div>
+            <p className="text-sm font-semibold">{tr('شريط التنقل اللي تحت (موبايل)', 'Bottom bar (phones)')}</p>
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              {([['auto', tr('يختفي وأنا نازل', 'Hide on scroll')], ['always', tr('ظاهر دايمًا', 'Always shown')], ['hidden', tr('مخفي', 'Hidden')]] as const).map(([k, l]) => (
+                <Button key={k} size="sm" variant={bar === k ? 'default' : 'outline'} onClick={() => { setBar(k); feedback('tap'); }} aria-pressed={bar === k}>{l}</Button>
+              ))}
+            </div>
+            <p className="t-meta mt-1">{tr('لو خبّيته، القائمة الكاملة لسه موجودة من زرار ☰ فوق.', 'If hidden, the full menu stays available from ☰ at the top.')}</p>
+          </div>
+          <p className="text-sm">{tr('باقتك', 'Your plan')}: <Link to="/plans" className="font-semibold text-primary">{tier.emoji} {locale === 'ar' ? tier.ar : tier.en}</Link></p>
+        </Card>
+        <Card className="space-y-3">
           <h2 className="flex items-center gap-2 text-lg font-bold"><Bell className="h-5 w-5 text-primary" />{tr('إشعارات الجهاز', 'Device notifications')}</h2>
           <p className="text-sm text-muted">{tr('الحالة', 'Status')}: <b>{perm === 'granted' ? tr('مسموح', 'Allowed') : perm === 'denied' ? tr('مرفوض من المتصفح', 'Blocked by browser') : perm === 'unsupported' ? tr('المتصفح مش بيدعمها', 'Not supported') : tr('لسه متسألتش', 'Not asked yet')}</b></p>
           <Button onClick={() => void askNotify()} disabled={perm === 'unsupported' || perm === 'denied'}>{perm === 'granted' ? tr('ابعت إشعار تجريبي', 'Send a test notification') : tr('فعّل الإشعارات', 'Enable notifications')}</Button>
@@ -228,7 +259,7 @@ export function SettingsPage() {
           <h2 className="flex items-center gap-2 text-lg font-bold"><Smartphone className="h-5 w-5 text-primary" />{tr('التطبيق', 'App')}</h2>
           <p className="text-sm text-muted">{install.installed ? tr('صفقة متثبّتة على جهازك ✓', 'Safqa is installed ✓') : install.available ? tr('ثبّت صفقة كتطبيق على الشاشة الرئيسية، ويشتغل أوفلاين.', 'Install Safqa to your home screen; it works offline.') : tr('لو المتصفح بيدعم، هيظهر زرار التثبيت هنا. على آيفون: مشاركة ← إضافة للشاشة الرئيسية.', 'If your browser supports it, an install button appears here. On iPhone: Share → Add to Home Screen.')}</p>
           <InstallButton />
-          <Button variant="outline" onClick={() => setTour(false)}>{tr('اعرض الجولة التعريفية تاني', 'Replay the guided tour')}</Button>
+          <Button variant="outline" onClick={() => setTour(false)}>{tr('اعرض جولة الترحيب تاني 👋', 'Replay the welcome tour 👋')}</Button>
         </Card>
         <Card className="space-y-3 lg:col-span-2">
           <h2 className="flex items-center gap-2 text-lg font-bold"><Database className="h-5 w-5 text-primary" />{tr('بياناتك', 'Your data')}</h2>

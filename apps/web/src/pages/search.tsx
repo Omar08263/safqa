@@ -132,7 +132,7 @@ export function SearchPage({ search }: { search: SearchFilters }) {
         {results.data && results.data.items.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-border bg-card px-6 py-10 text-center">{t('search.empty')}</div>
         ) : null}
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="deal-grid deal-grid--aside">
           {results.data?.items.map((product) => (
             <DealCard key={product.id} product={product} />
           ))}

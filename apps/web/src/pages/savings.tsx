@@ -30,7 +30,7 @@ export function SavingsPage() {
   let running = 0;
   const chart = [...purchases].reverse().map((p) => {
     running += Math.max(0, p.referenceEgp - p.paidEgp);
-    return { d: new Date(p.at).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-GB', { day: 'numeric', month: 'short' }), v: running };
+    return { d: new Date(p.at).toLocaleDateString(locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB', { day: 'numeric', month: 'short' }), v: running };
   });
 
   function addPurchase(e: FormEvent<HTMLFormElement>) {
@@ -120,7 +120,7 @@ export function SavingsPage() {
             {purchases.length === 0 ? <li className="text-sm text-muted">{tr('لسه مسجّلتش حاجة. من صفحة أي منتج دوس "اشتريته".', 'Nothing yet. Tap "I bought it" on any product page.')}</li> : null}
             {purchases.map((p) => (
               <li key={p.id} className="flex items-center gap-2 rounded-2xl bg-accent px-3 py-2 text-sm">
-                <span className="flex-1 truncate">{p.title}<span className="block text-xs text-muted">{new Date(p.at).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-GB')}</span></span>
+                <span className="flex-1 truncate">{p.title}<span className="block text-xs text-muted">{new Date(p.at).toLocaleDateString(locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB')}</span></span>
                 <span className="num">{m(p.paidEgp)}</span>
                 <span className={`num text-xs font-bold ${p.referenceEgp > p.paidEgp ? 'text-palm' : 'text-muted'}`}>{p.referenceEgp > p.paidEgp ? `-${m(p.referenceEgp - p.paidEgp)}` : '±0'}</span>
                 <button type="button" aria-label={tr('امسح', 'Delete')} onClick={() => setPurchases(purchases.filter((x) => x.id !== p.id))}><Trash2 className="h-4 w-4 text-muted" /></button>

@@ -1,3 +1,6 @@
+import { ChannelsCard, WhatsAppButton } from '../components/social';
+import { appUrl } from '../components/share';
+import { useCatalog as useCatalogQ } from '../lib/catalog';
 import { formatEGP } from '@safqa/shared';
 import { Link } from '@tanstack/react-router';
 import { BellRing, Mail, Moon, Radar, Send, Sparkles, Zap } from 'lucide-react';
@@ -28,6 +31,7 @@ const kindLabel: Record<DealSignal['kind'], [string, string, string]> = {
 };
 
 export function RadarPage() {
+  const catalogQ = useCatalogQ();
   const tr = useTr();
   const { locale } = usePrefs();
   const toast = useToast();
@@ -59,6 +63,7 @@ export function RadarPage() {
   const subject = 'SAFQA SUBSCRIBE';
   const body = `اشترك من فضلك في ملخص صفقة اليومي للعروض الحقيقية على العنوان ده.\nI explicitly opt in to Safqa's daily deals digest at this address.\nTo stop: send UNSUBSCRIBE.\n(${new Date().toISOString()})`;
 
+  const topDeals = [...(catalogQ.data?.items ?? [])].filter((p) => p.bestOffer && !p.bestOffer.fakeDiscount).sort((a, b) => (b.bestOffer?.dealScore ?? 0) - (a.bestOffer?.dealScore ?? 0));
   return (
     <div className="space-y-8">
       <PageHeader kicker={tr('فريق التنبيهات + صيادو العروض', 'Notifications + deal hunters')} title={tr('رادار العروض', 'Deal radar')} lede={tr('محرك تنبيهات ذكي شغال لوحده: الوكلاء بيفحصوا سجل الأسعار الحقيقي ويطلّعوا التخفيضات الحقيقية والخصومات المشبوهة وفروق الأسعار بين المتاجر، ويكتبوا عناوين تشد — من غير مبالغة ومن غير عروض مخترعة.', 'A self-running alert engine: agents scan the real price history for genuine drops, suspicious discounts and store gaps, and write catchy headlines — no hype, no invented deals.')} icon={<Radar className="h-6 w-6" />}>
@@ -71,6 +76,8 @@ export function RadarPage() {
         ))}
       </div>
 
+      <ChannelsCard items={topDeals} />
+
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr] [&>*]:min-w-0">
         <section className="space-y-3">
           <div className="flex flex-wrap gap-1.5 text-xs">
@@ -82,15 +89,16 @@ export function RadarPage() {
           ) : null}
           {shown.map((x, i) => (
             <Reveal key={x.id} delay={Math.min(i, 8) * 40}>
-              <Link to="/product/$id" params={{ id: x.productId }} className={`lift flex items-center gap-3 rounded-3xl border bg-card p-3 ${x.exceptional ? 'border-primary shadow-[0_0_0_3px_var(--glow)]' : 'border-border'}`}>
-                <ProductThumb id={x.productId} className="h-20 w-20 flex-none" />
+              <div className={`lift relative flex items-center gap-3 rounded-3xl border bg-card p-3 ${x.exceptional ? 'border-primary shadow-[0_0_0_3px_var(--glow)]' : 'border-border'}`}>
+                <Link to="/product/$id" params={{ id: x.productId }} className="absolute inset-0 z-0 rounded-3xl" aria-label={locale === 'ar' ? x.headline : x.headlineEn} />
+                <ProductThumb id={x.productId} className="w-16 flex-none sm:w-20" />
                 <div className="min-w-0 flex-1">
                   <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${kindLabel[x.kind][2]}`}>{tr(kindLabel[x.kind][0], kindLabel[x.kind][1])}{x.exceptional ? ' ⚡' : ''}</span>
-                  <p className="mt-1 font-bold leading-6">{locale === 'ar' ? x.headline : x.headlineEn}</p>
-                  <p className="text-xs text-muted">{x.body}</p>
+                  <p className="t-title mt-1 !min-h-0">{locale === 'ar' ? x.headline : x.headlineEn}</p>
+                  <p className="t-meta line-clamp-2">{x.body}</p>
                 </div>
-                <p className="num text-lg font-bold">{formatEGP(x.priceEgp, locale)}</p>
-              </Link>
+                <div className="relative z-10 flex flex-none flex-col items-end gap-2"><p className="t-price">{formatEGP(x.priceEgp, locale)}</p><WhatsAppButton compact text={`${locale === 'ar' ? x.headline : x.headlineEn}\n💰 ${formatEGP(x.priceEgp, locale)}`} url={appUrl(`/product/${x.productId}`)} /></div>
+              </div>
             </Reveal>
           ))}
         </section>
@@ -103,7 +111,7 @@ export function RadarPage() {
               <label className="flex items-center justify-between gap-2"><span className="flex items-center gap-2"><Sparkles className="h-4 w-4" />{tr('بانر متحرك جوه الموقع', 'Animated in-site banner')}</span><input type="checkbox" checked={prefs.toasts} onChange={(e) => setPrefs({ ...prefs, toasts: e.target.checked })} className="h-4 w-4 accent-[var(--saffron)]" /></label>
               <label className="block"><span className="flex items-center gap-2"><Zap className="h-4 w-4" />{tr(`أقل نسبة تخفيض: ${prefs.minPct}%`, `Minimum drop: ${prefs.minPct}%`)}</span><input type="range" min={1} max={30} value={prefs.minPct} onChange={(e) => setPrefs({ ...prefs, minPct: Number(e.target.value) })} className="mt-1 w-full accent-[var(--saffron)]" /></label>
               <label className="flex items-center justify-between gap-2"><span className="flex items-center gap-2"><Moon className="h-4 w-4" />{tr('ساعات هدوء 11م–8ص (القاهرة)', 'Quiet hours 11pm–8am (Cairo)')}</span><input type="checkbox" checked={Boolean(prefs.quietHours)} onChange={(e) => setPrefs({ ...prefs, quietHours: e.target.checked ? [23, 8] : null })} className="h-4 w-4 accent-[var(--saffron)]" /></label>
-              <div className="flex flex-wrap gap-1">{['phones', 'audio', 'tvs', 'appliances', 'lifestyle'].map((c) => { const on = prefs.categories.includes(c); return <button key={c} type="button" onClick={() => setPrefs({ ...prefs, categories: on ? prefs.categories.filter((x) => x !== c) : [...prefs.categories, c] })} className={`rounded-full px-2.5 py-1 text-xs ${on ? 'bg-primary text-primary-foreground' : 'bg-accent'}`}>{{ phones: tr('موبايلات', 'Phones'), audio: tr('صوتيات', 'Audio'), tvs: tr('شاشات', 'TVs'), appliances: tr('أجهزة', 'Appliances'), lifestyle: tr('ساعات', 'Wearables') }[c]}</button>; })}</div>
+              <div className="flex flex-wrap gap-1">{['phones', 'laptops', 'tablets', 'audio', 'tvs', 'appliances', 'kitchen', 'gaming', 'lifestyle'].map((c) => { const on = prefs.categories.includes(c); return <button key={c} type="button" onClick={() => setPrefs({ ...prefs, categories: on ? prefs.categories.filter((x) => x !== c) : [...prefs.categories, c] })} className={`rounded-full px-2.5 py-1 text-xs ${on ? 'bg-primary text-primary-foreground' : 'bg-accent'}`}>{({ phones: tr('موبايلات', 'Phones'), laptops: tr('لابتوب', 'Laptops'), tablets: tr('تابلت', 'Tablets'), audio: tr('صوتيات', 'Audio'), tvs: tr('شاشات', 'TVs'), appliances: tr('أجهزة', 'Appliances'), kitchen: tr('مطبخ', 'Kitchen'), gaming: tr('ألعاب', 'Gaming'), lifestyle: tr('ساعات', 'Wearables') } as Record<string, string>)[c]}</button>; })}</div>
               <p className="text-[11px] text-muted">{tr('لو ماختارتش أقسام، هيوصلك من كل الأقسام.', 'No category selected = all categories.')}</p>
               <Button size="sm" variant="outline" onClick={(e) => { confetti({ x: e.clientX, y: e.clientY }); void showBrowserNotification(tr('⚡ تجربة تنبيه من صفقة', '⚡ Safqa test alert'), tr('كده التنبيهات شغالة تمام.', 'Alerts are working.'), '/#/radar'); toast(tr('اتبعت تنبيه تجربة', 'Test alert sent')); }}>{tr('جرّب تنبيه', 'Send a test alert')}</Button>
             </div>

@@ -12,6 +12,7 @@ import { ProductThumb } from '../features/visuals';
 import { CountUp, Reveal, Spotlight } from '../fx/fx';
 import { track, useActivity } from '../lib/activity';
 import { useCatalog } from '../lib/catalog';
+import { greeting } from '../lib/device';
 import { usePrefs } from '../lib/prefs';
 import { useSession } from '../lib/session';
 import { useTr } from '../lib/tr';
@@ -46,9 +47,9 @@ export function HomePage() {
 
   const highlights = [
     { icon: ShieldAlert, to: '/search', ar: 'كاشف الخصم المضروب', en: 'Fake-discount detector', dar: 'بنقارن "السعر قبل الخصم" بتاريخ السعر الحقيقي ونفضح التخفيض الوهمي.', den: 'We check the "was" price against real history and flag fake markdowns.' },
-    { icon: TrendingDown, to: '/insights', ar: 'توقّع أحسن وقت للشراء', en: 'Best time to buy', dar: 'تحليل الاتجاه والقاع على ٩٠ يوم يقولك تشتري دلوقتي ولا تستنى.', den: 'Trend and 90-day-low analysis tells you buy now or wait.' },
-    { icon: GitCompare, to: '/compare', ar: 'قارن ٤ منتجات', en: 'Compare 4 products', dar: 'جدول جنب بعض بيلوّن الأحسن في كل صف، ومعاه رسم أسعار مجمّع.', den: 'Side-by-side table that highlights the winner per row, plus an overlay chart.' },
-    { icon: Calculator, to: '/tools', ar: 'حاسبة التقسيط والضريبة', en: 'Installments & VAT', dar: 'احسب القسط الشهري والفايدة الحقيقية وضريبة ١٤٪ في ثانية.', den: 'Monthly installment, true interest and 14% VAT in a second.' },
+    { icon: TrendingDown, to: '/insights', ar: 'توقّع أحسن وقت للشراء', en: 'Best time to buy', dar: 'تحليل الاتجاه والقاع على 90 يوم يقولك تشتري دلوقتي ولا تستنى.', den: 'Trend and 90-day-low analysis tells you buy now or wait.' },
+    { icon: GitCompare, to: '/compare', ar: 'قارن 4 منتجات', en: 'Compare 4 products', dar: 'جدول جنب بعض بيلوّن الأحسن في كل صف، ومعاه رسم أسعار مجمّع.', den: 'Side-by-side table that highlights the winner per row, plus an overlay chart.' },
+    { icon: Calculator, to: '/tools', ar: 'حاسبة التقسيط والضريبة', en: 'Installments & VAT', dar: 'احسب القسط الشهري والفايدة الحقيقية وضريبة 14% في ثانية.', den: 'Monthly installment, true interest and 14% VAT in a second.' },
     { icon: PiggyBank, to: '/savings', ar: 'ميزانية ومتتبع توفير', en: 'Budget & savings', dar: 'حدد ميزانيتك الشهرية وشوف وفّرت قد إيه من كل صفقة.', den: 'Set a monthly budget and see what every deal saved you.' },
     { icon: Layers, to: '/collections', ar: 'مجموعات تشاركها', en: 'Shareable collections', dar: 'اعمل قايمة هدايا أو جهاز عروسة وشاركها بلينك أو QR.', den: 'Build a gift or wedding list and share it by link or QR.' },
   ];
@@ -68,8 +69,17 @@ export function HomePage() {
               </span>
               <PriceFreshness className="ms-2 mt-2 sm:mt-0" />
             </Reveal>
+            <Reveal delay={40}>
+              <p className="mt-5 text-[15px] font-semibold text-muted" data-testid="greeting">
+                {(() => {
+                  const g = greeting();
+                  const name = user?.name && !/demo/i.test(user.name) ? `، ${user.name.split(' ')[0]}` : '';
+                  return tr(`${g.ar}${name} ${g.emoji} · خلّينا نلاقيلك صفقة النهارده`, `${g.en} ${g.emoji} · let's find today's deal`);
+                })()}
+              </p>
+            </Reveal>
             <Reveal delay={80}>
-              <h1 className="mt-5 text-4xl font-bold leading-[1.15] sm:text-6xl">
+              <h1 className="mt-2 text-4xl font-bold leading-[1.15] sm:text-6xl">
                 <span className="text-gradient">{tr('اعرف السعر العادل', 'Know the fair price')}</span>
                 <br />
                 {tr('قبل ما تدفع جنيه.', 'before you pay a pound.')}
@@ -101,7 +111,7 @@ export function HomePage() {
           <div className="relative hidden h-[520px] lg:block" aria-hidden="true">
             {top.map((p, i) => (
               <div key={p.id} className="glass float absolute w-72 rounded-3xl p-3 shadow-2xl" style={{ top: `${i * 34}%`, insetInlineStart: `${[4, 34, 10][i]}%`, ['--r' as string]: `${[-4, 3, -2][i]}deg`, animationDelay: `${i * 1.3}s` }}>
-                <ProductThumb id={p.id} slug={p.category?.slug} className="h-16" seed={i} />
+                <ProductThumb id={p.id} slug={p.category?.slug} className="w-full" seed={i} />
                 <p className="mt-2 truncate text-sm font-semibold">{localized(locale, { ar: p.titleAr, en: p.titleEn })}</p>
                 <div className="mt-1 flex items-center justify-between">
                   <span className="num text-lg font-bold">{formatEGP(p.bestOffer?.priceEgp ?? 0, locale)}</span>
@@ -139,7 +149,7 @@ export function HomePage() {
           <Reveal key={s.l} delay={i * 80}>
             <Spotlight className="glass rounded-3xl p-5">
               <s.icon className="h-6 w-6 text-primary" />
-              <p className="mt-3 text-3xl font-bold"><CountUp value={s.v} format={(n) => (s.pct ? `${n.toFixed(1)}%` : Math.round(n).toLocaleString(locale === 'ar' ? 'ar-EG' : 'en'))} /></p>
+              <p className="mt-3 text-3xl font-bold"><CountUp value={s.v} format={(n) => (s.pct ? `${n.toFixed(1)}%` : Math.round(n).toLocaleString(locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en'))} /></p>
               <p className="text-sm text-muted">{s.l}</p>
             </Spotlight>
           </Reveal>
@@ -149,8 +159,8 @@ export function HomePage() {
       {/* TOP 3 */}
       {top.length ? (
         <section>
-          <SectionTitle icon={<Medal className="h-5 w-5" />} title={tr('أحسن ٣ صفقات النهارده', "Today's top 3 deals")} to="/search" more={tr('كل الصفقات', 'All deals')} />
-          <div className="grid gap-4 md:grid-cols-3">
+          <SectionTitle icon={<Medal className="h-5 w-5" />} title={tr('أحسن 3 صفقات النهارده', "Today's top 3 deals")} to="/search" more={tr('كل الصفقات', 'All deals')} />
+          <div className="deal-grid">
             {top.map((p, i) => (
               <Reveal key={p.id} delay={i * 100} className="relative">
                 <span className="absolute -top-3 start-4 z-20 grid h-9 w-9 place-items-center rounded-full text-lg shadow-lg" style={{ background: ['#f0b429', '#cbd5e1', '#d4935a'][i] }}>{i + 1}</span>
@@ -184,7 +194,7 @@ export function HomePage() {
         <SectionTitle icon={<TrendingDown className="h-5 w-5" />} title={tr('أكبر خصومات حقيقية', 'Biggest real discounts')} to="/insights" more={tr('تحليلات السوق', 'Market insights')} />
         {deals.isLoading ? <StateMessage kind="loading" /> : null}
         {deals.isError ? <StateMessage kind="error" onRetry={() => void deals.refetch()} /> : null}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="deal-grid">
           {drops.map((p, i) => (
             <Reveal key={p.id} delay={(i % 3) * 90}><DealCard product={p} index={i + 3} /></Reveal>
           ))}
@@ -194,7 +204,7 @@ export function HomePage() {
       {deals.data && deals.data.suspicious.length > 0 ? (
         <section>
           <SectionTitle icon={<ShieldAlert className="h-5 w-5 text-destructive" />} title={t('home.suspicious')} />
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="deal-grid">
             {deals.data.suspicious.map((product, i) => (
               <Reveal key={`${product.id}-${product.bestOffer?.id}`} delay={(i % 3) * 90}><DealCard product={product} index={i + 6} /></Reveal>
             ))}
@@ -205,7 +215,7 @@ export function HomePage() {
       {recent.length ? (
         <section>
           <SectionTitle title={tr('شفته مؤخرًا', 'Recently viewed')} to="/dashboard" more={tr('لوحة التحكم', 'Dashboard')} />
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="deal-grid">
             {recent.map((p, i) => (p ? <DealCard key={p.id} product={p} index={i} /> : null))}
           </div>
         </section>

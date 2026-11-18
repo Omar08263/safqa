@@ -48,7 +48,7 @@ export function ToolsPage({ price }: { price?: number }) {
   const m = (n: number) => formatEGP(Math.round(Number.isFinite(n) ? n : 0), locale);
   return (
     <div>
-      <PageHeader icon={<Calculator className="h-6 w-6" />} kicker={tr('٧ أدوات مالية', '7 money tools')} title={tr('أدوات التوفير', 'Saving tools')} lede={tr('احسب القسط الحقيقي، الضريبة، تحويل العملة، والسعر النهائي بعد الشحن والكاش باك — كله على جهازك.', 'Work out the real installment, VAT, currency, and final price after shipping and cashback — all on your device.')} />
+      <PageHeader icon={<Calculator className="h-6 w-6" />} kicker={tr('7 أدوات مالية', '7 money tools')} title={tr('أدوات التوفير', 'Saving tools')} lede={tr('احسب القسط الحقيقي، الضريبة، تحويل العملة، والسعر النهائي بعد الشحن والكاش باك — كله على جهازك.', 'Work out the real installment, VAT, currency, and final price after shipping and cashback — all on your device.')} />
       <div className="mb-6 flex gap-2 overflow-x-auto pb-1" role="tablist">
         {tabs.map((t) => (
           <button key={t.id} type="button" role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)} className={`press flex flex-none items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition ${tab === t.id ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-card'}`}>
@@ -87,9 +87,9 @@ function Installment({ initial, m }: { initial?: number; m: (n: number) => strin
   const monthly = months ? total / months : 0;
   const extraPct = price ? ((total + down - price) / price) * 100 : 0;
   const presets = [
-    { ar: '٠٪ على ٦ شهور', en: '0% for 6 months', months: 6, rate: 0, fee: 0 },
-    { ar: 'فايدة ثابتة ١٢٪ سنويًا · ١٢ شهر', en: '12% flat / year · 12 months', months: 12, rate: 12, fee: 1.5 },
-    { ar: 'فايدة ثابتة ٢٠٪ سنويًا · ٢٤ شهر', en: '20% flat / year · 24 months', months: 24, rate: 20, fee: 2 },
+    { ar: '0% على 6 شهور', en: '0% for 6 months', months: 6, rate: 0, fee: 0 },
+    { ar: 'فايدة ثابتة 12% سنويًا · 12 شهر', en: '12% flat / year · 12 months', months: 12, rate: 12, fee: 1.5 },
+    { ar: 'فايدة ثابتة 20% سنويًا · 24 شهر', en: '20% flat / year · 24 months', months: 24, rate: 20, fee: 2 },
   ];
   return (
     <Two
@@ -143,7 +143,7 @@ function Vat({ initial, m }: { initial?: number; m: (n: number) => string }) {
   const [rate, setRate] = useState(14);
   return (
     <Two
-      left={<><Field label={tr('المبلغ', 'Amount')} value={amount} onChange={setAmount} suffix="EGP" /><Field label={tr('نسبة الضريبة (مصر ١٤٪)', 'VAT rate (Egypt 14%)')} value={rate} onChange={setRate} suffix="%" /></>}
+      left={<><Field label={tr('المبلغ', 'Amount')} value={amount} onChange={setAmount} suffix="EGP" /><Field label={tr('نسبة الضريبة (مصر 14%)', 'VAT rate (Egypt 14%)')} value={rate} onChange={setRate} suffix="%" /></>}
       right={
         <div className="grid gap-3 sm:grid-cols-2">
           <Result label={tr('لو المبلغ من غير ضريبة → بالضريبة', 'If amount excludes VAT → with VAT')} value={m(amount * (1 + rate / 100))} big />
@@ -191,7 +191,7 @@ function Currency({ initial }: { initial?: number }) {
           <Field label={dir === 'from' ? tr('المبلغ بالجنيه', 'Amount in EGP') : tr('المبلغ بالعملة', 'Amount in currency')} value={amount} onChange={setAmount} />
           <div className="flex items-center gap-2 text-xs text-muted">
             <Button size="sm" variant="outline" onClick={() => void refresh()}><RefreshCw className="h-3.5 w-3.5" />{tr('حدّث الأسعار', 'Refresh rates')}</Button>
-            <span>{rates.at ? tr(`المصدر: ${rates.source} · ${new Date(rates.at).toLocaleString('ar-EG')}`, `Source: ${rates.source} · ${new Date(rates.at).toLocaleString('en-GB')}`) : tr('أسعار يدوية تقريبية — حدّثها', 'Approximate manual rates — refresh them')}</span>
+            <span>{rates.at ? tr(`المصدر: ${rates.source} · ${new Date(rates.at).toLocaleString('ar-EG-u-nu-latn')}`, `Source: ${rates.source} · ${new Date(rates.at).toLocaleString('en-GB')}`) : tr('أسعار يدوية تقريبية — حدّثها', 'Approximate manual rates — refresh them')}</span>
           </div>
           {status ? <p className="text-xs text-destructive">{status}</p> : null}
         </>
@@ -201,7 +201,7 @@ function Currency({ initial }: { initial?: number }) {
           {Object.entries(rates.perEgp).map(([code, r]) => (
             <li key={code} className="flex items-center justify-between rounded-2xl bg-accent px-4 py-3">
               <span className="font-bold">{code}</span>
-              <span className="num text-lg font-bold">{dir === 'from' ? (amount * r).toLocaleString(locale === 'ar' ? 'ar-EG' : 'en', { maximumFractionDigits: 2 }) : formatEGP(Math.round(amount / r), locale)}</span>
+              <span className="num text-lg font-bold">{dir === 'from' ? (amount * r).toLocaleString(locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en', { maximumFractionDigits: 2 }) : formatEGP(Math.round(amount / r), locale)}</span>
               <label className="text-xs text-muted">1 EGP = <input aria-label={`${code} rate`} className="num w-20 rounded-md border border-border bg-card px-1" type="number" step="0.0001" value={r} onChange={(e) => setRates({ ...rates, source: 'manual', perEgp: { ...rates.perEgp, [code]: Number(e.target.value) } })} /></label>
             </li>
           ))}

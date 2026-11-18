@@ -201,7 +201,7 @@ function PostCard({ postId, state, products, me, index }: { postId: string; stat
         <Attachments items={p.attachments} size={110} />
         {product ? (
           <Link to="/product/$id" params={{ id: product.id }} className="mt-3 flex items-center gap-3 rounded-2xl border border-border bg-background p-2 hover:border-primary">
-            <ProductThumb id={product.id} slug={product.category?.slug} className="h-14 w-14 flex-none" />
+            <ProductThumb id={product.id} slug={product.category?.slug} className="w-14 flex-none" />
             <div className="min-w-0"><p className="line-clamp-1 text-sm font-semibold">{localized(locale, { ar: product.titleAr, en: product.titleEn })}</p><p className="num text-sm font-bold text-primary">{product.lowestPriceEgp ? formatEGP(product.lowestPriceEgp, locale) : ''}</p></div>
           </Link>
         ) : null}

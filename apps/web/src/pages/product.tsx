@@ -1,3 +1,4 @@
+import { dealText } from '../components/social';
 import { formatEGP, localized, type MessageKey } from '@safqa/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
@@ -62,7 +63,11 @@ export function ProductPage({ id }: { id: string }) {
       toast(t('watch.synced'));
       await queryClient.invalidateQueries({ queryKey: ['watchlist'] });
     },
-    onError: () => toast(tr('مقدرتش أضيفه للمراقبة', 'Could not add to watchlist'), 'error'),
+    onError: (error: unknown) => {
+      const msg = error instanceof Error ? error.message : '';
+      if (/limit/i.test(msg)) toast(tr('المراقبة مليانة في باقتك. فعّل «فضّي» ببلاش من صفحة الباقات أو شيل منتج قديم 🙏', 'Your watchlist is full. Switch on Silver for free on the Plans page, or remove an item.'), 'error', { action: { label: tr('الباقات', 'Plans'), onClick: () => { window.location.hash = '#/plans'; } } });
+      else toast(tr('معرفتش أضيفه للمراقبة دلوقتي. جرّب تاني كمان شوية', 'Could not add it right now. Try again in a bit.'), 'error');
+    },
   });
 
   useEffect(() => track.view(id), [id]);
@@ -169,7 +174,7 @@ export function ProductPage({ id }: { id: string }) {
                 <span className="text-muted">{tr('اقتراحات:', 'Suggestions:')}</span>
                 {[...new Set(suggestions)].map((s, i) => (
                   <button key={s} type="button" onClick={() => setTarget(String(s))} className="rounded-full border border-border px-2 py-0.5 hover:border-primary">
-                    <span className="num">{formatEGP(s, locale)}</span> <span className="text-muted">{[tr('قاع ٩٠ يوم', '90d low'), tr('١٠٪ تحت الوسيط', '10% under median'), tr('٥٪ تحت الحالي', '5% under now')][i]}</span>
+                    <span className="num">{formatEGP(s, locale)}</span> <span className="text-muted">{[tr('قاع 90 يوم', '90d low'), tr('10% تحت الوسيط', '10% under median'), tr('5% تحت الحالي', '5% under now')][i]}</span>
                   </button>
                 ))}
               </div>
@@ -178,7 +183,7 @@ export function ProductPage({ id }: { id: string }) {
           </form>
 
           <div className="no-print mt-4 flex flex-wrap gap-2">
-            <Button variant={compare.has(id) ? 'default' : 'outline'} size="sm" onClick={() => { const r = compare.toggle(id); if (r === 'full') toast(tr('المقارنة مليانة (٤)', 'Compare is full (4)'), 'error'); }}><GitCompare className="h-4 w-4" />{compare.has(id) ? tr('في المقارنة', 'In compare') : tr('قارن', 'Compare')}</Button>
+            <Button variant={compare.has(id) ? 'default' : 'outline'} size="sm" onClick={() => { const r = compare.toggle(id); if (r === 'full') toast(tr('المقارنة مليانة (4)', 'Compare is full (4)'), 'error'); }}><GitCompare className="h-4 w-4" />{compare.has(id) ? tr('في المقارنة', 'In compare') : tr('قارن', 'Compare')}</Button>
             {collections.length ? (
               <select aria-label={tr('ضيف لمجموعة', 'Add to collection')} className="h-8 rounded-full border border-border bg-card px-3 text-xs" defaultValue="" onChange={(e) => { if (e.target.value) addToCollection(e.target.value); e.target.value = ''; }}>
                 <option value="">{tr('+ ضيف لمجموعة', '+ Add to collection')}</option>
@@ -194,7 +199,7 @@ export function ProductPage({ id }: { id: string }) {
             <Link to="/radar"><Button variant="outline" size="sm"><QrCode className="h-4 w-4" />{tr('رادار العروض', 'Deal radar')}</Button></Link>
             <Button variant="outline" size="sm" onClick={() => window.print()}><Printer className="h-4 w-4" />{tr('اطبع', 'Print')}</Button>
           </div>
-          <div className="no-print mt-3"><ShareBar url={appUrl(`/product/${id}`)} title={title} /></div>
+          <div className="no-print mt-3"><ShareBar url={appUrl(`/product/${id}`)} title={title} text={product.data ? dealText(product.data, locale) : title} /></div>
         </div>
       </section>
 
@@ -232,7 +237,7 @@ export function ProductPage({ id }: { id: string }) {
         <Reveal>
           <section className="rounded-3xl border border-destructive/40 bg-destructive/5 p-5">
             <h2 className="flex items-center gap-2 text-lg font-bold text-destructive"><ShieldAlert className="h-5 w-5" />{tr('كاشف الخصم المضروب', 'Fake-discount detector')}</h2>
-            <p className="mt-2 text-sm leading-7">{tr('صفقة بتقارن "السعر قبل الخصم" اللي المتجر كاتبه بأعلى سعر فعلي اتسجّل في آخر ٩٠ يوم. لو المتجر كاتب سعر قديم عمره ما اتباع بيه، أو السعر "بعد الخصم" مش أقل من الوسيط، بنعلّم العرض إنه مشبوه.', 'Safqa compares the store\'s "was" price with the highest price actually recorded in the last 90 days. If the "was" price never existed, or the "now" price is not below the median, the offer is flagged.')}</p>
+            <p className="mt-2 text-sm leading-7">{tr('صفقة بتقارن "السعر قبل الخصم" اللي المتجر كاتبه بأعلى سعر فعلي اتسجّل في آخر 90 يوم. لو المتجر كاتب سعر قديم عمره ما اتباع بيه، أو السعر "بعد الخصم" مش أقل من الوسيط، بنعلّم العرض إنه مشبوه.', 'Safqa compares the store\'s "was" price with the highest price actually recorded in the last 90 days. If the "was" price never existed, or the "now" price is not below the median, the offer is flagged.')}</p>
             <ul className="mt-3 space-y-2 text-sm">
               {item.offers.filter((o) => o.fakeDiscount).map((o) => (
                 <li key={o.id} className="rounded-2xl bg-card p-3">

@@ -62,11 +62,6 @@ body {
   font-family: var(--font-sans);
 }
 
-button,
-input,
-select {
-  font: inherit;
-}
 
 .num {
   font-variant-numeric: tabular-nums;
@@ -232,3 +227,91 @@ a:hover .logo-mark { transform: rotate(-8deg) scale(1.06); }
 @keyframes bar { from { transform: scaleX(0); } }
 .bleed { margin-inline: calc(50% - 50vw); }
 body { overflow-x: clip; }
+
+/* ===== Safqa v4: device layouts, tiles, type scale ===== */
+@custom-variant phone (&:where([data-device="phone"] *));
+@custom-variant tablet (&:where([data-device="tablet"] *));
+@custom-variant desktop (&:where([data-device="desktop"] *));
+@custom-variant touch (&:where([data-pointer="coarse"] *));
+
+:root { --bottom-bar: 0px; }
+html { -webkit-tap-highlight-color: transparent; text-size-adjust: 100%; }
+body { overflow-x: clip; }
+
+/* Visibility by device (data-device is set before first paint by lib/device). */
+.only-phone, .only-tablet, .only-desktop, .not-phone, .not-desktop { display: none; }
+[data-device="phone"] .only-phone { display: grid; }
+[data-device="tablet"] .only-tablet { display: grid; }
+[data-device="desktop"] .only-desktop { display: flex; }
+[data-device="tablet"] .not-phone, [data-device="desktop"] .not-phone { display: block; }
+[data-device="phone"] .not-desktop, [data-device="tablet"] .not-desktop { display: grid; }
+[data-device="tablet"] .rail-pad { padding-inline-start: calc(84px + 1rem); max-width: none; }
+
+/* Fixed layers sit above the phone bottom bar, never under it. */
+.toast-stack { bottom: calc(1rem + var(--bottom-bar)); transition: bottom 0.3s var(--ease); }
+.back-to-top { bottom: calc(1rem + var(--bottom-bar)); transition: bottom 0.3s var(--ease), transform 0.2s; }
+.compare-tray { bottom: calc(0.75rem + var(--bottom-bar)); transition: bottom 0.3s var(--ease); }
+.compare-tray ~ .back-to-top, body:has(.compare-tray) .back-to-top { bottom: calc(5.5rem + var(--bottom-bar)); }
+
+.sheet-up { animation: sheet-up 0.32s var(--ease) both; }
+@keyframes sheet-up { from { transform: translateY(100%); } }
+.sheet-side { animation: sheet-side 0.3s var(--ease) both; }
+@keyframes sheet-side { from { transform: translateX(-100%); } }
+[dir="ltr"] .sheet-side { animation-name: sheet-side-ltr; }
+@keyframes sheet-side-ltr { from { transform: translateX(100%); } }
+
+/* One product image tile everywhere: same ratio, white tile, padding, contain. */
+.media-tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--line) 70%, transparent);
+}
+.dark .media-tile { background: #f7f5f1; box-shadow: none; }
+.media-tile > img { width: 100%; height: 100%; object-fit: contain; padding: 6%; }
+.media-tile.is-art > img { padding: 0; }
+
+/* Type scale: 12 / 13 / 15 / 17 / 20 / 24 / 30. Titles clamp to a reserved height. */
+.t-meta { font-size: 0.75rem; line-height: 1rem; color: var(--muted); }
+.t-body { font-size: 0.9375rem; line-height: 1.6; }
+.t-title { font-size: 0.9375rem; line-height: 1.35; font-weight: 600; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: calc(2 * 1.35em); overflow-wrap: anywhere; }
+.t-price { font-size: 1.25rem; line-height: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; white-space: nowrap; }
+[data-device="phone"] .t-title { font-size: 0.875rem; }
+[data-device="phone"] .t-price { font-size: 1.0625rem; }
+.num, .t-price, [data-num] { font-variant-numeric: tabular-nums; unicode-bidi: plaintext; }
+
+/* Touch targets */
+[data-pointer="coarse"] button, [data-pointer="coarse"] a { touch-action: manipulation; }
+:focus-visible { outline: 2px solid var(--saffron); outline-offset: 2px; border-radius: 0.6rem; }
+
+/* Tier effects */
+.tier-glow-silver { box-shadow: 0 0 0 1px #cfd8e3, 0 18px 50px -24px #8aa0b8; }
+.tier-glow-gold { box-shadow: 0 0 0 1px #f0c35a, 0 18px 60px -22px #f0a31a; }
+.tier-glow-diamond { box-shadow: 0 0 0 1px #9be7ff, 0 18px 70px -20px #7c5cff; }
+.tier-shimmer { position: relative; overflow: hidden; }
+.tier-shimmer::after { content: ""; position: absolute; inset: -50%; background: linear-gradient(105deg, transparent 40%, rgb(255 255 255 / 0.35) 50%, transparent 60%); transform: translateX(-60%); animation: tier-sweep 3.6s var(--ease) infinite; pointer-events: none; }
+@keyframes tier-sweep { 55%, 100% { transform: translateX(60%); } }
+.sparkle { animation: sparkle 2.4s ease-in-out infinite; }
+@keyframes sparkle { 0%, 100% { opacity: 0.2; transform: scale(0.7) rotate(0deg); } 50% { opacity: 1; transform: scale(1.1) rotate(25deg); } }
+
+/* Welcome tour */
+.welcome-orb { position: absolute; border-radius: 999px; filter: blur(40px); opacity: 0.55; animation: float 9s ease-in-out infinite; }
+.press { transition: transform 0.12s var(--ease); }
+.press:active { transform: scale(0.96); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-up, .sheet-side, .tier-shimmer::after, .sparkle, .welcome-orb { animation: none !important; }
+}
+
+/* Deal grids: 2 columns on phones, 3 on tablets, auto-fill on desktop. */
+.deal-grid { display: grid; gap: 0.75rem; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
+.deal-grid > * { min-width: 0; height: 100%; }
+[data-device="tablet"] .deal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+[data-device="desktop"] .deal-grid { grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 1.25rem; }
+[data-device="desktop"] .deal-grid--aside { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+@media (max-width: 359px) { .deal-grid { gap: 0.5rem; } }
+[data-device="tablet"] .bleed { margin-inline: -1rem; }

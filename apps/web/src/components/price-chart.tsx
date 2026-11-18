@@ -9,7 +9,7 @@ export function PriceChart({ history }: { history: PriceHistory }) {
   const stamps = [...new Set(history.series.flatMap((series) => series.points.map((point) => point.t)))].sort();
   const data = stamps.map((stamp) => {
     const row: Record<string, string | number> = {
-      t: new Date(stamp).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-GB', {
+      t: new Date(stamp).toLocaleDateString(locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB', {
         day: 'numeric',
         month: 'short',
       }),

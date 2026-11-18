@@ -5,6 +5,7 @@
 // emulated per browser in localStorage. Nothing is sent to a server.
 // biome-ignore lint/suspicious/noExplicitAny: snapshot JSON mirrors API schemas validated by the client.
 type Json = any;
+import { limitsNow } from './tiers';
 
 interface Snapshot {
   recordedAt: string;
@@ -430,6 +431,8 @@ export async function installDemoApi(snapshotUrl: string): Promise<void> {
       const list = state.watch[email];
       const existing = list.find((w) => w.product.id === data.productId);
       if (existing) return json(existing);
+      const cap = limitsNow().watchlist;
+      if (list.length >= cap) return fail(409, 'limit_reached', `Watchlist limit (${cap}) reached for your plan`);
       const item = {
         id: crypto.randomUUID(),
         targetPriceEgp: data.targetPriceEgp ?? null,

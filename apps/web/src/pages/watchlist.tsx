@@ -1,5 +1,6 @@
 import { Download, Eye } from 'lucide-react';
-import { PageHeader } from '../fx/fx';
+import { PageHeader, useToast } from '../fx/fx';
+import { StateMessage } from '../components/bits';
 import { downloadFile, toCsv } from '../lib/local';
 import { formatEGP, localized } from '@safqa/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -20,16 +21,26 @@ export function WatchlistPage() {
     queryFn: () => client.watchlist(),
     enabled: Boolean(user),
   });
+  const toast = useToast();
   const remove = useMutation({
-    mutationFn: (id: string) => client.removeWatch(id),
-    onSuccess: async () => {
+    mutationFn: (item: { id: string; productId: string; target: number | null }) => client.removeWatch(item.id),
+    onSuccess: async (_r, item) => {
       await queryClient.invalidateQueries({ queryKey: ['watchlist'] });
+      toast(locale === 'ar' ? 'شلناه من المراقبة' : 'Removed from your watchlist', 'info', {
+        action: {
+          label: locale === 'ar' ? 'رجّعه' : 'Undo',
+          onClick: () => void client.addWatch(item.productId, item.target).then(() => queryClient.invalidateQueries({ queryKey: ['watchlist'] })),
+        },
+        duration: 6000,
+      });
     },
+    onError: () => toast(locale === 'ar' ? 'معرفناش نشيله دلوقتي، جرّب تاني' : 'Could not remove it, try again', 'error'),
   });
   const update = useMutation({
     mutationFn: (input: { id: string; target: number | null }) => client.updateWatch(input.id, input.target),
-    onSuccess: async () => {
+    onSuccess: async (_r, input) => {
       await queryClient.invalidateQueries({ queryKey: ['watchlist'] });
+      toast(input.target ? (locale === 'ar' ? `اتحفظ 🎯 هنقولك أول ما يوصل ${formatEGP(input.target, locale)}` : `Saved 🎯 we'll ping you at ${formatEGP(input.target, locale)}`) : locale === 'ar' ? 'شلنا السعر المستهدف' : 'Target cleared', 'success');
     },
   });
 
@@ -62,13 +73,15 @@ export function WatchlistPage() {
           <Button variant="outline" size="sm" disabled={!list.data?.items.length} onClick={() => downloadFile('safqa-watchlist.csv', toCsv([['product', 'store', 'price_egp', 'target_egp', 'added'], ...(list.data?.items ?? []).map((w) => [w.product.titleEn, w.product.bestOffer?.store.nameEn ?? '', w.product.bestOffer?.priceEgp ?? '', w.targetPriceEgp ?? '', w.createdAt.slice(0, 10)])]), 'text/csv')}><Download className="h-4 w-4" />CSV</Button>
         </div>
       </PageHeader>
-      {list.isLoading ? <p>{t('common.loading')}</p> : null}
-      {list.isError ? (
-        <Button variant="outline" onClick={() => void list.refetch()}>
-          {t('action.retry')}
-        </Button>
+      {list.isLoading ? <StateMessage kind="loading" /> : null}
+      {list.isError ? <StateMessage kind="error" onRetry={() => void list.refetch()} /> : null}
+      {list.data && list.data.items.length === 0 ? (
+        <div className="rounded-3xl border border-dashed border-border bg-card px-6 py-10 text-center" role="status">
+          <p className="text-4xl" aria-hidden="true">🛎️</p>
+          <p className="mx-auto mt-3 max-w-md text-[15px]">{t('watch.empty')}</p>
+          <Link to="/radar" className="press mt-4 inline-flex h-10 items-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground">{locale === 'ar' ? 'شوف أحسن العروض' : 'See the best deals'}</Link>
+        </div>
       ) : null}
-      {list.data && list.data.items.length === 0 ? <p className="text-muted">{t('watch.empty')}</p> : null}
       <div className="space-y-3">
         {list.data?.items.map((item) => {
           const offer = item.product.bestOffer;
@@ -95,12 +108,12 @@ export function WatchlistPage() {
                   update.mutate({ id: item.id, target: raw ? Number(raw) : null });
                 }}
               >
-                <Input name="target" className="w-32" defaultValue={item.targetPriceEgp ?? ''} placeholder={t('watch.target')} />
+                <Input name="target" inputMode="numeric" aria-label={t('product.target')} title={t('product.targetHint')} className="w-32" defaultValue={item.targetPriceEgp ?? ''} placeholder={t('watch.target')} />
                 <Button type="submit" size="sm" variant="outline">
                   {t('action.save')}
                 </Button>
               </form>
-              <Button variant="ghost" size="sm" onClick={() => remove.mutate(item.id)}>
+              <Button variant="ghost" size="sm" aria-label={locale === 'ar' ? `بطّل تراقب ${item.product.titleAr}` : `Stop watching ${item.product.titleEn}`} onClick={() => remove.mutate({ id: item.id, productId: item.product.id, target: item.targetPriceEgp ?? null })}>
                 {t('action.unwatch')}
               </Button>
             </article>

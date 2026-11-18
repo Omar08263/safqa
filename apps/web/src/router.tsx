@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   createHashHistory,
   createRootRoute,
@@ -23,6 +24,8 @@ const lz = <M extends Record<string, unknown>>(load: () => Promise<M>, name: key
   lazy(async () => ({ default: (await load())[name] as React.ComponentType<any> }));
 const HelpPage = lz(() => import('./pages/help'), 'HelpPage');
 const AboutPage = lz(() => import('./pages/help'), 'AboutPage');
+const PlansPage = lz(() => import('./pages/plans'), 'PlansPage');
+const ChannelsPage = lz(() => import('./pages/channels'), 'ChannelsPage');
 const PayPage = lz(() => import('./pages/pay'), 'PayPage');
 const LivePage = lz(() => import('./pages/live'), 'LivePage');
 const PrivacyPage = lz(() => import('./pages/legal'), 'PrivacyPage');
@@ -229,6 +232,8 @@ const extraRoutes = [
   simple('/referral', () => <ReferralPage />),
   simple('/help', () => <HelpPage />),
   simple('/about', () => <AboutPage />),
+  simple('/plans', () => <PlansPage />),
+  simple('/channels', () => <ChannelsPage />),
   simple('/pay', () => <PayPage />),
   simple('/live', () => <LivePage />),
   simple('/privacy', () => <PrivacyPage />),
@@ -256,6 +261,30 @@ const routeTree = rootRoute.addChildren([
   ...extraRoutes,
 ]);
 
+const LOST = [
+  { emoji: '🧭', ar: 'شكلك تهت في السوق!', en: 'Looks like you got lost in the souq!' },
+  { emoji: '🛒', ar: 'العربية فاضية والصفحة دي مش موجودة', en: 'Empty cart, and this page does not exist' },
+  { emoji: '🕵️', ar: 'دوّرنا في كل المتاجر… مفيش صفحة بالاسم ده', en: 'We searched every store… no page by that name' },
+];
+
+function NotFound() {
+  const [pick] = useState(() => LOST[Math.floor(Math.random() * LOST.length)] ?? LOST[0]!);
+  return (
+    <div className="mx-auto max-w-lg py-16 text-center" role="alert">
+      <p className="text-6xl" aria-hidden="true">{pick.emoji}</p>
+      <p className="text-gradient mt-2 text-7xl font-bold">404</p>
+      <h1 className="mt-3 text-xl font-bold">{pick.ar}</h1>
+      <p className="mt-1 text-sm text-muted" lang="en" dir="ltr">{pick.en}</p>
+      <p className="mt-4 text-[15px] text-muted">يمكن اللينك قديم أو فيه حرف ناقص. جرّب واحدة من دول:</p>
+      <div className="mt-5 flex flex-wrap justify-center gap-2">
+        <Link to="/" className="press rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground">الرئيسية</Link>
+        <Link to="/radar" className="press rounded-full border border-border px-5 py-2.5 text-sm font-semibold">أحسن العروض 🔥</Link>
+        <Link to="/search" search={{ q: '' } as never} className="press rounded-full border border-border px-5 py-2.5 text-sm font-semibold">دوّر على منتج</Link>
+      </div>
+    </div>
+  );
+}
+
 export const router = createRouter({
   routeTree,
   // The static demo (no server rewrites) uses #/ URLs so deep links survive reloads.
@@ -263,13 +292,7 @@ export const router = createRouter({
     import.meta.env.VITE_DEMO_MODE === 'static'
       ? createHashHistory()
       : undefined,
-  defaultNotFoundComponent: () => (
-    <div className="py-20 text-center">
-      <p className="text-gradient text-7xl font-bold">404</p>
-      <p className="mt-3 text-muted">الصفحة دي مش موجودة · Page not found</p>
-      <Link to="/" className="mt-4 inline-block font-semibold text-primary">صفقة ← الرئيسية</Link>
-    </div>
-  ),
+  defaultNotFoundComponent: NotFound,
 });
 
 declare module '@tanstack/react-router' {

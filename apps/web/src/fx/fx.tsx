@@ -1,3 +1,4 @@
+import { feedback } from '../lib/sound';
 import { ArrowUp, CheckCircle2, Info, TriangleAlert, X } from 'lucide-react';
 import {
   createContext,
@@ -59,7 +60,7 @@ export function Reveal({
 /** Animated number that counts up when first visible. */
 export function CountUp({
   value,
-  format = (n) => Math.round(n).toLocaleString(),
+  format = (n) => Math.round(n).toLocaleString('en-US'),
   duration = 1200,
   className,
 }: {
@@ -170,31 +171,48 @@ export function confetti(opts: { x?: number; y?: number; count?: number } = {}) 
 }
 
 type ToastKind = 'success' | 'info' | 'error';
+interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
+interface ToastOptions {
+  /** e.g. { label: 'تراجع', onClick: restore } for undo toasts. */
+  action?: ToastAction;
+  duration?: number;
+}
 interface Toast {
   id: number;
   kind: ToastKind;
   text: string;
+  action?: ToastAction;
 }
-const ToastContext = createContext<(text: string, kind?: ToastKind) => void>(() => undefined);
+type PushToast = (text: string, kind?: ToastKind, options?: ToastOptions) => void;
+const ToastContext = createContext<PushToast>(() => undefined);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<Toast[]>([]);
-  const push = useCallback((text: string, kind: ToastKind = 'success') => {
+  const push = useCallback<PushToast>((text, kind = 'success', options) => {
     const id = Date.now() + Math.random();
-    setItems((list) => [...list, { id, kind, text }].slice(-4));
-    setTimeout(() => setItems((list) => list.filter((t) => t.id !== id)), 3800);
+    setItems((list) => [...list, { id, kind, text, action: options?.action }].slice(-3));
+    feedback(kind === 'error' ? 'error' : kind === 'success' ? 'pop' : 'tap', kind === 'error' ? 'warning' : 'light');
+    setTimeout(() => setItems((list) => list.filter((t) => t.id !== id)), options?.duration ?? (options?.action ? 6000 : 3800));
   }, []);
   return (
     <ToastContext.Provider value={push}>
       {children}
-      <div className="pointer-events-none fixed inset-x-0 bottom-4 z-[60] flex flex-col items-center gap-2 px-4" aria-live="polite">
+      <div className="toast-stack pointer-events-none fixed inset-x-0 z-[60] flex flex-col items-center gap-2 px-4" aria-live="polite">
         {items.map((t) => {
           const Icon = t.kind === 'success' ? CheckCircle2 : t.kind === 'error' ? TriangleAlert : Info;
           return (
             <div key={t.id} className="toast pointer-events-auto flex max-w-md items-center gap-3 rounded-2xl border border-border bg-card/95 px-4 py-3 text-sm shadow-xl backdrop-blur">
               <Icon className={cn('h-5 w-5 flex-none', t.kind === 'error' ? 'text-destructive' : t.kind === 'success' ? 'text-palm' : 'text-primary')} />
-              <span>{t.text}</span>
-              <button type="button" aria-label="close" className="ms-auto text-muted" onClick={() => setItems((l) => l.filter((x) => x.id !== t.id))}>
+              <span className="min-w-0 flex-1">{t.text}</span>
+              {t.action ? (
+                <button type="button" className="flex-none rounded-full bg-primary/15 px-3 py-1 text-xs font-bold text-primary hover:bg-primary/25" onClick={() => { t.action?.onClick(); setItems((l) => l.filter((x) => x.id !== t.id)); }}>
+                  {t.action.label}
+                </button>
+              ) : null}
+              <button type="button" aria-label={document.documentElement.lang === 'ar' ? 'اقفل' : 'Close'} className="flex-none text-muted" onClick={() => setItems((l) => l.filter((x) => x.id !== t.id))}>
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -234,7 +252,7 @@ export function BackToTop({ label }: { label: string }) {
       aria-label={label}
       title={label}
       onClick={() => window.scrollTo({ top: 0, behavior: prefersCalm() ? 'auto' : 'smooth' })}
-      className="fixed bottom-20 end-4 z-40 grid h-11 w-11 place-items-center rounded-full border border-border bg-card/90 shadow-lg backdrop-blur transition hover:-translate-y-0.5"
+      className="back-to-top fixed end-4 z-40 grid h-11 w-11 place-items-center rounded-full border border-border bg-card/90 shadow-lg backdrop-blur transition hover:-translate-y-0.5"
     >
       <ArrowUp className="h-5 w-5" />
     </button>

@@ -222,7 +222,7 @@ export function RuleChip({ id }: { id: string }) {
 
 export function timeAgo(iso: string, locale: 'ar' | 'en' = 'ar') {
   const s = (Date.now() - Date.parse(iso)) / 1000;
-  const rtf = new Intl.RelativeTimeFormat(locale === 'ar' ? 'ar-EG' : 'en', { numeric: 'auto' });
+  const rtf = new Intl.RelativeTimeFormat(locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en', { numeric: 'auto' });
   if (s < 60) return rtf.format(-Math.round(s), 'second');
   if (s < 3600) return rtf.format(-Math.round(s / 60), 'minute');
   if (s < 86400) return rtf.format(-Math.round(s / 3600), 'hour');

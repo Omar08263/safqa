@@ -48,7 +48,7 @@ export function Gallery({ media, slug, title }: { media: ProductMedia | null | u
     window.addEventListener('keydown', k);
     return () => window.removeEventListener('keydown', k);
   });
-  if (n === 0) return <ProductArt slug={slug} className="h-72 sm:h-96" />;
+  if (n === 0) return <ProductArt slug={slug} className="w-full rounded-3xl" />;
   const cur = imgs[i] ?? imgs[0];
   if (!cur) return null;
   return (
@@ -67,7 +67,7 @@ export function Gallery({ media, slug, title }: { media: ProductMedia | null | u
         tabIndex={0}
         aria-label={tr('كبّر الصورة', 'Enlarge image')}
       >
-        <img src={cur.full} alt={`${title} — ${i + 1}`} className="h-full w-full select-none object-contain p-6 transition duration-300" draggable={false} style={lens && !spin ? { transform: 'scale(2.2)', transformOrigin: `${lens.x}% ${lens.y}%` } : undefined} />
+        <img src={cur.full} alt={`${title} — ${i + 1}`} className="h-full w-full select-none object-contain p-3 transition duration-300" draggable={false} style={lens && !spin ? { transform: 'scale(2.2)', transformOrigin: `${lens.x}% ${lens.y}%` } : undefined} />
         <div className="pointer-events-none absolute start-3 top-3 flex gap-1.5">
           <span className="rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-semibold text-white">{i + 1}/{n}</span>
           <span className="rounded-full bg-black/60 px-2.5 py-1 text-[11px] text-white">{tr('صورة من', 'Photo from')} {storeLabel(cur.store, locale)}</span>
@@ -428,7 +428,7 @@ export function ProductRow({ title, items }: { title: string; items: ProductCard
       <div className="flex snap-x gap-3 overflow-x-auto pb-2">
         {items.map((p, k) => (
           <Link key={p.id} to="/product/$id" params={{ id: p.id }} className="lift group w-44 flex-none snap-start rounded-2xl border border-border bg-card p-2">
-            <ProductThumb id={p.id} slug={p.category?.slug} className="h-28" seed={k} />
+            <ProductThumb id={p.id} slug={p.category?.slug} className="w-full" seed={k} />
             <p className="mt-2 line-clamp-2 text-xs font-semibold">{localized(locale, { ar: p.titleAr, en: p.titleEn })}</p>
             <p className="num mt-1 text-sm font-bold">{p.lowestPriceEgp ? formatEGP(p.lowestPriceEgp, locale) : '—'}</p>
             {p.bestOffer?.discountPct && !p.bestOffer.fakeDiscount ? <span className="text-[10px] font-bold text-palm">-{Math.round(p.bestOffer.discountPct)}%</span> : null}
@@ -545,7 +545,7 @@ export function StickyBuyBar({ item, title }: { item: ProductDetail; title: stri
   return (
     <div className="no-print page-enter fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 p-3 shadow-2xl backdrop-blur md:bottom-4 md:mx-auto md:max-w-3xl md:rounded-full md:border">
       <div className="flex items-center gap-3">
-        <ProductThumb id={item.id} slug={item.category?.slug} className="h-10 w-10 flex-none" />
+        <ProductThumb id={item.id} slug={item.category?.slug} className="w-10 flex-none" />
         <p className="line-clamp-1 flex-1 text-sm font-semibold">{title}</p>
         <p className="num font-bold">{formatEGP(b.priceEgp, locale)}</p>
         <a href={b.url} target="_blank" rel="noreferrer"><Button size="sm">{tr('روح للمتجر', 'Go to store')} <ExternalLink className="h-3.5 w-3.5" /></Button></a>

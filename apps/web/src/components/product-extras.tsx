@@ -6,9 +6,9 @@ import { useTr } from '../lib/tr';
 import { PriceChart } from './price-chart';
 
 export const ranges = [
-  { id: '7', days: 7, ar: '٧ أيام', en: '7D' },
-  { id: '30', days: 30, ar: '٣٠ يوم', en: '30D' },
-  { id: '90', days: 90, ar: '٩٠ يوم', en: '90D' },
+  { id: '7', days: 7, ar: '7 أيام', en: '7D' },
+  { id: '30', days: 30, ar: '30 يوم', en: '30D' },
+  { id: '90', days: 90, ar: '90 يوم', en: '90D' },
   { id: 'all', days: 100000, ar: 'الكل', en: 'All' },
 ] as const;
 
@@ -77,8 +77,8 @@ export function ScoreBreakdown({ item }: { item: ProductDetail }) {
   const vsMedian = item.median30 ? (1 - best.priceEgp / item.median30) * 100 : null;
   const vsMin = item.min90 ? (best.priceEgp / item.min90 - 1) * 100 : null;
   const rows = [
-    { label: tr('مقارنة بوسيط ٣٠ يوم', 'Versus 30-day median'), value: vsMedian, good: (vsMedian ?? 0) > 3, text: vsMedian == null ? '—' : tr(`${vsMedian >= 0 ? 'أرخص' : 'أغلى'} بـ ${Math.abs(vsMedian).toFixed(1)}%`, `${Math.abs(vsMedian).toFixed(1)}% ${vsMedian >= 0 ? 'cheaper' : 'pricier'}`), weight: Math.max(0, Math.min(100, 50 + (vsMedian ?? 0) * 3)) },
-    { label: tr('قرب من أقل سعر في ٩٠ يوم', 'Closeness to 90-day low'), value: vsMin, good: (vsMin ?? 99) < 3, text: vsMin == null ? '—' : vsMin <= 0.01 ? tr('ده أقل سعر', 'This is the low') : tr(`أعلى بـ ${vsMin.toFixed(1)}%`, `${vsMin.toFixed(1)}% above`), weight: Math.max(0, 100 - (vsMin ?? 50) * 5) },
+    { label: tr('مقارنة بوسيط 30 يوم', 'Versus 30-day median'), value: vsMedian, good: (vsMedian ?? 0) > 3, text: vsMedian == null ? '—' : tr(`${vsMedian >= 0 ? 'أرخص' : 'أغلى'} بـ ${Math.abs(vsMedian).toFixed(1)}%`, `${Math.abs(vsMedian).toFixed(1)}% ${vsMedian >= 0 ? 'cheaper' : 'pricier'}`), weight: Math.max(0, Math.min(100, 50 + (vsMedian ?? 0) * 3)) },
+    { label: tr('قرب من أقل سعر في 90 يوم', 'Closeness to 90-day low'), value: vsMin, good: (vsMin ?? 99) < 3, text: vsMin == null ? '—' : vsMin <= 0.01 ? tr('ده أقل سعر', 'This is the low') : tr(`أعلى بـ ${vsMin.toFixed(1)}%`, `${vsMin.toFixed(1)}% above`), weight: Math.max(0, 100 - (vsMin ?? 50) * 5) },
     { label: tr('مصداقية الخصم', 'Discount honesty'), value: 0, good: !best.fakeDiscount, text: best.fakeDiscount ? tr('خصم مشبوه', 'Suspicious') : tr('سليم', 'Clean'), weight: best.fakeDiscount ? 10 : 95 },
     { label: tr('التوفر', 'Availability'), value: 0, good: best.inStock, text: best.inStock ? tr('متوفر', 'In stock') : tr('غير متوفر', 'Out of stock'), weight: best.inStock ? 100 : 20 },
     { label: tr('تقييم المتجر للمنتج', 'Listing rating'), value: 0, good: (best.rating ?? 0) >= 4.3, text: best.rating ? `${best.rating}/5` : '—', weight: best.rating ? (best.rating / 5) * 100 : 50 },
@@ -146,13 +146,13 @@ export function ChangeLog({ history }: { history: PriceHistory }) {
     .filter((c) => Math.abs(c.to - c.from) / c.from >= 0.02)
     .sort((a, b) => b.t.localeCompare(a.t))
     .slice(0, 8);
-  if (!changes.length) return <p className="text-sm text-muted">{tr('مفيش تغييرات كبيرة (أكتر من ٢٪).', 'No big changes (over 2%).')}</p>;
+  if (!changes.length) return <p className="text-sm text-muted">{tr('مفيش تغييرات كبيرة (أكتر من 2%).', 'No big changes (over 2%).')}</p>;
   return (
     <ol className="relative space-y-3 border-s-2 border-border ps-5">
       {changes.map((c) => (
         <li key={`${c.store}-${c.t}`} className="relative text-sm">
           <span className={`absolute -start-[27px] top-1 h-3 w-3 rounded-full ${c.to < c.from ? 'bg-[var(--palm)]' : 'bg-[var(--clay)]'}`} />
-          <span className="text-xs text-muted">{new Date(c.t).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-GB', { day: 'numeric', month: 'short' })} · {c.store}</span>
+          <span className="text-xs text-muted">{new Date(c.t).toLocaleDateString(locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB', { day: 'numeric', month: 'short' })} · {c.store}</span>
           <p className="num font-semibold">{formatEGP(c.from, locale)} → <span className={c.to < c.from ? 'text-palm' : 'text-destructive'}>{formatEGP(c.to, locale)}</span> <span className="text-xs">({(((c.to - c.from) / c.from) * 100).toFixed(1)}%)</span></p>
         </li>
       ))}

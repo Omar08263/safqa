@@ -84,7 +84,7 @@ export function DashboardPage() {
           <h2 className="text-xl font-bold">{tr('شفته مؤخرًا', 'Recently viewed')}</h2>
           {recent.length ? <Button variant="ghost" size="sm" onClick={() => track.clearViews()}><Trash2 className="h-4 w-4" />{tr('امسح السجل', 'Clear history')}</Button> : null}
         </div>
-        {recent.length === 0 ? <p className="text-sm text-muted">{tr('لسه مفتحتش منتجات.', 'You have not opened any products yet.')}</p> : <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{recent.map((p, i) => <DealCard key={p.id} product={p} index={i} />)}</div>}
+        {recent.length === 0 ? <p className="text-sm text-muted">{tr('لسه مفتحتش منتجات.', 'You have not opened any products yet.')}</p> : <div className="deal-grid">{recent.map((p, i) => <DealCard key={p.id} product={p} index={i} />)}</div>}
       </section>
     </div>
   );
@@ -121,7 +121,7 @@ export function AchievementsPage() {
                   {got ? <span className="rounded-full bg-[var(--palm)]/15 px-2 py-0.5 text-xs font-bold text-palm">✓</span> : null}
                 </div>
                 <div className="mt-3 h-2 overflow-hidden rounded-full bg-accent"><div className="h-full rounded-full bg-primary" style={{ width: `${(v / goal) * 100}%` }} /></div>
-                <p className="num mt-1 text-xs text-muted">{Math.round(v).toLocaleString()} / {goal.toLocaleString()}</p>
+                <p className="num mt-1 text-xs text-muted">{Math.round(v).toLocaleString('en-US')} / {goal.toLocaleString('en-US')}</p>
               </Card>
             </Reveal>
           );

@@ -42,8 +42,8 @@ export function ComparePage({ ids: fromUrl }: { ids?: string }) {
     { label: tr('أحسن سعر', 'Best price'), values: items.map((p) => p.bestOffer?.priceEgp ?? null), fmt: money, best: 'min' },
     { label: tr('تقييم الصفقة', 'Deal score'), values: items.map((p) => p.bestOffer?.dealScore ?? null), fmt: (v) => (v == null ? '—' : `${v}/100`), best: 'max' },
     { label: tr('الخصم', 'Discount'), values: items.map((p) => p.bestOffer?.discountPct ?? null), fmt: (v, i) => (v == null ? '—' : `${v.toFixed(1)}%${items[i]?.bestOffer?.fakeDiscount ? ' ⚠️' : ''}`), best: 'max' },
-    { label: tr('وسيط ٣٠ يوم', '30-day median'), values: items.map((p) => p.median30 ?? null), fmt: money },
-    { label: tr('أقل سعر ٩٠ يوم', '90-day low'), values: items.map((p) => p.min90 ?? null), fmt: money, best: 'min' },
+    { label: tr('وسيط 30 يوم', '30-day median'), values: items.map((p) => p.median30 ?? null), fmt: money },
+    { label: tr('أقل سعر 90 يوم', '90-day low'), values: items.map((p) => p.min90 ?? null), fmt: money, best: 'min' },
     { label: tr('أرخص من الوسيط بـ', 'Below median by'), values: items.map((p) => (p.median30 && p.bestOffer ? (1 - p.bestOffer.priceEgp / p.median30) * 100 : null)), fmt: (v) => (v == null ? '—' : `${v.toFixed(1)}%`), best: 'max' },
     { label: tr('عدد العروض', 'Offers'), values: items.map((p) => p.offers.length), fmt: (v) => String(v ?? '—'), best: 'max' },
     { label: tr('التقييم', 'Rating'), values: items.map((p) => p.bestOffer?.rating ?? null), fmt: (v) => (v == null ? '—' : `★ ${v}`), best: 'max' },
@@ -72,7 +72,7 @@ export function ComparePage({ ids: fromUrl }: { ids?: string }) {
   });
   const allDays = [...new Set(series.flatMap((s) => s.points.map((p) => p.d)))].sort();
   const chart = allDays.map((d) => {
-    const row: Record<string, string | number> = { d: new Date(d).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-GB', { day: 'numeric', month: 'short' }) };
+    const row: Record<string, string | number> = { d: new Date(d).toLocaleDateString(locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB', { day: 'numeric', month: 'short' }) };
     for (const s of series) {
       const hit = s.points.find((p) => p.d === d);
       if (hit) row[s.key] = Number(hit.v.toFixed(1));
@@ -83,7 +83,7 @@ export function ComparePage({ ids: fromUrl }: { ids?: string }) {
 
   return (
     <div>
-      <PageHeader icon={<GitCompare className="h-6 w-6" />} kicker={tr('قارن قبل ما تقرر', 'Compare before you decide')} title={tr('مقارنة المنتجات', 'Product comparison')} lede={tr('ضيف لحد ٤ منتجات. الخلية الخضرا هي الأحسن في كل صف، والرسم بيوضح مين سعره نزل أكتر.', 'Add up to 4 products. The green cell wins each row, and the chart shows whose price fell most.')}>
+      <PageHeader icon={<GitCompare className="h-6 w-6" />} kicker={tr('قارن قبل ما تقرر', 'Compare before you decide')} title={tr('مقارنة المنتجات', 'Product comparison')} lede={tr('ضيف لحد 4 منتجات. الخلية الخضرا هي الأحسن في كل صف، والرسم بيوضح مين سعره نزل أكتر.', 'Add up to 4 products. The green cell wins each row, and the chart shows whose price fell most.')}>
         {compare.ids.length ? <ShareBar url={appUrl(`/compare?ids=${compare.ids.join(',')}`)} title={tr('مقارنة صفقة', 'Safqa comparison')} /> : null}
       </PageHeader>
 
@@ -110,7 +110,7 @@ export function ComparePage({ ids: fromUrl }: { ids?: string }) {
                   {items.map((p, i) => (
                     <th key={p.id} className="p-3 text-start align-top">
                       <div className="relative">
-                        <ProductThumb id={p.id} slug={p.category?.slug} className="h-20" seed={i} />
+                        <ProductThumb id={p.id} slug={p.category?.slug} className="mx-auto w-full max-w-[120px]" seed={i} />
                         <button type="button" onClick={() => compare.remove(p.id)} className="absolute end-1 top-1 grid h-7 w-7 place-items-center rounded-full bg-black/50 text-white" aria-label={tr('شيل', 'Remove')}><X className="h-4 w-4" /></button>
                       </div>
                       <Link to="/product/$id" params={{ id: p.id }} className="mt-2 line-clamp-2 block font-semibold hover:text-primary"><span className="me-1 inline-block h-2.5 w-2.5 rounded-full" style={{ background: colors[i] }} />{localized(locale, { ar: p.titleAr, en: p.titleEn })}</Link>
@@ -135,7 +135,7 @@ export function ComparePage({ ids: fromUrl }: { ids?: string }) {
           </div>
           {chart.length ? (
             <Card className="mt-6">
-              <h2 className="text-lg font-bold">{tr('مين سعره نزل أكتر؟ (١٠٠ = أول يوم)', 'Whose price fell most? (100 = first day)')}</h2>
+              <h2 className="text-lg font-bold">{tr('مين سعره نزل أكتر؟ (100 = أول يوم)', 'Whose price fell most? (100 = first day)')}</h2>
               <div className="mt-3 h-72" dir="ltr">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chart} margin={{ top: 10, right: 8, left: 0, bottom: 0 }}>

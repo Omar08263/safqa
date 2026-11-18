@@ -30,7 +30,7 @@ export function usePriceStatus() {
 }
 
 export function formatCairo(iso: string, locale: 'ar' | 'en'): string {
-  return new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG' : 'en-GB', {
+  return new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB', {
     timeZone: 'Africa/Cairo',
     weekday: 'long',
     day: 'numeric',

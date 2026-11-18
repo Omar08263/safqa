@@ -99,6 +99,6 @@ export function think(a: Agent, input: string, ctx: BrainCtx): Reply {
 
 /** Short agent line for moderation notices (cites the rule). */
 export function modNotice(a: Agent, action: string, rules: string[], until: string | null): string {
-  const u = until ? ` لحد ${new Intl.DateTimeFormat('ar-EG', { timeZone: 'Africa/Cairo', hour: 'numeric', minute: '2-digit', day: 'numeric', month: 'short' }).format(new Date(until))} (القاهرة)` : '';
+  const u = until ? ` لحد ${new Intl.DateTimeFormat('ar-EG-u-nu-latn', { timeZone: 'Africa/Cairo', hour: 'numeric', minute: '2-digit', day: 'numeric', month: 'short' }).format(new Date(until))} (القاهرة)` : '';
   return `${a.emoji[0]} ${pick(a.catch, rules.join(''))} — ${action} بسبب مخالفة المادة ${rules.join('، ')}${u}. تقدر تتظلم من صفحة القوانين.`;
 }

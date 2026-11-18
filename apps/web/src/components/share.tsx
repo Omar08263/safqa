@@ -6,8 +6,9 @@ import { useToast } from '../fx/fx';
 import { track } from '../lib/activity';
 import { useTr } from '../lib/tr';
 import { Button } from './ui/button';
+import { TelegramButton, WhatsAppButton } from './social';
 
-export function ShareBar({ url, title }: { url: string; title: string }) {
+export function ShareBar({ url, title, text }: { url: string; title: string; text?: string }) {
   const tr = useTr();
   const toast = useToast();
   const [qrOpen, setQrOpen] = useState(false);
@@ -36,6 +37,8 @@ export function ShareBar({ url, title }: { url: string; title: string }) {
   }
   return (
     <div className="flex flex-wrap gap-2">
+      <WhatsAppButton text={text ?? title} url={url} />
+      <TelegramButton text={text ?? title} url={url} />
       <Button variant="outline" size="sm" onClick={() => void native()}><Share2 className="h-4 w-4" />{tr('شارك', 'Share')}</Button>
       <Button variant="outline" size="sm" onClick={() => void copy()}><Copy className="h-4 w-4" />{tr('انسخ اللينك', 'Copy link')}</Button>
       <Button variant="outline" size="sm" onClick={() => { setQrOpen(true); track.share(); }}><QrCode className="h-4 w-4" />QR</Button>
