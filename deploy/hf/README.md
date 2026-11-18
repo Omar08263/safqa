@@ -26,3 +26,19 @@ The API also serves the built web app on the same origin when `WEB_DIST_DIR` is 
 
 For a Docker Space, copy `deploy/hf/Dockerfile` to the Space root and use `README.docker-space.md`
 as its README. Data is ephemeral and reseeded on every boot.
+
+## Live prices (daily refresh)
+
+`deploy/hf/refresh-live.sh` is the one command that turns the static Space into a
+real price tracker. It starts Postgres/Redis/API if needed, reads every product
+page listed in `deploy/live/catalog.json` once (robots.txt respected, honest
+`SafqaBot` user agent, JSON-LD only, no LLM), appends a `price_points` row per
+offer so history grows day by day, recomputes deal scores and fake-discount
+flags, records the snapshot, builds and uploads the Space, and prints a summary.
+A store page that fails keeps its last good price and is shown as stale. The
+site shows "آخر تحديث للأسعار" (Cairo time) from the snapshot.
+
+Stores that answer the honest bot today: B.TECH, 2B, and some Amazon.eg pages.
+Noon drops connections from any self-identified bot, so its offers stay empty
+until a partner feed or a store that allows bots replaces them. Log:
+`/workspace/safqa-refresh.log`; status JSON: `/workspace/safqa-refresh-status.json`.

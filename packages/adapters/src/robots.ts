@@ -87,6 +87,7 @@ export class MemoryRobotsCache implements RobotsCache {
       const response = await fetchImpl(`${origin}/robots.txt`, {
         headers: { 'User-Agent': userAgent, Accept: 'text/plain' },
         redirect: 'follow',
+        signal: AbortSignal.timeout(10_000),
       });
       if (!response.ok) return null;
       return parseRobots(await response.text());

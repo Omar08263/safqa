@@ -2,7 +2,7 @@
 // Record a read-only snapshot of a running, seeded Safqa API so the web app
 // can run as a fully static demo (Hugging Face static Space, GitHub Pages...).
 // Usage: SAFQA_API=http://localhost:8787 node deploy/hf/record-snapshot.mjs out.json
-import { writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 
 const base = (process.env.SAFQA_API || 'http://localhost:8787').replace(/\/$/, '');
 const out = process.argv[2] || 'apps/web/public/demo/snapshot.json';
@@ -18,8 +18,26 @@ const routes = {};
 for (const path of ['/api/health', '/api/meta', '/api/deals', '/api/stores', '/api/categories', '/api/adapters', '/api/calendar']) {
   routes[path] = await get(path);
 }
+// Live price status written by the refresh (deploy/hf/refresh-live.sh). Served
+// to the static site as /api/prices/status for the "last price update" badge.
+const statusFile = process.env.SAFQA_PRICE_STATUS;
+if (statusFile && existsSync(statusFile)) {
+  const status = JSON.parse(readFileSync(statusFile, 'utf8'));
+  routes['/api/prices/status'] = {
+    updatedAt: status.updatedAt,
+    timeZone: status.timeZone,
+    source: status.source,
+    productsWithPrice: status.productsWithPrice,
+    offersUpdated: status.offersUpdated,
+    offersFailed: status.offersFailed,
+    perStore: status.perStore,
+    stale: Object.entries(status.offers || {})
+      .filter(([, offer]) => !offer.ok && offer.lastOkAt)
+      .map(([offerId, offer]) => ({ offerId, lastOkAt: offer.lastOkAt, reason: offer.reason })),
+  };
+}
 const deals = routes['/api/deals'];
-const all = await get('/api/products/search');
+const all = await get('/api/products/search?limit=48');
 const ids = new Set([...all.items, ...deals.items, ...deals.suspicious].map((p) => p.id));
 const products = {};
 for (const id of ids) {

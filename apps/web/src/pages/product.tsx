@@ -17,6 +17,7 @@ import { useCompare } from '../lib/compare';
 import { downloadFile, toCsv, useLocal } from '../lib/local';
 import { usePrefs } from '../lib/prefs';
 import { useSession } from '../lib/session';
+import { PriceFreshness, StaleBadge } from '../components/price-freshness';
 import { useTr } from '../lib/tr';
 
 const roleNames: Record<string, [string, string]> = {
@@ -125,6 +126,7 @@ export function ProductPage({ id }: { id: string }) {
             </div>
           ) : null}
           <p className="mt-2 flex items-center gap-2 text-sm text-muted">{t('deal.best')} · {best ? localized(locale, { ar: best.store.nameAr, en: best.store.nameEn }) : ''}{best?.rating ? <span className="inline-flex items-center gap-0.5"><Star className="h-3.5 w-3.5 fill-[var(--saffron)] text-[var(--saffron)]" />{best.rating}</span> : null}</p>
+          <div className="mt-3"><PriceFreshness compact /></div>
 
           {prediction.data ? (
             <div className={`mt-4 flex items-start gap-3 rounded-2xl p-4 text-sm ${prediction.data.recommendation === 'buy_now' ? 'bg-[var(--palm)]/12' : 'bg-primary/12'}`}>
@@ -232,6 +234,7 @@ export function ProductPage({ id }: { id: string }) {
                     {offer.condition === 'used' ? <Badge>{t('deal.used')}</Badge> : null}
                     {offer.fakeDiscount ? <Badge className="border-destructive text-destructive">{t('deal.fake')}</Badge> : null}
                     <Badge>{t(`deal.${offer.dealLabel}`)} · {offer.dealScore}</Badge>
+                    <StaleBadge offerId={offer.id} />
                   </div>
                   {reasonKey ? <p className="mt-2 text-xs text-destructive">{t(reasonKey)}</p> : null}
                 </div>

@@ -1,4 +1,5 @@
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
+import { PriceFreshness } from './price-freshness';
 import { Bell, Command, Menu, MoonStar, Sun, X } from 'lucide-react';
 import { FormEvent, ReactNode, useEffect, useRef, useState } from 'react';
 import { allNav, primaryNav } from '../features/nav';
@@ -186,6 +187,7 @@ export function Shell({ children }: { children: ReactNode }) {
             ))}
           </ul>
         </div>
+        <div className="flex justify-center pb-3"><PriceFreshness compact /></div>
         <p className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 pb-3 text-xs text-muted">
           <a href="/privacy.html" className="hover:text-foreground">{tr('سياسة الخصوصية', 'Privacy Policy')}</a>
           <Link to="/privacy" className="hover:text-foreground">{tr('الخصوصية داخل الموقع', 'In-app privacy')}</Link>

@@ -1,5 +1,5 @@
 export const SAFQA_USER_AGENT =
-  'SafqaBot/0.1 (+https://safqa.example/bot; polite price index; contact: bot@safqa.example)';
+  'SafqaBot/0.1 (+https://github.com/Omar08263/safqa; polite daily price index)';
 
 export type AdapterStatus = 'structured' | 'best-effort' | 'stub';
 

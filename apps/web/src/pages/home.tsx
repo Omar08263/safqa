@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, BadgeCheck, Bell, Bot, CalendarDays, Calculator,
 import { FormEvent } from 'react';
 import { DealCard, StateMessage } from '../components/bits';
 import { Countdown } from '../components/countdown';
+import { PriceFreshness } from '../components/price-freshness';
 import { Button } from '../components/ui/button';
 import { features } from '../features/registry';
 import { ProductArt } from '../features/visuals';
@@ -65,6 +66,7 @@ export function HomePage() {
                 <span className="pulse-dot h-2 w-2 rounded-full bg-[var(--palm)] text-[var(--palm)]" />
                 {tr(`بنتابع ${all.length} منتج و${offers} عرض في ${stores.data?.items.length ?? 0} متجر`, `Tracking ${all.length} products and ${offers} offers across ${stores.data?.items.length ?? 0} stores`)}
               </span>
+              <PriceFreshness className="ms-2 mt-2 sm:mt-0" />
             </Reveal>
             <Reveal delay={80}>
               <h1 className="mt-5 text-4xl font-bold leading-[1.15] sm:text-6xl">

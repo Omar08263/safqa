@@ -1,0 +1,93 @@
+{
+  "$comment": "Real products tracked by deploy/hf/refresh-live.sh. Every URL is a live public product page. Prices come only from the page's schema.org JSON-LD (parseJsonLdOffer); a page that is blocked or has no JSON-LD keeps its last good price and is marked stale. Add a product by appending an entry with a unique key.",
+  "categories": [
+    { "slug": "phones", "nameAr": "هواتف", "nameEn": "Phones" },
+    { "slug": "audio", "nameAr": "صوتيات", "nameEn": "Audio" },
+    { "slug": "tvs", "nameAr": "شاشات", "nameEn": "TVs" },
+    { "slug": "appliances", "nameAr": "أجهزة منزلية", "nameEn": "Appliances" },
+    { "slug": "lifestyle", "nameAr": "ساعات ذكية", "nameEn": "Wearables" }
+  ],
+  "products": [
+    { "key": "iphone-17-pro-max-256-deep-blue", "category": "phones", "brand": "Apple", "model": "iPhone 17 Pro Max", "titleAr": "أبل آيفون 17 برو ماكس 256 جيجا أزرق داكن", "titleEn": "Apple iPhone 17 Pro Max 256GB Deep Blue",
+      "offers": [
+        { "store": "btech", "url": "https://btech.com/en/p/apple-iphone-17-pro-max-256gb-12gb-ram-5g-deep-blue?offering_id=bd1cf37e-739f-4c81-97b8-312e63686534" },
+        { "store": "2b", "url": "https://2b.com.eg/en/offers/apple-iphone-17-pro-max-256gb-deep-blue-official-warranty.html" },
+        { "store": "noon", "url": "https://www.noon.com/egypt-en/iphone-17-pro-max-256gb-nano-sim-esim-deep-blue-5g-with-facetime-international-version/N70211580V/p/" },
+        { "store": "amazon-eg", "url": "https://www.amazon.eg/-/en/dp/B0FQFK93TR" }
+      ] },
+    { "key": "iphone-15-128-blue", "category": "phones", "brand": "Apple", "model": "iPhone 15", "titleAr": "أبل آيفون 15 ذاكرة 128 جيجا أزرق", "titleEn": "Apple iPhone 15 128GB Blue",
+      "offers": [ { "store": "2b", "url": "https://2b.com.eg/en/apple-iphone-15-128gb-blue-official-warranty.html" } ] },
+    { "key": "galaxy-s26-fe-256-graphite", "category": "phones", "brand": "Samsung", "model": "Galaxy S26 FE", "titleAr": "سامسونج جالاكسي S26 FE ذاكرة 256 جيجا جرافيت", "titleEn": "Samsung Galaxy S26 FE 256GB Graphite",
+      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/samsung-galaxy-s26-fe-256-gb-8-gb-5g-dual-sim-graphite?offering_id=94947e45-24d3-403e-9679-53fe4f3dfc5a" } ] },
+    { "key": "galaxy-a56-256-black", "category": "phones", "brand": "Samsung", "model": "Galaxy A56", "titleAr": "سامسونج جالاكسي A56 ذاكرة 256 جيجا رام 8", "titleEn": "Samsung Galaxy A56 5G 8GB/256GB",
+      "offers": [
+        { "store": "2b", "url": "https://2b.com.eg/en/samsung-galaxy-a56-8gb-ram-256gb-black.html" },
+        { "store": "amazon-eg", "url": "https://www.amazon.eg/-/en/dp/B0HJZV27G8" }
+      ] },
+    { "key": "galaxy-a16-128-black", "category": "phones", "brand": "Samsung", "model": "Galaxy A16", "titleAr": "سامسونج جالاكسي A16 ذاكرة 128 جيجا أسود", "titleEn": "Samsung Galaxy A16 128GB Black",
+      "offers": [
+        { "store": "btech", "url": "https://btech.com/en/p/samsung-galaxy-a16-128gb-4gb-4g-lte-dual-sim-black-local?offering_id=3afc181d-6e05-46b2-bef1-631dce46980d" },
+        { "store": "2b", "url": "https://2b.com.eg/en/samsung-galaxy-a16-4gb-ram-128gb-black.html" },
+        { "store": "noon", "url": "https://www.noon.com/egypt-en/galaxy-a16-dual-sim-4g-black-4gb-ram-128gb-middle-east-version/N70126887V/p/" }
+      ] },
+    { "key": "honor-600-256-gold", "category": "phones", "brand": "Honor", "model": "Honor 600", "titleAr": "هونر 600 ذاكرة 256 جيجا ذهبي", "titleEn": "Honor 600 256GB 5G Light Gold",
+      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/a10c32e0-ab59-4ac6-9426-aaa6ff52f7cf?offering_id=332fba2b-4aba-4e51-8a0f-b0d4135eafe7" } ] },
+    { "key": "honor-x5c-plus-128-black", "category": "phones", "brand": "Honor", "model": "X5C Plus", "titleAr": "هونر X5C بلس ذاكرة 128 جيجا أسود", "titleEn": "Honor X5C Plus 128GB Midnight Black",
+      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/6ac7b2fb-b75f-4fbd-8665-d305de42adfc?offering_id=e7a202fa-b55d-472a-8ecc-6a58c7a2dd4a" } ] },
+    { "key": "redmi-note-15-128-black", "category": "phones", "brand": "Xiaomi", "model": "Redmi Note 15", "titleAr": "شاومي ريدمي نوت 15 ذاكرة 128 جيجا أسود", "titleEn": "Xiaomi Redmi Note 15 6GB/128GB Black",
+      "offers": [ { "store": "2b", "url": "https://2b.com.eg/en/offers/xiaomi-redmi-note-15-6gb-ram-128gb-black.html" } ] },
+    { "key": "airpods-4-anc", "category": "audio", "brand": "Apple", "model": "AirPods 4 ANC", "titleAr": "سماعة أبل إيربودز 4 بعزل الضوضاء", "titleEn": "Apple AirPods 4 with Active Noise Cancellation",
+      "offers": [
+        { "store": "2b", "url": "https://2b.com.eg/en/apple-airpods-4-with-active-noise-cancellation-white.html" },
+        { "store": "amazon-eg", "url": "https://www.amazon.eg/-/en/dp/B0DGJ7M995" }
+      ] },
+    { "key": "soundcore-r50i-nc-black", "category": "audio", "brand": "Anker", "model": "Soundcore R50i NC", "titleAr": "سماعة أنكر ساوندكور R50i NC بعزل الضوضاء أسود", "titleEn": "Anker Soundcore R50i NC Earbuds Black",
+      "offers": [
+        { "store": "btech", "url": "https://btech.com/en/p/anker-soundcore-r50i-earbuds-noise-cancellation-black-a3959h11?offering_id=37baea54-bd1d-4a59-8ccd-15d069da8ea8" },
+        { "store": "2b", "url": "https://2b.com.eg/en/anker-soundcore-r50i-earphone-tws-a3959h11-black.html" }
+      ] },
+    { "key": "soundcore-r60i-nc-black", "category": "audio", "brand": "Anker", "model": "Soundcore R60i NC", "titleAr": "سماعة أنكر ساوندكور R60i NC أسود", "titleEn": "Anker Soundcore R60i NC Earbuds Black",
+      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/e2ecf1cb-831f-4891-a755-1b31ba1571ef?offering_id=27aab6e5-a084-46c9-a634-1f3fdcc9e6a4" } ] },
+    { "key": "soundcore-liberty-4-pro", "category": "audio", "brand": "Anker", "model": "Soundcore Liberty 4 Pro", "titleAr": "سماعة أنكر ساوندكور ليبرتي 4 برو أسود", "titleEn": "Anker Soundcore Liberty 4 Pro Earbuds Black",
+      "offers": [ { "store": "2b", "url": "https://2b.com.eg/en/anker-soundcore-liberty-4-pro-earbuds-black.html" } ] },
+    { "key": "apple-watch-s11-46-jet-black", "category": "lifestyle", "brand": "Apple", "model": "Watch Series 11 46mm", "titleAr": "ساعة أبل الإصدار 11 مقاس 46 مم أسود", "titleEn": "Apple Watch Series 11 46mm Jet Black",
+      "offers": [
+        { "store": "btech", "url": "https://btech.com/en/p/6a1a5780-ad9e-4395-9628-d3689c659b75?offering_id=e89bff7b-ab4e-4f8d-8fd6-f8364254c4eb" },
+        { "store": "2b", "url": "https://2b.com.eg/en/apple-watch-series-11-gps-46-mm-jet-black-aluminium-case-with-black-sport-band-s-m.html" }
+      ] },
+    { "key": "huawei-band-10-black", "category": "lifestyle", "brand": "Huawei", "model": "Band 10", "titleAr": "سوار هواوي باند 10 أسود", "titleEn": "Huawei Band 10 Black",
+      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/huawei-band-10-smart-band-1-47-inch-black-case-black-strap?offering_id=590b206e-6a96-49e1-b751-1c0a273726a9" } ] },
+    { "key": "huawei-fit-4-black", "category": "lifestyle", "brand": "Huawei", "model": "Watch Fit 4", "titleAr": "ساعة هواوي فيت 4 أسود", "titleEn": "Huawei Watch Fit 4 Black",
+      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/huawei-fit-4-smart-watch-1-82-inch-grey-case-and-black-strap?offering_id=6c19e2ae-f43b-4336-8bf0-c6a0237cbafb" } ] },
+    { "key": "lg-55-nano-55nu830", "category": "tvs", "brand": "LG", "model": "55NU830B6LA", "titleAr": "شاشة إل جي 55 بوصة نانو 4K سمارت", "titleEn": "LG 55\" NanoCell 4K Smart TV 55NU830B6LA",
+      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/lg-55-inch-smart-tv-nano-4k-uhd-55nu830b6la?offering_id=85ced936-7a6e-41c2-985b-ca3c817555f2" } ] },
+    { "key": "samsung-50-du8000", "category": "tvs", "brand": "Samsung", "model": "UA50DU8000", "titleAr": "شاشة سامسونج 50 بوصة كريستال 4K سمارت", "titleEn": "Samsung 50\" Crystal UHD 4K Smart TV UA50DU8000",
+      "offers": [ { "store": "2b", "url": "https://2b.com.eg/en/samsung-tv-50-inch-crystal-uhd-smart-built-in-receiver-ua50du8000.html" } ] },
+    { "key": "samsung-32-h5000f", "category": "tvs", "brand": "Samsung", "model": "32H5000F", "titleAr": "شاشة سامسونج 32 بوصة HD سمارت", "titleEn": "Samsung 32\" HD Smart TV 32H5000F",
+      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/samsung-tv-32-inch-hd-smart-led-receiver-32h5000f?offering_id=84fd8724-975e-483e-bd0f-63a6f9320342" } ] },
+    { "key": "hisense-32a4q", "category": "tvs", "brand": "Hisense", "model": "32A4Q", "titleAr": "شاشة هايسنس 32 بوصة سمارت", "titleEn": "Hisense 32\" Smart TV 32A4Q",
+      "offers": [ { "store": "2b", "url": "https://2b.com.eg/en/hisense-tv-32-inch-smart-fhd-vidaa-32a4q.html" } ] },
+    { "key": "fresh-50-google-tv", "category": "tvs", "brand": "Fresh", "model": "50MFQ433G", "titleAr": "شاشة فريش 50 بوصة جوجل تي في", "titleEn": "Fresh 50\" FHD Google TV 50MFQ433G",
+      "offers": [ { "store": "2b", "url": "https://2b.com.eg/en/fresh-tv-50-inch-fhd-led-smart-google-tv-50mfq433g-22367.html" } ] },
+    { "key": "carrier-xcool-1-5hp", "category": "appliances", "brand": "Carrier", "model": "XCool 1.5HP", "titleAr": "تكييف كاريير إكس كول 1.5 حصان بارد", "titleEn": "Carrier XCool Split AC 1.5HP Cooling",
+      "offers": [
+        { "store": "btech", "url": "https://btech.com/en/p/a0abee78-c9c3-4e6b-981c-0a5c9c0eb49a?offering_id=d7e9d4eb-2ccd-4198-9578-b5c4522f8929" },
+        { "store": "2b", "url": "https://2b.com.eg/en/carrier-air-conditioner-1-5-hp-xcool-split-inverter-cooling-only-white-kheft12dn.html" }
+      ] },
+    { "key": "fresh-ac-1-5hp", "category": "appliances", "brand": "Fresh", "model": "FUFW12C", "titleAr": "تكييف فريش 1.5 حصان بارد", "titleEn": "Fresh Split AC 1.5HP Cooling FUFW12C",
+      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/fresh-air-conditioner-1-5hp-cooling-fufw12c-iw-ag-2022?offering_id=159f6212-ba6b-446a-8b1e-ed5afa8f4b1d" } ] },
+    { "key": "haier-washer-8kg-hw80", "category": "appliances", "brand": "Haier", "model": "HW80-BP14929AS6", "titleAr": "غسالة هاير 8 كيلو إنفرتر تحميل أمامي", "titleEn": "Haier 8kg Inverter Front Load Washer HW80-BP14929AS6",
+      "offers": [
+        { "store": "btech", "url": "https://btech.com/en/p/haier-front-load-inverter-washing-machine-8kg-silver-hw80-bp14929as6?offering_id=9718c36b-7922-4c4a-b6c6-388f3ba4c904" },
+        { "store": "2b", "url": "https://2b.com.eg/en/haier-washing-machine-8-kg-steam-front-loading-bldc-inverter-silver-hw80-bp14929as6.html" }
+      ] },
+    { "key": "lg-washer-8kg-f4y2", "category": "appliances", "brand": "LG", "model": "F4Y2TYG6P", "titleAr": "غسالة إل جي 8 كيلو إنفرتر تحميل أمامي", "titleEn": "LG 8kg Inverter Front Load Washer F4Y2TYG6P",
+      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/b4aa1359-dd09-40a8-b504-f882a7fde318?offering_id=c1e2a7b7-4dbc-4538-b43d-5798cd2a44f3" } ] },
+    { "key": "samsung-microwave-40l-grill", "category": "appliances", "brand": "Samsung", "model": "MG40DG5524ATS", "titleAr": "ميكروويف سامسونج 40 لتر بالشواية", "titleEn": "Samsung 40L Grill Microwave MG40DG5524ATS",
+      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/samsung-microwave-grill-40-liters-black-silver-mg40dg5524atsg?offering_id=d41a9765-0d71-4882-90cd-fb1f6eb87b7a" } ] },
+    { "key": "lg-neochef-42l", "category": "appliances", "brand": "LG", "model": "MH8265DIS", "titleAr": "ميكروويف إل جي نيوشيف 42 لتر بالشواية", "titleEn": "LG NeoChef 42L Grill Microwave MH8265DIS",
+      "offers": [ { "store": "btech", "url": "https://btech.com/en/p/lg-neochef-microwave-oven-grill-42liters-black-mh8265dis?offering_id=f03182c7-d5f2-48aa-ad6a-cc3fa453b254" } ] },
+    { "key": "delonghi-magnifica-start", "category": "appliances", "brand": "De'Longhi", "model": "Magnifica Start", "titleAr": "ماكينة إسبريسو ديلونجي ماجنيفيكا ستارت", "titleEn": "De'Longhi Magnifica Start Bean-to-Cup Espresso Machine",
+      "offers": [ { "store": "2b", "url": "https://2b.com.eg/en/de-longhi-espresso-machine-magnificat-start-automatic-bean-to-cup-5-hot-drinks-1450-watt-stainless-steel-ecam220-80-sb.html" } ] }
+  ]
+}
