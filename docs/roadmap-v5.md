@@ -61,7 +61,9 @@ robots.txt and bot protection (no disguised crawlers, proxies or captcha solving
 - **Crawlee + Playwright** for JS-only stores, run politely: one browser, honest UA, robots, ≥2.5 s delay, no stealth plugins.
 - **Instant search**: D1 FTS5 virtual table (free, already on the platform), then Meilisearch on a free host if latency needs it.
 - **WooCommerce adapter** in `crawl.ts`: the CLI already detects WooCommerce stores.
-- **B.TECH**: its sitemap times out for a polite single fetch. We need its sitemap index split or a partner feed.
+- ~~B.TECH~~: solved by safqa-hunter's streaming sitemap reader (60,861 products, ~20-day budgeted backfill).
+- **El Araby**: refuses SafqaBot (404 on product pages); ask them for a feed or permission.
+- **Telegram deal channels**: public previews (t.me/s/…) could supply leads for Amazon.eg/noon deals, labelled "reported by channel" and verified via pasted link or the extension. Not built: third-party claims and channel terms need care.
 
 ## Phase 1 · weeks 1-4: coverage and freshness
 - 🔜 Nightly box cron for the crawler (one store family per night to stay under D1's 100k writes/day).
