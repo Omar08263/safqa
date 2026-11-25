@@ -35,7 +35,7 @@ export function BottomNav({ onMore, moreOpen }: { onMore: () => void; moreOpen: 
   const label = (n: { ar: string; en: string }) => (locale === 'ar' ? n.ar : n.en);
   return (
     <nav
-      className={`bottom-bar no-print fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/92 backdrop-blur-xl transition-transform duration-300 ${shown ? 'translate-y-0' : 'translate-y-full'}`}
+      className={`bottom-bar no-print fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background transition-transform duration-300 ${shown ? 'translate-y-0' : 'translate-y-full'}`}
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       aria-label={tr('تنقل سريع', 'Quick navigation')}
       aria-hidden={!shown}

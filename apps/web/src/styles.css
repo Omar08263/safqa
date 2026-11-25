@@ -128,8 +128,8 @@ body { min-height: 100vh; }
 .reveal.is-in { opacity: 1; transform: none; }
 
 /* page transition */
-.page-enter { animation: page-in 0.45s var(--ease) both; }
-@keyframes page-in { from { opacity: 0; transform: translateY(10px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+.page-enter { animation: page-in 0.45s var(--ease) backwards; }
+@keyframes page-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
 .float { animation: float 6s ease-in-out infinite; }
 .float-slow { animation: float 9s ease-in-out infinite; }
@@ -417,9 +417,14 @@ html { overflow-x: clip; }
 
 /* One money format: digits + currency as an isolated unit with a real gap (never glued). */
 .money { display: inline-flex; align-items: baseline; gap: .28em; unicode-bidi: isolate; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.money-c { font-size: .62em; font-weight: 700; opacity: .85; }
+.money-c { font-size: .62em; font-weight: 700; }
 .money-n { unicode-bidi: isolate; }
 /* Touch screens: no keyboard hints in the header search; placeholder centered with even padding. */
 [data-pointer="coarse"] .kbd-hint { display: none; }
 [data-pointer="coarse"] .search-input { padding-inline-end: 1rem; }
 .search-input { line-height: 2.5rem; padding-block: 0; }
+
+/* Arabic must always join: no letter/word spacing, ligatures + contextual forms forced on, and
+   numeric features scoped to digits only (.num / .money-n), never to the Arabic around them. */
+:lang(ar), [dir="rtl"] { letter-spacing: normal; word-spacing: normal; font-feature-settings: normal; font-variant-ligatures: normal; }
+:lang(ar) .tracking-tight, :lang(ar) .tracking-wide, :lang(ar) .tracking-tighter, :lang(ar) .tracking-wider, [dir="rtl"] .tracking-tight, [dir="rtl"] .tracking-wide { letter-spacing: normal; }
