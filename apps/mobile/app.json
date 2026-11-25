@@ -2,7 +2,7 @@
   "expo": {
     "name": "صفقة",
     "slug": "safqa",
-    "version": "5.0.0",
+    "version": "5.1.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "scheme": "safqa",
@@ -20,7 +20,7 @@
     },
     "android": {
       "package": "app.safqa.mobile",
-      "versionCode": 50,
+      "versionCode": 51,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-foreground.png",
         "monochromeImage": "./assets/adaptive-monochrome.png",
@@ -78,6 +78,12 @@
         }
       ],
       "expo-secure-store",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false
+        }
+      ],
       "expo-font",
       "expo-image",
       "expo-web-browser",

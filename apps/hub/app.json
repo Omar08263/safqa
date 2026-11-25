@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "Safqa Hub",
+    "slug": "safqa-hub",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "safqahub",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0B1220",
+    "primaryColor": "#1FA67A",
+    "description": "Safqa Hub: مركز قيادة صفقة — القرارات، المدفوعات، الوكلاء، والمزايا من الموبايل.",
+    "extra": { "apiUrl": "https://safqa-api.safqaeg.workers.dev", "hubWeb": "https://safqa-admin.pages.dev", "siteUrl": "https://safqaeg.pages.dev", "supportsRTL": true, "forcesRTL": true },
+    "android": {
+      "package": "app.safqa.hub",
+      "versionCode": 1,
+      "adaptiveIcon": { "foregroundImage": "./assets/adaptive-foreground.png", "monochromeImage": "./assets/adaptive-monochrome.png", "backgroundColor": "#0B1220" },
+      "permissions": ["POST_NOTIFICATIONS", "VIBRATE"],
+      "blockedPermissions": ["android.permission.RECORD_AUDIO"],
+      "intentFilters": [{ "action": "VIEW", "data": [{ "scheme": "safqahub" }], "category": ["BROWSABLE", "DEFAULT"] }]
+    },
+    "plugins": [
+      "expo-router",
+      ["expo-splash-screen", { "image": "./assets/splash-icon.png", "imageWidth": 160, "backgroundColor": "#0B1220" }],
+      ["expo-notifications", { "color": "#1FA67A" }],
+      ["expo-localization", { "supportsRTL": true, "forcesRTL": true }],
+      "expo-secure-store",
+      ["expo-audio", { "microphonePermission": false }],
+      "./plugins/with-force-rtl.js",
+      "./plugins/with-release-signing.js"
+    ],
+    "experiments": { "typedRoutes": false }
+  }
+}

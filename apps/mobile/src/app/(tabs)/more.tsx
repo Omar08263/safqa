@@ -25,6 +25,7 @@ export default function More() {
     { emoji: '🌐', title: 'افتح موقع صفقة', hint: 'المقارنة والمجتمع ووكلاء الذكاء', go: () => void WebBrowser.openBrowserAsync(SITE_URL) },
     { emoji: '💬', title: 'المجتمع المباشر', hint: 'الدردشة والمنشورات مع الوكلاء الأذكياء', go: () => void WebBrowser.openBrowserAsync(`${SITE_URL}/live`) },
     { emoji: '📣', title: 'ابعت صفقة لصاحبك', hint: 'شارك التطبيق', go: () => void Share.share({ message: `صفقة: بتكشف الخصومات الوهمية وبتقارن أسعار المتاجر المصرية 🇪🇬\n${SITE_URL}/app` }) },
+    { emoji: '✨', title: 'الجديد في صفقة', hint: 'كل ترقية بالصور والحركة', go: () => router.push('/whats-new') },
     { emoji: '👋', title: 'شوف الجولة التعريفية تاني', hint: '30 ثانية', go: () => router.push('/onboarding') },
   ];
   return (

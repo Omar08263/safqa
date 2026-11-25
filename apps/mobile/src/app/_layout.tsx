@@ -11,6 +11,10 @@ import { hydrate, setSyncErrorHandler, syncWatchlist, useSettings } from '../lib
 import { hydrateAuth } from '../lib/api';
 import { useToast } from '../components/toast';
 import { useColors } from '../lib/theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { flagOn, initRemote } from '../lib/remote';
+import { initSfx } from '../lib/sfx';
+import { fetchChangelog, WHATS_NEW_SEEN } from './whats-new';
 
 I18nManager.allowRTL(true);
 I18nManager.forceRTL(true);
@@ -23,6 +27,8 @@ export default function RootLayout() {
   const dark = settings.theme === 'dark' || (settings.theme === 'system' && system === 'dark');
 
   useEffect(() => {
+    void initSfx();
+    void initRemote();
     void hydrate().then(async () => {
       await hydrateAuth();
       await syncWatchlist();
@@ -38,6 +44,13 @@ export default function RootLayout() {
     if (!ready) return;
     void SplashScreen.hideAsync().catch(() => undefined);
     if (!settings.onboarded) router.replace('/onboarding');
+    // «الجديد في صفقة»: once per release (new users get the onboarding instead and see the next one).
+    void (async () => {
+      const [cl, seen] = await Promise.all([fetchChangelog(), AsyncStorage.getItem(WHATS_NEW_SEEN)]);
+      if (!cl?.latest || seen === cl.latest) return;
+      if (!settings.onboarded) { await AsyncStorage.setItem(WHATS_NEW_SEEN, cl.latest); return; }
+      if (flagOn('whats_new', true)) setTimeout(() => router.push('/whats-new'), 900);
+    })();
   }, [ready, settings.onboarded]);
 
   return (
@@ -58,6 +71,7 @@ export default function RootLayout() {
           >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="onboarding" options={{ headerShown: false, animation: 'fade' }} />
+            <Stack.Screen name="whats-new" options={{ headerShown: false, animation: 'fade_from_bottom', presentation: 'fullScreenModal' }} />
             <Stack.Screen name="product/[id]" options={{ title: 'تفاصيل المنتج' }} />
             <Stack.Screen name="item/[id]" options={{ title: 'المنتج' }} />
             <Stack.Screen name="drops" options={{ title: 'نزول الأسعار مباشر' }} />

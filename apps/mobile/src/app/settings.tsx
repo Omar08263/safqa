@@ -10,6 +10,8 @@ import { useGrid } from '../lib/layout';
 import { ensurePermission } from '../lib/notify';
 import { useSnapshot } from '../lib/snapshot';
 import { useSettings } from '../lib/store';
+import { onSound, setSound, soundOn } from '../lib/sfx';
+import { useEffect, useState } from 'react';
 import { type as t, useColors } from '../lib/theme';
 
 function Row({ title, hint, value, onChange }: { title: string; hint: string; value: boolean; onChange: (v: boolean) => void }) {
@@ -43,6 +45,7 @@ export default function Settings() {
       </Card>
       <Card>
         <SectionTitle title="الإحساس والتنبيهات" />
+        <SoundRow />
         <Row title="اهتزاز خفيف" hint="لمسة صغيرة لما تضغط أو تضيف للمراقبة" value={settings.haptics} onChange={(v) => update({ haptics: v })} />
         <Row
           title="تنبيهات نزول السعر"
@@ -80,4 +83,10 @@ export default function Settings() {
       <Text style={[t.meta, { color: c.muted, textAlign: 'center' }]}>صفقة {Constants.expoConfig?.version ?? '4.0.0'} · مفتوح المصدر · من غير إعلانات ومن غير دفع</Text>
     </ScrollView>
   );
+}
+
+function SoundRow() {
+  const [on, setOn] = useState(soundOn());
+  useEffect(() => onSound(setOn), []);
+  return <Row title="أصوات الواجهة" hint="أصوات هادية وفخمة مع كل ضغطة (متولّدة بالكود، CC0)" value={on} onChange={(v) => setSound(v)} />;
 }
