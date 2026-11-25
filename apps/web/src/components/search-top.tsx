@@ -10,7 +10,7 @@ import type { SearchFilters } from '../pages/search';
 import { Button } from './ui/button';
 import { Link } from '@tanstack/react-router';
 import { formatEGP } from '@safqa/shared';
-import { v5 } from '../lib/v5';
+import { noteSearch, v5 } from '../lib/v5';
 
 interface Saved { id: string; name: string; filters: SearchFilters }
 // biome-ignore lint/suspicious/noExplicitAny: Web Speech API is not in lib.dom for every browser.
@@ -40,6 +40,7 @@ export function SearchTop({ search, count }: { search: SearchFilters; count?: nu
   function go(e?: FormEvent) {
     e?.preventDefault();
     track.search(q);
+    noteSearch(q);
     void navigate({ to: '/search', search: { ...search, q: q || undefined } });
   }
   function voice() {

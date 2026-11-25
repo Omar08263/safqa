@@ -5,7 +5,8 @@ import { Database, Flame, Layers, Sparkles, Store, TrendingDown } from 'lucide-r
 import { CountUp, Reveal, Spotlight } from '../fx/fx';
 import { usePrefs } from '../lib/prefs';
 import { useTr } from '../lib/tr';
-import { topInterests, useV5Meta, v5 } from '../lib/v5';
+import { formatEGP } from '@safqa/shared';
+import { topInterests, useDroppedSinceViewed, useV5Meta, v5 } from '../lib/v5';
 import { CardGrid, LiveTicker } from './v5';
 
 export function HomeV5() {
@@ -30,6 +31,7 @@ export function HomeV5() {
   ];
   return (
     <div className="space-y-10">
+      <SinceViewed />
       <LiveTicker />
       <section className="grid grid-cols-2 gap-3 md:grid-cols-4" aria-label={tr('أرقام الكتالوج', 'Catalog numbers')}>
         {stats.map((s, i) => (
@@ -75,5 +77,26 @@ export function HomeV5() {
         </section>
       ) : null}
     </div>
+  );
+}
+
+/** Auto price tracking: everything you opened that is now cheaper than when you looked. */
+function SinceViewed() {
+  const tr = useTr();
+  const { locale } = usePrefs();
+  const q = useDroppedSinceViewed();
+  if (!q.data?.length) return null;
+  return (
+    <section className="since-viewed-new rounded-3xl border-2 border-palm/50 p-4" aria-label={tr('نزل من ساعة ما شفته', 'Dropped since you viewed')}>
+      <h2 className="text-lg font-bold">📉 {tr('نزل من ساعة ما شفته', 'Dropped since you viewed it')}</h2>
+      <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+        {q.data.slice(0, 6).map(({ p, was, now }) => (
+          <li key={p.id}><Link to="/p/$id" params={{ id: p.id }} className="flex items-center gap-3 rounded-2xl bg-card p-2 hover:bg-accent">
+            {p.image ? <img src={p.image} alt="" loading="lazy" className="h-12 w-12 flex-none rounded-xl bg-white object-contain" /> : null}
+            <span className="min-w-0 flex-1"><span className="line-clamp-1 text-sm font-semibold">{locale === 'ar' ? p.titleAr : p.titleEn}</span><span className="num text-xs"><s className="text-muted">{formatEGP(was, locale)}</s> → <b className="text-palm">{formatEGP(now, locale)}</b> (−{Math.round(((was - now) / was) * 100)}%)</span></span>
+          </Link></li>
+        ))}
+      </ul>
+    </section>
   );
 }

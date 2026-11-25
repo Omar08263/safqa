@@ -136,11 +136,11 @@ export function CardGrid({ items, showVotes = true }: { items: V5Card[]; showVot
 export function LiveTicker() {
   const { locale } = usePrefs();
   const tr = useTr();
-  const { items, live } = useLiveDrops(14);
+  const { items, live, flash } = useLiveDrops(14);
   if (!items.length) return null;
   const row = [...items, ...items];
   return (
-    <section className="live-ticker relative overflow-hidden rounded-2xl border border-border bg-card" aria-label={tr('نزول أسعار مباشر', 'Live price drops')}>
+    <section key={flash} className={`live-ticker relative overflow-hidden rounded-2xl border border-border bg-card ${flash ? 'ticker-flash' : ''}`} aria-live="polite" aria-label={tr('نزول أسعار مباشر', 'Live price drops')}>
       <div className="absolute inset-y-0 start-0 z-10 flex items-center gap-1.5 bg-gradient-to-l from-transparent via-[var(--elev)] to-[var(--elev)] pe-6 ps-3 rtl:bg-gradient-to-r">
         <span className={`relative grid h-2.5 w-2.5 place-items-center`}><span className={`absolute h-2.5 w-2.5 rounded-full ${live ? 'bg-palm live-dot' : 'bg-muted'}`} /></span>
         <Link to="/drops" className="text-xs font-bold">{tr('مباشر', 'LIVE')}</Link>

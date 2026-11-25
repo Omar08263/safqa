@@ -4,16 +4,21 @@ import type { ProductCard } from '@safqa/shared';
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { EDGE_URL, edge } from './edge';
+import { play } from './sound';
 
 export interface V5Extra { heat: number; hot: number; cold: number; low: number | null; med30: number | null; dropPct: number | null; dropAt: string | null; firstSeen: string; checkedAt: string | null }
 export type V5Card = ProductCard & { image?: string | null; condition?: string; v5?: V5Extra };
 export interface V5Offer { store: { slug: string; nameAr: string; nameEn: string; domain: string }; url: string; priceEgp: number; listPriceEgp: number | null; inStock: boolean; checkedAt: string; source: string; userReported: boolean; points: number }
 export interface Prediction { verdict: 'buy' | 'wait' | 'fair' | 'unknown'; confidence: number; reasonAr: string; reasonEn: string; low90?: number; median?: number; trend?: number }
-export type V5Product = V5Card & { specs: Record<string, unknown>; offers: V5Offer[]; history: { at: string; price: number; store: string }[]; series: { at: string; price: number }[]; prediction: Prediction; similar: V5Card[]; votes: { hot: number; cold: number } };
+export interface DnaFactor { key: string; points: number; ar: string; en: string; tone: 'good' | 'bad' | 'neutral' }
+export interface FakeInfo { flag: boolean; kind?: string; ar: string; en: string }
+export interface SeasonInfo { ar: string; en: string; days: number | null; active: { id: string; ar: string; en: string } | null; next?: { id: string; ar: string; en: string; from: string } }
+export type V5Product = V5Card & { dna?: { score: number; grade: string; factors: DnaFactor[] }; fake?: FakeInfo; season?: SeasonInfo; war?: { stores: number; drops: number } | null; specs: Record<string, unknown>; offers: V5Offer[]; history: { at: string; price: number; store: string }[]; series: { at: string; price: number }[]; prediction: Prediction; similar: V5Card[]; votes: { hot: number; cold: number } };
 export interface V5Meta { products?: number; offers?: number; stores: { slug: string; nameAr: string; nameEn: string; domain: string; kind: string; products: number; lastCrawl: string | null }[]; categories: { slug: string; nameAr: string; nameEn: string; emoji: string; n: number }[]; at?: string; drops24: number; amazon: boolean; noon: boolean }
 export interface SearchRes { items: V5Card[]; page: number; more: boolean; total: number | null; fuzzy: boolean; query?: string; facets?: { categories: { id: string; n: number }[]; stores: { id: string; n: number }[] } }
 export interface Drop { dropId: number; old: number; new: number; pct: number; at: string; store: { slug: string; nameAr: string; nameEn: string }; product: V5Card }
 
+export interface NotifyPrefs { opted_in: number; mode: 'instant' | 'digest' | 'off'; quiet_start: number; quiet_end: number; digest_hour: number; min_drop: number; max_per_day: number; auto_track: number }
 export const isV5Id = (id: string) => /^p[0-9a-f]{20}$/.test(id);
 async function get<T>(path: string): Promise<T> {
   const r = await fetch(`${EDGE_URL}${path}`, { headers: { accept: 'application/json' } });
@@ -40,11 +45,23 @@ export const v5 = {
   myVotes: (ids: string[]) => edge<{ votes: Record<string, number> }>(`/api/v5/votes/mine?ids=${ids.join(',')}`),
   submit: (url: string) => edge<{ status: string; productId?: string; message?: string; via?: string }>('/api/v5/submit', { method: 'POST', body: { url } }),
   addCoupon: (b: { store: string; title: string; code?: string; expires?: string }) => edge<{ id: string }>('/api/v5/coupons', { method: 'POST', body: b }),
+  health: () => get<Record<string, any>>('/api/v5/health'),
+  radarFake: () => get<{ scanned: number; items: (V5Card & { fake: FakeInfo })[] }>('/api/v5/radar/fake'),
+  wars: () => get<{ items: (V5Card & { war: { slug: string; nameAr: string; nameEn: string; drops: number }[] })[] }>('/api/v5/wars'),
+  seasons: () => get<{ seasons: { id: string; ar: string; en: string; from: string; to: string }[]; now: SeasonInfo }>('/api/v5/seasons'),
+  basket: async (ids: string[], fee?: number) => {
+    const r = await fetch(`${EDGE_URL}/api/v5/basket`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ids, fee }) });
+    if (!r.ok) throw new Error(`basket ${r.status}`);
+    return r.json() as Promise<{ best: { total: number; fees: number; plan: { id: string; store: string; price: number }[]; stores: string[] } | null; single: { store: string; total: number } | null; missing: string[]; assumedFee: number; products: V5Card[]; stores: { slug: string; nameAr: string; nameEn: string }[] }>;
+  },
+  notify: () => edge<{ prefs: NotifyPrefs; telegram: boolean; email: boolean; interests: { cats: number; brands: number; viewed: number; searches: number } }>('/api/v5/me/notify'),
+  saveNotify: (p: NotifyPrefs) => edge('/api/v5/me/notify', { method: 'PUT', body: p }),
+  syncInterests: (b: unknown) => edge('/api/v5/me/interests', { method: 'POST', body: b }),
   couponFeedback: (id: string, worked: boolean) => edge(`/api/v5/coupons/${id}/feedback`, { method: 'POST', body: { worked } }),
 };
 
 export const useV5Meta = () => useQuery({ queryKey: ['v5', 'meta'], queryFn: v5.meta, staleTime: 5 * 60_000, retry: 1 });
-export const useV5Product = (id: string) => useQuery({ queryKey: ['v5', 'product', id], queryFn: () => v5.product(id), enabled: Boolean(id), retry: 1 });
+export const useV5Product = (id: string) => useQuery({ queryKey: ['v5', 'product', id], queryFn: () => v5.product(id), enabled: Boolean(id), retry: 1, refetchInterval: 60_000 });
 export function useV5Deals(cat: string | undefined, sort: string) {
   return useInfiniteQuery({
     queryKey: ['v5', 'deals', cat ?? '', sort],
@@ -77,6 +94,7 @@ export const clearInterests = () => localStorage.removeItem(INT_KEY);
 export function useLiveDrops(max = 12) {
   const [items, setItems] = useState<Drop[]>([]);
   const [live, setLive] = useState(false);
+  const [flash, setFlash] = useState(0);
   const last = useRef(0);
   useEffect(() => {
     let es: EventSource | null = null; let timer: number | undefined; let stopped = false;
@@ -89,6 +107,7 @@ export function useLiveDrops(max = 12) {
         es.addEventListener('drops', (e) => {
           const fresh = JSON.parse((e as MessageEvent).data) as Drop[];
           last.current = Math.max(last.current, ...fresh.map((x) => x.dropId));
+          if (fresh.length) { setFlash(Date.now()); if (document.visibilityState === 'visible') play('deal'); }
           setItems((cur) => [...fresh, ...cur.filter((c) => !fresh.some((f) => f.dropId === c.dropId))].slice(0, max));
         });
         es.onerror = () => { setLive(false); };
@@ -98,7 +117,7 @@ export function useLiveDrops(max = 12) {
     }
     return () => { stopped = true; es?.close(); if (timer) window.clearInterval(timer); };
   }, [max]);
-  return { items, live };
+  return { items, live, flash };
 }
 
 /** Relative "x minutes ago" in Egyptian Arabic / English with Latin digits. */
@@ -130,4 +149,48 @@ export async function v5AsHistory(id: string) {
 export async function v5AsPrediction(id: string) {
   const p = await v5.product(id);
   return { recommendation: p.prediction.verdict === 'buy' ? 'buy_now' : p.prediction.verdict === 'wait' ? 'wait' : 'unknown' };
+}
+
+// ---------------- auto price tracking for everything you view (on this device; synced if signed in) ----------------
+const VIEW_KEY = 'safqa.v5.viewed';
+export type Viewed = [string, number, string]; // id, price when viewed, ISO time
+export const viewedList = (): Viewed[] => { try { return JSON.parse(localStorage.getItem(VIEW_KEY) ?? '[]'); } catch { return []; } };
+export function noteView(id: string, price: number | null | undefined) {
+  if (!price || localStorage.getItem('safqa.v5.autotrack') === 'off') return;
+  const cur = viewedList().filter((v) => v[0] !== id);
+  localStorage.setItem(VIEW_KEY, JSON.stringify([[id, price, new Date().toISOString()], ...cur].slice(0, 60)));
+  scheduleSync();
+}
+export const clearViewed = () => localStorage.removeItem(VIEW_KEY);
+const SEARCH_KEY = 'safqa.v5.searches';
+export function noteSearch(q: string) {
+  const t = q.trim(); if (t.length < 3) return;
+  let cur: string[] = []; try { cur = JSON.parse(localStorage.getItem(SEARCH_KEY) ?? '[]'); } catch { /* */ }
+  localStorage.setItem(SEARCH_KEY, JSON.stringify([t, ...cur.filter((x) => x !== t)].slice(0, 20)));
+  scheduleSync();
+}
+let syncTimer: number | undefined;
+function scheduleSync() {
+  if (!localStorage.getItem('safqa.access')) return; // signed-in users only
+  window.clearTimeout(syncTimer);
+  syncTimer = window.setTimeout(() => {
+    let ints: { cats?: Record<string, number>; brands?: Record<string, number> } = {};
+    try { ints = JSON.parse(localStorage.getItem('safqa.v5.interests') ?? '{}'); } catch { /* */ }
+    let searches: string[] = []; try { searches = JSON.parse(localStorage.getItem(SEARCH_KEY) ?? '[]'); } catch { /* */ }
+    void v5.syncInterests({ cats: ints.cats, brands: ints.brands, viewed: viewedList().slice(0, 40), searches }).catch(() => undefined);
+  }, 4000);
+}
+/** Products you viewed whose best price is now lower than when you looked. */
+export function useDroppedSinceViewed() {
+  const ids = viewedList().map((v) => v[0]).slice(0, 12);
+  return useQuery({
+    queryKey: ['v5', 'since-viewed', ids.join(',')],
+    enabled: ids.length > 0,
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      const r = await v5.compare(ids);
+      const seen = new Map(viewedList().map((v) => [v[0], v[1]]));
+      return r.items.map((p) => ({ p, was: seen.get(p.id) ?? 0, now: p.bestOffer?.priceEgp ?? 0 })).filter((x) => x.now && x.was && x.now < x.was * 0.995).sort((a, b) => (b.was - b.now) / b.was - (a.was - a.now) / a.was);
+    },
+  });
 }

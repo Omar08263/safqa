@@ -11,7 +11,7 @@ import { signedInToBackend } from '../lib/edge';
 import { usePrefs } from '../lib/prefs';
 import { useSession } from '../lib/session';
 import { useTr } from '../lib/tr';
-import { ago, noteInterest, useLiveDrops, useV5Deals, useV5Meta, useV5Product, v5, type V5Card } from '../lib/v5';
+import { ago, noteInterest, noteView, useLiveDrops, useV5Deals, useV5Meta, useV5Product, v5, type V5Card } from '../lib/v5';
 import { waLink } from '../components/social';
 
 function GridSkeleton({ n = 8 }: { n?: number }) {
@@ -82,7 +82,7 @@ export function V5ProductPage({ id }: { id: string }) {
   const q = useV5Product(id);
   const p = q.data;
   const ar = locale === 'ar';
-  useEffect(() => { if (p) { noteInterest(p, 2); document.title = `${p.titleAr} · صفقة`; } }, [p]);
+  useEffect(() => { if (p) { noteInterest(p, 2); noteView(p.id, p.bestOffer?.priceEgp); document.title = `${p.titleAr} · صفقة`; } }, [p]);
   const watch = useMutation({
     mutationFn: async () => client.addWatch(id),
     onSuccess: () => toast(tr('اتضاف للمراقبة 👀 — هنبلغك لما السعر ينزل', 'Watching 👀 — we will tell you when it drops'), 'success'),
@@ -115,7 +115,7 @@ export function V5ProductPage({ id }: { id: string }) {
           <div className="flex flex-wrap items-end justify-between gap-3 rounded-3xl border border-border bg-card p-4">
             <div>
               <p className="t-meta">{tr(`أحسن سعر في ${offer.store.nameAr}`, `Best price at ${offer.store.nameEn}`)}</p>
-              <p className="num text-4xl font-black tracking-tight">{formatEGP(offer.priceEgp, locale)}</p>
+              <p key={offer.priceEgp} className="num price-flip text-4xl font-black tracking-tight">{formatEGP(offer.priceEgp, locale)}</p>
               <p className="t-meta num mt-1 flex flex-wrap gap-x-3">
                 {p.v5?.low ? <span>{tr('أقل سعر شفناه', 'Lowest seen')}: <b>{formatEGP(p.v5.low, locale)}</b></span> : null}
                 {saving > 0 ? <span className="text-palm">{tr(`بتوفّر ${formatEGP(saving, locale)} عن أغلى متجر`, `Save ${formatEGP(saving, locale)} vs priciest store`)}</span> : null}
@@ -129,7 +129,16 @@ export function V5ProductPage({ id }: { id: string }) {
             <button type="button" onClick={() => (signedInToBackend() ? watch.mutate() : toast(tr('سجّل دخول الأول عشان تراقب المنتج', 'Sign in first'), 'info'))} className="press inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-3 font-bold"><Bell className="h-4 w-4" />{tr('راقب السعر', 'Watch price')}</button>
             <a href={waLink(`${title} بـ ${formatEGP(offer.priceEgp, 'ar')} على صفقة 👇\n${share}`)} target="_blank" rel="noopener noreferrer" className="press inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-3 font-bold"><Share2 className="h-4 w-4" />{tr('شارك', 'Share')}</a>
           </div>
+          {p.fake?.flag ? (
+            <div role="alert" className="rounded-3xl border-2 border-destructive/60 bg-destructive/10 p-4">
+              <p className="font-bold">🕵️ {tr('رادار الخصم الوهمي: انتبه!', 'Fake-discount radar: careful!')}</p>
+              <p className="mt-1 text-sm">{ar ? p.fake.ar : p.fake.en}</p>
+            </div>
+          ) : null}
+          {p.war ? <p className="rounded-2xl bg-primary/10 px-4 py-2 text-sm font-semibold">⚔️ {tr(`حرب أسعار: ${p.war.stores} متاجر نزّلوا السعر ${p.war.drops} مرات في أسبوعين — ممكن ينزل كمان.`, `Price war: ${p.war.stores} stores cut the price ${p.war.drops} times in 2 weeks.`)}</p> : null}
+          {p.dna ? <DealDnaCard dna={p.dna} /> : null}
           <PredictionCard p={p.prediction} />
+          {p.season?.ar ? <p className="t-meta rounded-2xl border border-border px-4 py-2">🗓️ {ar ? p.season.ar : p.season.en}</p> : null}
         </div>
       </div>
       <section className="rounded-3xl border border-border bg-card p-4">
@@ -328,7 +337,78 @@ export function SourcesPage() {
           <li>{tr('نفس المنتج في متاجر مختلفة بنطابقه بالباركود أو الموديل والسعة.', 'The same product across stores is matched by barcode or model + capacity.')}</li>
         </ul>
       </div>
+      <HealthPanel />
     </div>
   );
 }
 export type { V5Card };
+
+/** Deal DNA: why this deal is (or isn't) good, factor by factor, from real data. */
+export function DealDnaCard({ dna }: { dna: { score: number; grade: string; factors: { key: string; points: number; ar: string; en: string; tone: string }[] } }) {
+  const { locale } = usePrefs();
+  const tr = useTr();
+  const color = dna.score >= 80 ? 'var(--palm)' : dna.score >= 65 ? 'var(--saffron)' : dna.score >= 50 ? '#d97706' : 'var(--destructive, #dc2626)';
+  return (
+    <section className="rounded-3xl border border-border bg-card p-4" aria-label={tr('بصمة الصفقة', 'Deal DNA')}>
+      <div className="flex items-center gap-3">
+        <div className="dna-ring grid h-16 w-16 flex-none place-items-center rounded-full" style={{ background: `conic-gradient(${color} ${dna.score * 3.6}deg, var(--line) 0)` }}>
+          <div className="grid h-12 w-12 place-items-center rounded-full bg-card"><span className="num text-lg font-black">{dna.score}</span></div>
+        </div>
+        <div>
+          <p className="font-bold">🧬 {tr('بصمة الصفقة', 'Deal DNA')} · <span style={{ color }}>{dna.grade}</span></p>
+          <p className="t-meta">{tr('ليه الصفقة دي حلوة أو لأ — من بيانات حقيقية بس', 'Why this deal is good or not, from real data only')}</p>
+        </div>
+      </div>
+      <ul className="mt-3 space-y-1.5">
+        {dna.factors.map((f, i) => (
+          <li key={f.key} className="dna-row flex items-center gap-2 text-sm" style={{ animationDelay: `${i * 70}ms` }}>
+            <span className={`num w-10 flex-none text-end font-bold ${f.tone === 'good' ? 'text-palm' : f.tone === 'bad' ? 'text-destructive' : 'text-muted'}`}>{f.points > 0 ? `+${f.points}` : f.points}</span>
+            <span className="min-w-0 flex-1">{locale === 'ar' ? f.ar : f.en}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/** Live freshness/health of every source and of the ingestion agents (from /api/v5/health). */
+export function HealthPanel() {
+  const tr = useTr();
+  const { locale } = usePrefs();
+  const q = useQuery({ queryKey: ['v5', 'health'], queryFn: v5.health, refetchInterval: 60_000 });
+  const h = q.data as undefined | { at: string; stores: { store: string; products: number; newestCheck: string | null; oldestCheck: string | null; checked24h: number; feed: boolean; pausedUntil: string | null }[]; ingest: { at: string; store: string; kind: string; added: number; updated: number; note?: string }[]; recrawl: { at: string; checked: number } | null; drops24h: number; selfHealedHosts: Record<string, unknown>; freshness: Record<string, string> };
+  if (!h) return q.isPending ? <Skeleton className="h-40 w-full rounded-3xl" /> : null;
+  const ageMin = (iso: string | null) => (iso ? Math.round((Date.now() - Date.parse(iso)) / 60_000) : null);
+  const ageTxt = (m: number | null) => (m == null ? '—' : m < 60 ? tr(`من ${m} دقيقة`, `${m} min ago`) : m < 1440 ? tr(`من ${Math.round(m / 60)} ساعة`, `${Math.round(m / 60)} h ago`) : tr(`من ${Math.round(m / 1440)} يوم`, `${Math.round(m / 1440)} d ago`));
+  return (
+    <section className="space-y-3" aria-label={tr('صحة المصادر', 'Source health')}>
+      <h2 className="text-xl font-bold">🩺 {tr('صحة المصادر وطزاجة الأسعار — مباشر', 'Source health & price freshness, live')}</h2>
+      <div className="overflow-x-auto rounded-3xl border border-border bg-card">
+        <table className="w-full text-sm">
+          <thead className="t-meta text-start"><tr><th className="p-3 text-start">{tr('المتجر', 'Store')}</th><th className="p-3 text-start">{tr('منتجات', 'Products')}</th><th className="p-3 text-start">{tr('آخر فحص', 'Last check')}</th><th className="p-3 text-start">{tr('أقدم سعر', 'Oldest price')}</th><th className="p-3 text-start">{tr('الطريقة', 'Method')}</th></tr></thead>
+          <tbody>
+            {h.stores.map((s) => {
+              const newest = ageMin(s.newestCheck); const oldest = ageMin(s.oldestCheck);
+              const dot = s.pausedUntil ? 'bg-destructive' : newest != null && newest < 180 ? 'bg-palm' : newest != null && newest < 1440 ? 'bg-saffron' : 'bg-muted';
+              return (
+                <tr key={s.store} className="border-t border-border">
+                  <td className="p-3 font-semibold"><span className={`me-2 inline-block h-2.5 w-2.5 rounded-full ${dot}`} aria-hidden="true" />{s.store}</td>
+                  <td className="num p-3">{s.products.toLocaleString(locale === 'ar' ? 'ar-EG' : 'en-US')}</td>
+                  <td className="p-3">{ageTxt(newest)}</td>
+                  <td className="p-3">{ageTxt(oldest)}</td>
+                  <td className="p-3">{s.pausedUntil ? tr('متوقف مؤقتًا (المتجر طلب نهدى)', 'paused (store asked us to slow down)') : s.feed ? tr('فيد رسمي · كل 10 دقايق', 'official feed · every 10 min') : tr('خريطة الموقع + JSON-LD', 'sitemap + JSON-LD')}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div className="grid gap-3 md:grid-cols-3">
+        <div className="rounded-3xl border border-border bg-card p-4 text-sm"><p className="font-bold">🤖 {tr('وكلاء الإضافة', 'Ingestion agents')}</p>{h.ingest.length ? <ul className="mt-2 space-y-1">{h.ingest.slice(0, 6).map((x, i) => <li key={i} className="t-meta">{ageTxt(ageMin(x.at))} · {x.store} · {x.kind}: +{x.added} / ↻{x.updated}{x.note ? ` · ${x.note}` : ''}</li>)}</ul> : <p className="t-meta mt-2">{tr('أول دورة جاية خلال 10 دقايق.', 'First cycle within 10 minutes.')}</p>}</div>
+        <div className="rounded-3xl border border-border bg-card p-4 text-sm"><p className="font-bold">🎯 {tr('إعادة الفحص الذكية', 'Adaptive recrawl')}</p><p className="t-meta mt-2">{h.recrawl ? tr(`آخر دورة ${ageTxt(ageMin(h.recrawl.at))} · ${h.recrawl.checked} منتج`, `last ${ageTxt(ageMin(h.recrawl.at))} · ${h.recrawl.checked} products`) : tr('بتبدأ مع أول دورة.', 'Starts with the first cycle.')}</p><p className="t-meta mt-1">{tr('المراقَب كل ساعة، السخن كل 90 دقيقة–3 ساعات، الباقي كل 6 ساعات.', 'Watched hourly, hot every 90 min–3 h, the rest every 6 h.')}</p></div>
+        <div className="rounded-3xl border border-border bg-card p-4 text-sm"><p className="font-bold">🩹 {tr('مستخرج بيصلّح نفسه', 'Self-healing extractor')}</p><p className="t-meta mt-2">{tr(`متاجر اتصلّح استخراجها بالذكاء الاصطناعي: ${Object.keys(h.selfHealedHosts ?? {}).length}`, `Hosts healed by AI: ${Object.keys(h.selfHealedHosts ?? {}).length}`)}</p><p className="t-meta mt-1">{tr(`نزول أسعار آخر 24 ساعة: ${h.drops24h}`, `Drops in last 24 h: ${h.drops24h}`)}</p></div>
+      </div>
+      <details className="rounded-3xl border border-border bg-card p-4 text-sm"><summary className="cursor-pointer font-bold">{tr('الطزاجة الحقيقية لكل مصدر (بصراحة)', 'Honest freshness per source')}</summary><ul className="mt-2 list-disc space-y-1 ps-5">{Object.entries(h.freshness ?? {}).map(([k, v]) => <li key={k} dir="ltr" className="text-start">{v}</li>)}</ul></details>
+    </section>
+  );
+}

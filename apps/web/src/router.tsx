@@ -62,6 +62,7 @@ const VoicePage = lz(() => import('./future/voice'), 'VoicePage');
 const TimeMachinePage = lz(() => import('./future/time-machine'), 'TimeMachinePage');
 const GlobePage = lz(() => import('./future/globe'), 'GlobePage');
 const WhatsNewPage = lz(() => import('./components/whats-new'), 'WhatsNewPage');
+const SmartPage = lz(() => import('./pages/smart'), 'SmartPage') as unknown as React.ComponentType<{ tab?: string }>;
 const ToolsPage = lz(() => import('./pages/tools'), 'ToolsPage') as unknown as React.ComponentType<{ price?: number }>;
 
 const rootRoute = createRootRoute({
@@ -140,6 +141,12 @@ const v5ProductRoute = createRoute({
 const dropsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/drops', component: DropsPage });
 const couponsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/coupons', component: CouponsPage });
 const addRoute = createRoute({ getParentRoute: () => rootRoute, path: '/add', component: AddLinkPage });
+const smartRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/smart',
+  validateSearch: (s: Record<string, unknown>): { tab?: string } => ({ tab: typeof s.tab === 'string' ? s.tab : undefined }),
+  component: function SmartRoute() { const s = smartRoute.useSearch(); return <SmartPage key={s.tab} tab={s.tab} />; },
+});
 const sourcesRoute = createRoute({ getParentRoute: () => rootRoute, path: '/sources', component: SourcesPage });
 
 const watchRoute = createRoute({
@@ -293,6 +300,7 @@ const routeTree = rootRoute.addChildren([
   couponsRoute,
   addRoute,
   sourcesRoute,
+  smartRoute,
   watchRoute,
   alertsRoute,
   assistantRoute,

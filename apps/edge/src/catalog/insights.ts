@@ -12,7 +12,9 @@ export function dealDna(o: { price: number; offers: OfferLite[]; hot: number; co
   const now = o.now ?? Date.now();
   const nowMin = Math.floor(now / 60000);
   const own = o.offers.filter((x) => x.src !== 'user');
-  const pts = own.flatMap((x) => x.h);
+  // Time factors use the best offer's own history; cross-store comparison is its own factor (no double count).
+  const bestOffer = own.find((x) => x.p === o.price) ?? own[0];
+  const pts = bestOffer?.h ?? [];
   const f: DnaFactor[] = [];
   const add = (key: string, points: number, ar: string, en: string) => f.push({ key, points: Math.round(points), ar, en, tone: points > 2 ? 'good' : points < -2 ? 'bad' : 'neutral' });
   const recent = pts.filter(([t]) => t >= nowMin - 30 * 1440).map(([, v]) => v).sort((a, b) => a - b);

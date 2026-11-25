@@ -85,6 +85,7 @@ export function ComparePage({ ids: fromUrl }: { ids?: string }) {
   return (
     <div>
       <PageHeader icon={<GitCompare className="h-6 w-6" />} kicker={tr('قارن قبل ما تقرر', 'Compare before you decide')} title={tr('مقارنة المنتجات', 'Product comparison')} lede={tr('ضيف لحد 4 منتجات. الخلية الخضرا هي الأحسن في كل صف، والرسم بيوضح مين سعره نزل أكتر.', 'Add up to 4 products. The green cell wins each row, and the chart shows whose price fell most.')}>
+        <Link to="/smart" search={{ tab: 'basket' }} className="press inline-flex rounded-full bg-accent px-4 py-2 text-sm font-bold">🧺 {tr('احسب أرخص سلة من كل المتاجر', 'Cheapest basket across stores')}</Link>
         {compare.ids.length ? <ShareBar url={appUrl(`/compare?ids=${compare.ids.join(',')}`)} title={tr('مقارنة صفقة', 'Safqa comparison')} /> : null}
       </PageHeader>
 
