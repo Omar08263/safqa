@@ -11,6 +11,8 @@ import { registerHub } from './hub';
 import { autopilotTick } from './autopilot';
 import { tierById } from './tiers';
 import * as V5 from './catalog/api';
+import * as Ingest from './catalog/ingest';
+import * as Smart from './catalog/smart';
 import { cairoDay, type Env, fail, HttpError, json, nowIso, parseJ, rateLimit, readJson, str, timingSafeEqual, uid, b64 } from './util';
 
 type Ctx = { req: Request; env: Env; url: URL; p: string[]; exec: ExecutionContext };
@@ -637,6 +639,7 @@ on('POST', '/api/v2/admin/telegram/setup', async (c) => {
 on('POST', '/api/v2/admin/telegram/digest', async (c) => { await needAdmin(c); const n = await T.queueDigests(c.env); c.exec.waitUntil(T.drainOutbox(c.env)); return { queued: n }; });
 
 V5.register(on, auth.authenticate);
+Smart.registerSmart(on, auth.authenticate);
 
 // ---------------- runtime ----------------
 function cors(env: Env, req: Request): Record<string, string> {
@@ -679,6 +682,15 @@ export default {
   async scheduled(ev: ScheduledController, env: Env, exec: ExecutionContext) {
     const d = new Date(ev.scheduledTime);
     const cairoH = (d.getUTCHours() + 2) % 24;
+    if (ev.cron === '5-55/10 * * * *') {
+      // v5 ingestion agents: new arrivals + rotating price sweep, then adaptive recrawl, then smart notifications.
+      exec.waitUntil((async () => {
+        await Ingest.ingestTick(env).catch((e) => console.log('ingest', String(e)));
+        await Ingest.adaptiveRecrawl(env, 3).catch((e) => console.log('recrawl', String(e)));
+        await Smart.smartTick(env, d).catch((e) => console.log('smart', String(e)));
+      })());
+      return;
+    }
     exec.waitUntil((async () => {
       await C.judgeAppeals(env).catch(() => 0);
       if (d.getUTCMinutes() < 10) {
@@ -691,7 +703,7 @@ export default {
       await autopilotTick(env, d).catch((e) => console.log('autopilot', String(e)));
       await T.drainOutbox(env);
       // Last: priority recrawl of hot/watched products uses the remaining subrequest budget of this invocation.
-      await V5.priorityRecrawl(env, 4).catch((e) => console.log('recrawl', String(e)));
+      await Ingest.adaptiveRecrawl(env, 3).catch((e) => console.log('recrawl', String(e)));
     })());
   },
 };

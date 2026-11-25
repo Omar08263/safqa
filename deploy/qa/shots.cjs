@@ -8,6 +8,8 @@ const widths = (process.argv[4] || '360,390,412,768,1024,1440').split(',').map(N
 const all = ['/', '/search', '/radar', '/compare', '/toolbox', '/community', '/plans', '/channels', '/app', '/features', '/chat', '/agents', '/rules', '/tools', '/dashboard', '/watchlist', '/alerts', '/collections', '/savings', '/calendar', '/categories', '/stores', '/insights', '/assistant', '/achievements', '/referral', '/profile', '/settings', '/help', '/about', '/privacy', '/terms', '/login', '/nope-404'];
 const routes = process.argv[5] && process.argv[5] !== 'all' ? process.argv[5].split(',') : all;
 const full = process.argv.includes('--full');
+let latestVersion = null;
+try { const cl = require('../../apps/web/src/features/changelog.json'); latestVersion = cl.latest ?? cl.releases?.[0]?.version ?? null; } catch {}
 const tour = process.argv.includes('--tour');
 const dark = process.argv.includes('--dark');
 fs.mkdirSync(out, { recursive: true });
@@ -18,17 +20,17 @@ fs.mkdirSync(out, { recursive: true });
     const mobile = w < 768;
     const tablet = w >= 768 && w < 1280 && w !== 1024;
     const ctx = await browser.newContext({ viewport: { width: w, height: mobile ? 860 : tablet ? 1024 : 900 }, deviceScaleFactor: mobile ? 2 : 1, hasTouch: mobile || tablet, isMobile: mobile, locale: 'ar-EG' });
-    await ctx.addInitScript(({ tour, dark }) => {
-      if (!tour) localStorage.setItem('safqa.welcome.v4', 'true');
+    await ctx.addInitScript(({ tour, dark, latestVersion }) => {
+      if (!tour) { localStorage.setItem('safqa.welcome.v4', 'true'); localStorage.setItem('safqa.whatsnew.seen.v1', JSON.stringify(latestVersion)); }
       localStorage.setItem('safqa.tourDone.v1', 'true');
       localStorage.setItem('safqa.installBanner.dismissed', 'true');
       if (dark) localStorage.setItem('safqa.theme', '"dark"'.replace(/"/g, '')); 
-    }, { tour, dark });
+    }, { tour, dark, latestVersion });
     const page = await ctx.newPage();
     const errors = [];
     page.on('pageerror', (e) => errors.push(String(e).slice(0, 200)));
     for (const r of routes) {
-      const url = `${base}/#${r}`;
+      const url = process.env.CLEAN_URLS === '1' ? `${base}${r}` : `${base}/#${r}`;
       try {
         await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
       } catch { /* keep going */ }

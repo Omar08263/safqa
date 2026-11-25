@@ -5,6 +5,8 @@ import type { Env } from '../util';
 import { fail, nowIso, parseJ, rateLimit, str, uid } from '../util';
 import { CATEGORIES, canonicalUrl, categorize, categoryBySlug, condition, extractProduct, guessBrand, matchKey, normAr, normQuery, plausibleEgp, predict, productId, rowHeat, searchText, type Extracted } from './core';
 import * as amazon from './amazon';
+import { aiExtract, healedSelector } from './ingest';
+import { dealDna, fakeDiscount, seasonAdvice } from './insights';
 
 // biome-ignore lint/suspicious/noExplicitAny: D1 rows.
 type Row = Record<string, any>;
@@ -129,6 +131,10 @@ export async function product(env: Env, id: string, exec?: ExecutionContext) {
   return {
     ...toCard(r), specs: parseJ(r.specs, {}), offers: offers.sort((a, b) => b.k - a.k || a.p - b.p).map((o) => ({ store: storeInfo(o.s), url: o.u, priceEgp: o.p, listPriceEgp: o.l, inStock: Boolean(o.k), checkedAt: o.t, source: o.src ?? 'crawl', userReported: o.src === 'user', points: o.h.length })),
     history: points, series, prediction: pred, similar: similar.map(toCard), votes: { hot: r.hot, cold: r.cold },
+    dna: dealDna({ price: r.price, offers, hot: Number(r.hot), cold: Number(r.cold), checkedAt: r.checked_at }),
+    fake: fakeDiscount(offers.find((o) => o.p === r.price && o.src !== 'user') ?? null),
+    season: seasonAdvice(Date.now(), r.category),
+    war: (await env.DB.prepare('SELECT COUNT(DISTINCT store) s, COUNT(*) n FROM drops WHERE product_id=? AND at > ?').bind(id, new Date(Date.now() - 14 * 86400_000).toISOString()).first<{ s: number; n: number }>().then((w) => (w && w.s >= 2 && w.n >= 3 ? { stores: w.s, drops: w.n } : null))),
   };
 }
 export function bestSeries(offers: Offer[]) {
@@ -145,7 +151,9 @@ export function bestSeries(offers: Offer[]) {
 }
 
 // ---------------- refresh (cron + on view) ----------------
-const UA = 'SafqaBot/5.0 (+https://safqaeg.pages.dev/about; price comparison)';
+export { cached };
+export type { Ctx, On };
+export const UA = 'SafqaBot/5.0 (+https://safqaeg.pages.dev/about; price comparison)';
 async function readOffer(env: Env, o: Offer): Promise<{ price: number | null; inStock: boolean | null; listPrice?: number | null } | 'blocked' | null> {
   const u = new URL(o.u);
   if (!(await robotsOk(env, u))) return null;
@@ -167,20 +175,44 @@ async function readOffer(env: Env, o: Offer): Promise<{ price: number | null; in
   if (r.status === 403 || r.status === 429 || r.status === 503) return 'blocked';
   if (r.status === 404 || r.status === 410) return { price: null, inStock: false };
   if (!r.ok) return null;
-  const ex = await extractFromResponse(r);
+  const ex = await extractFromResponse(r, env);
   return ex?.price ? { price: ex.price, inStock: ex.inStock ?? true } : null;
 }
-/** Collect only JSON-LD + meta tags with HTMLRewriter (cheap on CPU), then parse. */
-async function extractFromResponse(r: Response): Promise<Extracted | null> {
-  let ld = ''; let metas = ''; let inLd = false;
+/**
+ * Collect only JSON-LD + meta tags with HTMLRewriter (cheap on CPU), then parse. When the page has no structured
+ * data, fall back to the self-healing extractor: price-like elements (+ the class remembered for this host) are
+ * handed to Workers AI once, and the winning class is remembered so later reads skip the AI.
+ */
+async function extractFromResponse(r: Response, env?: Env): Promise<Extracted | null> {
+  let ld = ''; let metas = ''; let inLd = false; let title = '';
+  const host = (() => { try { return new URL(r.url).host; } catch { return ''; } })();
+  const healed = env && host ? await healedSelector(env, host) : null;
+  const cands: { cls: string; text: string }[] = []; let healedText = '';
+  let cur: { cls: string; text: string } | null = null;
+  let inTitle = false;
   const rw = new HTMLRewriter()
     .on('script[type="application/ld+json"]', { element() { inLd = true; ld += '<script type="application/ld+json">'; }, text(t) { if (inLd) { ld += t.text; if (t.lastInTextNode) { ld += '</script>'; inLd = false; } } } })
-    .on('meta', { element(e) { const p = e.getAttribute('property') ?? e.getAttribute('name') ?? e.getAttribute('itemprop'); const c = e.getAttribute('content'); if (p && c && /^(og:|product:)/.test(p)) metas += `<meta property="${p}" content="${c.replace(/"/g, '&quot;')}">`; } });
+    .on('meta', { element(e) { const p = e.getAttribute('property') ?? e.getAttribute('name') ?? e.getAttribute('itemprop'); const c = e.getAttribute('content'); if (p && c && /^(og:|product:)/.test(p)) metas += `<meta property="${p}" content="${c.replace(/"/g, '&quot;')}">`; } })
+    .on('title', { element() { inTitle = true; }, text(t) { if (inTitle) { title += t.text; if (t.lastInTextNode) inTitle = false; } } })
+    .on('[class*="price"], [class*="Price"], [itemprop="price"]', {
+      element(e) { if (cands.length < 24) { cur = { cls: (e.getAttribute('class') ?? '').split(/\s+/).find((c) => /price/i.test(c)) ?? '', text: '' }; cands.push(cur); } },
+      text(t) { if (cur && cur.text.length < 80) cur.text += t.text; },
+    });
+  if (healed) rw.on(`.${healed.replace(/[^a-zA-Z0-9_-]/g, '')}`, { text(t) { if (healedText.length < 80) healedText += t.text; } });
   await rw.transform(r).arrayBuffer();
-  if (/captcha|robot check/i.test(metas)) return null;
-  return extractProduct(ld + metas);
+  if (/captcha|robot check/i.test(metas + title)) return null;
+  const ex = extractProduct(ld + metas);
+  if (ex?.price) return ex;
+  // Healed selector first (no AI), then AI with the price-like candidates.
+  const num = (s: string) => { const m = s.replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d))).replace(/,/g, '').match(/\d{2,7}(\.\d+)?/); return m ? Number(m[0]) : null; };
+  const t = (ex?.title || title).trim();
+  if (healedText && num(healedText) && t) return { ...(ex ?? {}), title: t, price: num(healedText), currency: 'EGP', inStock: true, crumbs: [], source: 'healed' } as Extracted;
+  if (!env || !t) return ex;
+  const useful = cands.map((c) => ({ cls: c.cls, text: c.text.replace(/\s+/g, ' ').trim() })).filter((c) => /\d/.test(c.text));
+  const ai = await aiExtract(env, host, t, useful);
+  return ai ? ({ ...(ex ?? {}), title: ai.title, price: ai.price, currency: 'EGP', inStock: true, crumbs: [], source: 'ai' } as Extracted) : ex;
 }
-async function robotsOk(env: Env, u: URL): Promise<boolean> {
+export async function robotsOk(env: Env, u: URL): Promise<boolean> {
   const key = `robots:${u.host}`;
   let txt = await env.KV.get(key);
   if (txt === null) {
@@ -302,7 +334,7 @@ export async function submitLink(env: Env, rawUrl: string, userKey: string) {
         : 'المتجر رفض الطلب الآلي — مش هنحاول نتخفّى. جرّب إضافة صفقة للمتصفح.' };
     }
     if (!r.ok) { await record('error', null, `status ${r.status}`); return { status: 'error', message: `المتجر رد بـ ${r.status}` }; }
-    ex = await extractFromResponse(r);
+    ex = await extractFromResponse(r, env);
   }
   if (!ex?.price || !ex.title) { await record('noproduct', null, ''); return { status: 'noproduct', message: 'ملقيناش بيانات منتج منظمة (schema.org) في الصفحة دي.' }; }
   if (ex.currency && !/EGP|LE|جنيه/i.test(ex.currency)) { await record('currency', null, String(ex.currency)); return { status: 'currency', message: `السعر بعملة ${ex.currency} — صفقة بتقارن بالجنيه بس.` }; }
@@ -321,7 +353,7 @@ export async function observe(env: Env, b: Row, userKey: string) {
   const saved = await upsertOffer(env, ex, url, storeId!, 'user');
   return { ok: true, productId: saved.id, userReported: true, by: userKey.slice(0, 6) };
 }
-async function upsertOffer(env: Env, ex: Extracted, url: string, storeId: string, src: string): Promise<{ id: string; created: boolean }> {
+export async function upsertOffer(env: Env, ex: Extracted, url: string, storeId: string, src: string): Promise<{ id: string; created: boolean }> {
   const brand = guessBrand(ex.title, ex.brand);
   const key = matchKey({ title: ex.title, brand, gtin: ex.gtin, mpn: ex.mpn });
   const id = await productId(key);
@@ -329,7 +361,10 @@ async function upsertOffer(env: Env, ex: Extracted, url: string, storeId: string
   const offer: Offer = { s: storeId, u: url, p: ex.price!, l: ex.listPrice ?? null, k: ex.inStock === false ? 0 : 1, t: now, src, h: [[Math.floor(Date.now() / 60000), ex.price!]] };
   const r = await env.DB.prepare('SELECT * FROM catalog WHERE id=?').bind(id).first<Row>();
   if (r) {
-    const offers = parseJ<Offer[]>(r.offers, []).filter((o) => o.u !== url);
+    const all = parseJ<Offer[]>(r.offers, []);
+    const prev = all.find((o) => o.u === url);
+    if (prev?.h.length) offer.h = [...prev.h, ...(prev.h[prev.h.length - 1]![1] !== offer.p ? offer.h : [])].slice(-240); // keep history
+    const offers = all.filter((o) => o.u !== url);
     offers.push(offer);
     await saveOffers(env, r, offers);
     return { id, created: false };
