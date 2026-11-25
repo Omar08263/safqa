@@ -21,6 +21,7 @@ import * as Smart from './catalog/smart';
 import { registerSystems } from './systems/api';
 import { uptimeTick } from './systems/uptime';
 import * as Sec from './security/audit';
+export { RateLimiterDO } from './security/limiter-do';
 import { clientIp, guard, originAllowed, securityHeaders } from './security/guard';
 import * as TwoFA from './security/owner2fa';
 import { open as openField } from './security/crypto';
@@ -677,7 +678,7 @@ on('GET', '/api/v2/admin/security', async (c) => {
     ...ev, bans: Object.entries(bans).filter(([, t]) => t > Date.now()).map(([ip, until]) => ({ ip, until: new Date(until).toISOString() })),
     layers: {
       rateLimitBindings: ['RL_IP', 'RL_AUTH', 'RL_WRITE', 'RL_NONCE', 'RL_OTP'].filter((k) => Boolean((c.env as unknown as Record<string, unknown>)[k])),
-      fieldEncryption: Boolean(c.env.FIELD_KEYS), signing: c.env.SIGNING_MODE ?? 'monitor', signingKey: Boolean(c.env.SIGNING_KEYS),
+      strictLimiter: Boolean(c.env.RL_DO), fieldEncryption: Boolean(c.env.FIELD_KEYS), signing: c.env.SIGNING_MODE ?? 'monitor', signingKey: Boolean(c.env.SIGNING_KEYS),
       accessTokenMinutes: auth.ACCESS_TTL / 60, telegramAlerts: T.tgEnabled(c.env),
     },
     rules: Sec.RULES,

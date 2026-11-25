@@ -44,6 +44,15 @@ name = "RL_OTP"
 namespace_id = "7105"
 simple = { limit = 5, period = 60 }
 
+# Strict limiter for sign-in / refresh / 2FA / nonces (in-memory Durable Object, free plan: SQLite class).
+[[durable_objects.bindings]]
+name = "RL_DO"
+class_name = "RateLimiterDO"
+
+[[migrations]]
+tag = "sec-v1"
+new_sqlite_classes = ["RateLimiterDO"]
+
 [observability]
 enabled = true
 head_sampling_rate = 1

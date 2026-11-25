@@ -12,6 +12,12 @@ const MACHINE = [/^\/api\/v2\/telegram\/webhook$/];
 const seenNonces = new Map<string, number>();
 
 export const clientIp = (req: Request) => req.headers.get('cf-connecting-ip') ?? req.headers.get('x-real-ip') ?? null;
+/** Rate-limit key for an IP: IPv6 users get a whole /64 (one subscriber), so rotating addresses inside it doesn't reset limits. */
+export function ipBucket(ip: string | null): string | null {
+  if (!ip || !ip.includes(':')) return ip;
+  const full = ip.includes('::') ? (() => { const [a, b] = ip.split('::'); const l = a ? a.split(':') : []; const r = b ? b.split(':') : []; return [...l, ...Array(8 - l.length - r.length).fill('0'), ...r]; })() : ip.split(':');
+  return `${full.slice(0, 4).map((x) => x.toLowerCase().replace(/^0+(?=.)/, '')).join(':')}::/64`;
+}
 
 export function originAllowed(env: Env, origin: string): boolean {
   if (!origin) return true; // native app, curl, server-to-server: no Origin header → JWT decides
@@ -44,7 +50,8 @@ export async function guard(env: Env, req: Request, url: URL, ch: Record<string,
     secEvent('banned_hit', ip, { path });
     return reject(403, 'banned', 'الوصول اتمنع مؤقتًا بسبب نشاط مريب', ch, { 'retry-after': String(Math.ceil((until - Date.now()) / 1000)) });
   }
-  if (ip && !(await allow(env, 'RL_IP', ip))) {
+  const bucket = ipBucket(ip);
+  if (bucket && !(await allow(env, 'RL_IP', bucket))) {
     secEvent('rate_limited', ip, { path, detail: 'ip' });
     return reject(429, 'rate_limited', 'طلبات كتير — استنى دقيقة', ch, { 'retry-after': '60' });
   }
@@ -60,11 +67,11 @@ export async function guard(env: Env, req: Request, url: URL, ch: Record<string,
     secEvent('origin_blocked', ip, { path, detail: origin.slice(0, 100) });
     return reject(403, 'origin_not_allowed', 'Origin not allowed', ch);
   }
-  if (/^\/api\/(auth\/(login|register|google|refresh|forgot)|v2\/hub\/pair\/claim|v2\/admin\/2fa\/verify)$/.test(path) && ip && !(await allow(env, 'RL_AUTH', ip))) {
+  if (/^\/api\/(auth\/(login|register|google|refresh|forgot)|v2\/hub\/pair\/claim|v2\/admin\/2fa\/verify)$/.test(path) && bucket && !(await allow(env, 'RL_AUTH', bucket))) {
     secEvent('rate_limited', ip, { path, detail: 'auth' });
     return reject(429, 'rate_limited', 'محاولات كتير — استنى دقيقة', ch, { 'retry-after': '60' });
   }
-  const writer = (req.headers.get('authorization') ?? '').slice(-24) || ip || 'anon';
+  const writer = (req.headers.get('authorization') ?? '').slice(-24) || bucket || 'anon';
   if (!(await allow(env, 'RL_WRITE', writer))) {
     secEvent('rate_limited', ip, { path, detail: 'write' });
     return reject(429, 'rate_limited', 'براحة شوية — طلبات كتير ورا بعض', ch, { 'retry-after': '60' });

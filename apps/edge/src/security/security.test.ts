@@ -3,7 +3,7 @@ import * as auth from '../auth';
 import { b64url, hashPassword, signJwt, verifyJwt } from '../util';
 import { _secState, flushSec, secEvent, shouldFlush } from './audit';
 import { blindIndex, isSealed, open, parseKeyring, seal, sealedKid } from './crypto';
-import { guard, originAllowed, securityHeaders } from './guard';
+import { guard, ipBucket, originAllowed, securityHeaders } from './guard';
 import { _resetLocalLimits, allow } from './ratelimit';
 import { signRequest, verifySignature } from './signing';
 import { base32Decode, base32Encode, totpAt, verifyTotp } from './totp';
@@ -171,6 +171,11 @@ describe('guard', () => {
     expect(await guard(env, req('POST', '/api/watchlist', h, body), new URL('https://api/api/watchlist'), {})).toBeNull();
     expect((await guard(env, req('POST', '/api/watchlist', h, body), new URL('https://api/api/watchlist'), {}))?.status).toBe(409);
     expect((await guard(env, req('POST', '/api/watchlist', { ...h, 'x-safqa-nonce': 'other-nonce-123456' }, body), new URL('https://api/api/watchlist'), {}))?.status).toBe(401);
+  });
+  it('buckets IPv6 by /64', () => {
+    expect(ipBucket('2a09:bac5:30c3:3296::50a:8e')).toBe('2a09:bac5:30c3:3296::/64');
+    expect(ipBucket('2a09:bac5:30c3:3296:1:2:3:4')).toBe('2a09:bac5:30c3:3296::/64');
+    expect(ipBucket('1.2.3.4')).toBe('1.2.3.4');
   });
   it('sets security headers', () => {
     const h = securityHeaders('/api/auth/me');

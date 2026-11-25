@@ -15,7 +15,7 @@ export function installSecurity({ PAGES, VIEWS, api, post, esc, ago, toast }) {
         <p class="muted small">${tf.enabled ? `شغال من ${ago(tf.enabledAt)} — أي جهاز جديد هيحتاج كود من تطبيق المصادقة.` : 'مقفول. فعّله عشان حتى لو حد خد حساب جوجل بتاعك مايقدرش يدخل اللوحة.'}</p>
         <div id="tfbox">${tf.enabled ? '<button class="btn s" id="tfoff">إيقاف 2FA</button>' : `<button class="btn p" id="tfon" ${tf.encryption ? '' : 'disabled'}>تفعيل 2FA</button>${tf.encryption ? '' : '<p class="small muted">محتاج مفتاح التشفير على السيرفر الأول.</p>'}`}</div></div>
       <div class="card"><b>🧱 طبقات الحماية الشغالة</b><ul class="small" style="margin:8px 0 0;padding-inline-start:18px;line-height:1.9">
-        ${yes(L.rateLimitBindings.length === 5, `حد الطلبات على الحافة (${L.rateLimitBindings.length}/5)`)}
+        ${yes(L.strictLimiter, 'حد صارم لمحاولات الدخول و2FA (Durable Object)')}${yes(L.rateLimitBindings.length === 5, `حد الطلبات على الحافة (${L.rateLimitBindings.length}/5)`)}
         ${yes(L.fieldEncryption, 'تشفير AES-256-GCM للإيصالات وأسرار 2FA')}
         ${yes(L.signingKey, `توقيع طلبات التطبيق (${esc(L.signing)})`)}
         ${yes(true, `توكن دخول قصير (${L.accessTokenMinutes} دقيقة) + تدوير وكشف إعادة الاستخدام`)}

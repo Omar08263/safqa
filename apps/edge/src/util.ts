@@ -27,6 +27,7 @@ export interface Env {
   GITHUB_TOKEN?: string;
   GITHUB_REPO?: string;
   // ---- security (see docs/security.md) ----
+  RL_DO?: DurableObjectNamespace;
   RL_IP?: RateLimiter; RL_AUTH?: RateLimiter; RL_WRITE?: RateLimiter; RL_NONCE?: RateLimiter; RL_OTP?: RateLimiter;
   /** AES-GCM keyring "kid:base64,kid:base64" (first encrypts). Secret. */
   FIELD_KEYS?: string;

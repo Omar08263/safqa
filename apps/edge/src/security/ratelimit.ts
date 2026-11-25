@@ -22,12 +22,26 @@ function localLimit(name: LimiterName, key: string, now = Date.now()) {
 }
 export const _resetLocalLimits = () => mem.clear();
 
-export async function allow(env: Partial<Record<LimiterName, RateLimiter>>, name: LimiterName, key: string): Promise<boolean> {
+/** Limiters that go through the strict Durable Object counter (low-volume, security-critical). */
+const STRICT: Partial<Record<LimiterName, true>> = { RL_AUTH: true, RL_NONCE: true, RL_OTP: true };
+interface LimiterNs { idFromName(n: string): unknown; get(id: unknown): { hit(key: string, limit: number, period: number): Promise<boolean> } }
+
+/**
+ * Layered: isolate memory (always) + Workers Rate Limiting binding (approximate, per location)
+ * + for STRICT limiters a Durable Object counter (exact). Any layer saying "no" blocks.
+ */
+export async function allow(env: Partial<Record<LimiterName, RateLimiter>> & { RL_DO?: unknown }, name: LimiterName, key: string): Promise<boolean> {
+  if (!localLimit(name, key)) return false;
   const b = env[name];
-  if (!b) return localLimit(name, key);
-  try {
-    return (await b.limit({ key })).success;
-  } catch {
-    return localLimit(name, key); // binding hiccup: never fail open entirely
+  if (b) {
+    try { if (!(await b.limit({ key })).success) return false; } catch { /* binding hiccup: other layers still apply */ }
   }
+  const ns = env.RL_DO as LimiterNs | undefined;
+  if (STRICT[name] && ns) {
+    const [limit, period] = LOCAL[name];
+    let h = 0;
+    for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+    try { return await ns.get(ns.idFromName(`${name}:${h % 8}`)).hit(key, limit, period); } catch (e) { console.log("rl_do error", String(e).slice(0, 160)); return true; } // DO quota/outage: memory + binding already checked
+  }
+  return true;
 }
