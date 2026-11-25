@@ -8,6 +8,7 @@ import * as pay from './payments';
 import { loadSnapshot, searchSnapshot, storeSnapshot } from './snapshot';
 import * as T from './telegram';
 import { registerHub } from './hub';
+import { registerOwnerTools } from './owner-tools';
 import { autopilotTick } from './autopilot';
 import { tierById } from './tiers';
 import * as V5 from './catalog/api';
@@ -38,6 +39,7 @@ async function needAdmin(c: Ctx): Promise<string> {
 }
 const body = (c: Ctx, max?: number) => readJson<Record<string, any>>(c.req, max);
 registerHub(on, { need, needAdmin, body });
+registerOwnerTools(on, { needAdmin, body });
 
 // ---------------- meta ----------------
 on('GET', '/api/health', async (c) => ({ ok: true, db: 'd1', edge: true, at: nowIso(), ai: (await aiBudgetLeft(c.env)) > 0 }));

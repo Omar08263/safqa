@@ -10,7 +10,7 @@ import { decidePayment } from './payments';
 import { enqueue, tgEnabled } from './telegram';
 import { cairoDay, type Env, nowIso, parseJ, uid } from './util';
 
-export interface OpsAgent { id: string; name: string; emoji: string; role: string; color: string; every: number }
+export interface OpsAgent { id: string; name: string; emoji: string; role: string; color: string; every: number; crew?: 'ops' | 'owner' }
 /** every = minutes between runs (cron ticks every 10 min). */
 export const OPS_AGENTS: OpsAgent[] = [
   { id: 'haris', name: 'حارس', emoji: '🛡️', role: 'رصد الأعطال وإرجاع المزايا اللي بتعمل مشاكل تلقائيًا', color: '#ef4444', every: 10 },
@@ -41,7 +41,7 @@ export function nextRank(xp: number) {
   return OPS_RANKS.find((r) => r.min > xp) ?? null;
 }
 
-type Row = { id: string; xp: number; runs: number; ok: number; failed: number; overridden: number; enabled: number; rank_override: string | null; last_run: string | null; last_note: string | null };
+type Row = { id: string; xp: number; runs: number; ok: number; failed: number; overridden: number; enabled: number; rank_override: string | null; last_run: string | null; last_note: string | null; auto?: number };
 
 export async function opsLog(env: Env, actor: string, kind: string, title: string, detail?: unknown, severity: 'info' | 'warn' | 'crit' | 'ok' = 'info') {
   await env.DB.prepare('INSERT INTO ops_audit (at,actor,kind,title,detail,severity) VALUES (?,?,?,?,?,?)')
@@ -122,7 +122,7 @@ export async function setFlag(env: Env, actor: string, key: string, patch: Parti
 }
 
 // ---------------------------------------------------------------- agents
-type Result = { ok: boolean; note: string; xp?: number };
+export type Result = { ok: boolean; note: string; xp?: number };
 
 /** 🛡️ Incident detection: client error spikes per flag → auto-rollback guarded flags. */
 async function haris(env: Env): Promise<Result> {
@@ -308,7 +308,15 @@ export async function rawi(env: Env, force = false): Promise<Result> {
   return { ok: true, note: ai ? 'تقرير بالذكاء الاصطناعي' : 'تقرير بالقالب', xp: 2 };
 }
 
-const RUNNERS: Record<string, (env: Env) => Promise<Result>> = { haris, mizan, kashaf, radar, khazna, monasseq, rawi: (e) => rawi(e) };
+export const RUNNERS: Record<string, (env: Env) => Promise<Result>> = { haris, mizan, kashaf, radar, khazna, monasseq, rawi: (e) => rawi(e) };
+
+/** Lets another module (owner-tools) add agents to the crew: they get ranks, XP, the cron and the Hub controls for free. */
+export function registerAgent(a: OpsAgent, run: (env: Env) => Promise<Result>, schedule?: (cairoMinute: number) => boolean) {
+  if (!OPS_AGENTS.some((x) => x.id === a.id)) OPS_AGENTS.push(a);
+  RUNNERS[a.id] = run;
+  if (schedule) SCHEDULES[a.id] = schedule;
+}
+const SCHEDULES: Record<string, (cairoMinute: number) => boolean> = {};
 
 /** Runs one agent and records its track record. */
 export async function runAgent(env: Env, id: string, manual = false): Promise<Result & { id: string }> {
@@ -330,10 +338,14 @@ export async function autopilotTick(env: Env, when: Date) {
   const out: unknown[] = [];
   for (const a of OPS_AGENTS) {
     if (a.id === 'rawi') { if (cairoH === 22 && when.getUTCMinutes() < 10) out.push(await runAgent(env, 'rawi')); continue; }
+    if (SCHEDULES[a.id]) { if (SCHEDULES[a.id]!(minuteOfDay)) out.push(await runAgent(env, a.id)); continue; }
     if (a.every <= 10 || Math.floor(minuteOfDay / 10) % Math.round(a.every / 10) === 0) out.push(await runAgent(env, a.id));
   }
   return out;
 }
+
+/** Extra escalation kinds (owner-tools registers «owner_change»: one-tap apply of a proposed change). */
+export const ESC_HANDLERS: Record<string, (env: Env, who: string, ref: string, decision: string) => Promise<unknown>> = {};
 
 /** Owner answers an escalation in the Hub. Feeds the agent's XP (agreement = trust). */
 export async function decideEscalation(env: Env, who: string, id: string, decision: string) {
@@ -343,6 +355,7 @@ export async function decideEscalation(env: Env, who: string, id: string, decisi
   const opts = parseJ<{ id: string }[]>(e.options, []);
   if (!opts.some((o) => o.id === decision)) throw new Error('bad decision');
   let effect: unknown = null;
+  if (ESC_HANDLERS[e.kind] && e.ref) effect = await ESC_HANDLERS[e.kind]!(env, who, e.ref, decision);
   if (e.kind === 'payment' && e.ref && (decision === 'approve' || decision === 'reject')) effect = await decidePayment(env, who, e.ref, decision, `قرار المالك من Safqa Hub`);
   if (e.kind === 'rollback' && e.ref && decision === 'enable') { await setFlag(env, who, e.ref.split(':')[0]!, { enabled: true }); effect = 'enabled'; }
   if (e.kind === 'ban' && e.ref && decision === 'ban30') {
@@ -359,9 +372,9 @@ export async function decideEscalation(env: Env, who: string, id: string, decisi
 export async function agentsOut(env: Env) {
   const rows = new Map((await env.DB.prepare('SELECT * FROM ops_agents').all<Row>()).results.map((r) => [r.id, r]));
   return OPS_AGENTS.map((a) => {
-    const r = rows.get(a.id) ?? ({ xp: 0, runs: 0, ok: 0, failed: 0, overridden: 0, enabled: 1, rank_override: null, last_run: null, last_note: null } as Row);
+    const r = rows.get(a.id) ?? ({ xp: 0, runs: 0, ok: 0, failed: 0, overridden: 0, enabled: 1, rank_override: null, last_run: null, last_note: null, auto: 1 } as Row);
     const rank = rankFor(r.xp, r.rank_override);
     const next = nextRank(r.xp);
-    return { ...a, xp: r.xp, runs: r.runs, okRuns: r.ok, failed: r.failed, overridden: r.overridden, enabled: Boolean(r.enabled), rank, rankOverride: r.rank_override, next: next ? { ...next, need: next.min - r.xp } : null, lastRun: r.last_run, lastNote: r.last_note };
+    return { ...a, xp: r.xp, runs: r.runs, okRuns: r.ok, failed: r.failed, overridden: r.overridden, enabled: Boolean(r.enabled), auto: r.auto === undefined ? true : Boolean(r.auto), rank, rankOverride: r.rank_override, next: next ? { ...next, need: next.min - r.xp } : null, lastRun: r.last_run, lastNote: r.last_note };
   });
 }

@@ -154,6 +154,7 @@ export function registerHub(on: On, d: Deps) {
     const b = await d.body(c);
     await c.env.DB.prepare('INSERT OR IGNORE INTO ops_agents (id) VALUES (?)').bind(id).run();
     if (b.enabled !== undefined) await c.env.DB.prepare('UPDATE ops_agents SET enabled=? WHERE id=?').bind(b.enabled ? 1 : 0, id).run();
+    if (b.auto !== undefined) await c.env.DB.prepare('UPDATE ops_agents SET auto=? WHERE id=?').bind(b.auto ? 1 : 0, id).run();
     if (b.rankOverride !== undefined) await c.env.DB.prepare('UPDATE ops_agents SET rank_override=? WHERE id=?').bind(b.rankOverride && AP.OPS_RANKS.some((r) => r.id === b.rankOverride) ? b.rankOverride : null, id).run();
     if (typeof b.xp === 'number') await AP.grantOpsXp(c.env, id, Math.max(-500, Math.min(500, Math.round(b.xp))), 'owner');
     await AP.opsLog(c.env, who, 'agent', `المالك عدّل الوكيل ${id}`, b, 'info');

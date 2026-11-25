@@ -1,6 +1,7 @@
 // Safqa Hub (admin) — a dependency-free PWA. Talks only to the Safqa edge API.
 import { installHub } from './hub.js';
 import { installTaps } from './asmr.js';
+import { installOwner } from './owner.js';
 const API = 'https://safqa-api.safqaeg.workers.dev';
 const SITE = 'https://safqaeg.pages.dev';
 const GOOGLE_CLIENT_ID = '700154178904-k0hi0kp5v19m775u8t1bt6m6mnfhrghc.apps.googleusercontent.com';
@@ -259,6 +260,7 @@ VIEWS.ops = async (v) => {
 };
 
 installHub({ PAGES, VIEWS, api, post, esc, fmt, ago, toast });
+installOwner({ PAGES, VIEWS, api, post, esc, fmt, ago, toast });
 installTaps();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => 0);
 await completeLogin();
