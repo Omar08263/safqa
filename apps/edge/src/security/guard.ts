@@ -8,7 +8,7 @@ import { verifySignature } from './signing';
 export const MAX_BODY = 13_000_000; // largest legit body: 12 MB video upload
 const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 /** Server-to-server endpoints with their own secret; no browser Origin, no app signature. */
-const MACHINE = [/^\/api\/v2\/telegram\/webhook$/];
+const MACHINE = [/^\/api\/v2\/telegram\/webhook$/, /^\/api\/v5\/hunter\//];
 const seenNonces = new Map<string, number>();
 
 export const clientIp = (req: Request) => req.headers.get('cf-connecting-ip') ?? req.headers.get('x-real-ip') ?? null;
