@@ -6,6 +6,7 @@ import { FormEvent } from 'react';
 import { DealCard, StateMessage } from '../components/bits';
 import { Countdown } from '../components/countdown';
 import { HomeV5 } from '../components/home-v5';
+import { FeaturedDeals } from '../components/featured-deals';
 import { useV5Meta } from '../lib/v5';
 import { PriceFreshness } from '../components/price-freshness';
 import { Button } from '../components/ui/button';
@@ -141,6 +142,7 @@ export function HomePage() {
         </div>
       ) : null}
 
+      <FeaturedDeals />
       <HomeV5 />
 
       {/* STATS (curated v4 snapshot) */}
