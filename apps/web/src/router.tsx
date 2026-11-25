@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import {
-  createHashHistory,
   createRootRoute,
   createRoute,
   createRouter,
@@ -256,6 +255,7 @@ const extraRoutes = [
   simple('/plans', () => <PlansPage />),
   simple('/channels', () => <ChannelsPage />),
   simple('/pay', () => <PayPage />),
+  simple('/auth/callback', () => <AuthCallback />),
   simple('/live', () => <LivePage />),
   simple('/privacy', () => <PrivacyPage />),
   simple('/terms', () => <TermsPage />),
@@ -288,13 +288,22 @@ const routeTree = rootRoute.addChildren([
   ...extraRoutes,
 ]);
 
-/** #/community, #/chat and #/u/:id all open the single server-synced community at #/live. */
+/** /community, /chat and /u/:id all open the single server-synced community at /live. */
 function ToLive({ tab }: { tab: 'chat' | 'feed' }) {
   const navigate = useNavigate();
   useEffect(() => {
     void navigate({ to: '/live', search: { tab } as never, replace: true });
   }, [navigate, tab]);
   return null;
+}
+
+/** Google returns to /auth/callback#id_token=…; main.tsx finishes sign-in before the router starts. */
+function AuthCallback() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    void navigate({ to: '/login', replace: true });
+  }, [navigate]);
+  return <div className="skeleton mx-auto h-64 max-w-5xl rounded-3xl" aria-busy="true" />;
 }
 
 const LOST = [
@@ -323,11 +332,8 @@ function NotFound() {
 
 export const router = createRouter({
   routeTree,
-  // The static demo (no server rewrites) uses #/ URLs so deep links survive reloads.
-  history:
-    import.meta.env.VITE_DEMO_MODE === 'static'
-      ? createHashHistory()
-      : undefined,
+  // Clean history URLs (/login, /product/x). Cloudflare Pages serves index.html for
+  // every path via public/_redirects, so deep links survive reloads.
   defaultNotFoundComponent: NotFound,
 });
 

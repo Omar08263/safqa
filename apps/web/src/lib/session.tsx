@@ -1,5 +1,6 @@
 import { createSafqaClient, type SafqaClient } from '@safqa/api-client';
 import type { User } from '@safqa/shared';
+import { accessTtl, cachedUser, onTokens, refreshAccess, saveTokens, startSilentRefresh, USER } from './auth-tokens';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 interface SessionValue {
@@ -32,56 +33,60 @@ const baseUrl = import.meta.env.VITE_API_URL || '';
 export function SessionProvider({ children }: { children: ReactNode }) {
   const [access, setAccess] = useState<string | null>(() => window.localStorage.getItem('safqa.access'));
   const [refresh, setRefresh] = useState<string | null>(() => window.localStorage.getItem('safqa.refresh'));
-  const [user, setUser] = useState<User | null>(null);
+  // Signed-in UI shows instantly (and offline) from the last known profile.
+  const [user, setUserState] = useState<User | null>(() => cachedUser<User>());
   const [ready, setReady] = useState(false);
+  const setUser = useCallback((u: User | null) => {
+    setUserState(u);
+    if (u) window.localStorage.setItem(USER, JSON.stringify(u));
+  }, []);
 
   const store = useCallback((nextAccess: string | null, nextRefresh: string | null) => {
-    setAccess(nextAccess);
-    setRefresh(nextRefresh);
-    if (nextAccess) window.localStorage.setItem('safqa.access', nextAccess);
-    else window.localStorage.removeItem('safqa.access');
-    if (nextRefresh) window.localStorage.setItem('safqa.refresh', nextRefresh);
-    else window.localStorage.removeItem('safqa.refresh');
+    saveTokens(nextAccess, nextRefresh);
   }, []);
+
+  // Keep React state in sync with the token store (refresh, other tabs, sign-out elsewhere).
+  useEffect(
+    () =>
+      onTokens(() => {
+        const a = window.localStorage.getItem('safqa.access');
+        const r = window.localStorage.getItem('safqa.refresh');
+        setAccess(a);
+        setRefresh(r);
+        if (!a && !r) setUserState(null);
+      }),
+    [],
+  );
+  useEffect(() => startSilentRefresh(), []);
 
   const client = useMemo(
     () =>
       createSafqaClient({
         baseUrl,
         getAccessToken: () => window.localStorage.getItem('safqa.access'),
-        refresh: async () => {
-          const token = window.localStorage.getItem('safqa.refresh');
-          if (!token) return null;
-          const anonymous = createSafqaClient({ baseUrl, getAccessToken: () => null });
-          try {
-            const next = await anonymous.refresh(token);
-            store(next.accessToken, next.refreshToken);
-            setUser(next.user);
-            return next.accessToken;
-          } catch {
-            store(null, null);
-            setUser(null);
-            return null;
-          }
-        },
+        refresh: refreshAccess,
       }),
-    [store],
+    [],
   );
 
   useEffect(() => {
     let cancel = false;
-    if (!access) {
-      setUser(null);
+    if (!access && !refresh) {
+      setUserState(null);
       setReady(true);
       return;
     }
-    client
-      .me()
+    const ttl = accessTtl();
+    // Expired (or missing) access token: refresh first instead of collecting a 401.
+    const ready$ = refresh && (ttl === null ? !access : ttl < 60) ? refreshAccess() : Promise.resolve(null);
+    ready$
+      .then(() => client.me())
       .then((me) => {
         if (!cancel) setUser(me);
       })
       .catch(() => {
-        if (!cancel) store(null, null);
+        // Never sign out on a network/server hiccup: only a rejected refresh token
+        // (handled in auth-tokens) ends the session. Keep the cached profile.
       })
       .finally(() => {
         if (!cancel) setReady(true);
@@ -89,7 +94,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     return () => {
       cancel = true;
     };
-  }, [access, client, store]);
+  }, [access, refresh, client, setUser]);
 
   const value = useMemo<SessionValue>(
     () => ({
@@ -112,15 +117,20 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         setUser(me);
       },
       async raw<T>(path: string, method = 'GET', body?: unknown): Promise<T> {
-        const token = window.localStorage.getItem('safqa.access');
-        const res = await fetch(baseUrl + path, {
-          method,
-          headers: {
-            ...(body !== undefined ? { 'content-type': 'application/json' } : {}),
-            ...(token ? { authorization: `Bearer ${token}` } : {}),
-          },
-          body: body !== undefined ? JSON.stringify(body) : undefined,
-        });
+        const call = (token: string | null) =>
+          fetch(baseUrl + path, {
+            method,
+            headers: {
+              ...(body !== undefined ? { 'content-type': 'application/json' } : {}),
+              ...(token ? { authorization: `Bearer ${token}` } : {}),
+            },
+            body: body !== undefined ? JSON.stringify(body) : undefined,
+          });
+        let res = await call(window.localStorage.getItem('safqa.access'));
+        if (res.status === 401 && window.localStorage.getItem('safqa.refresh')) {
+          const next = await refreshAccess();
+          if (next) res = await call(next);
+        }
         const data = await res.json().catch(() => null);
         if (!res.ok) throw new RawError(res.status, data?.error?.code ?? 'error', data?.error?.message ?? res.statusText);
         return data as T;
@@ -132,7 +142,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         setUser(null);
       },
     }),
-    [client, ready, refresh, store, user],
+    [client, ready, refresh, setUser, store, user],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

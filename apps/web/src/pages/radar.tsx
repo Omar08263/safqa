@@ -55,7 +55,7 @@ export function RadarPage() {
     const p = await Notification.requestPermission();
     if (p === 'granted') {
       setPrefs({ ...prefs, browser: true });
-      await showBrowserNotification(tr('🔔 إشعارات صفقة اشتغلت', '🔔 Safqa alerts are on'), tr('هنبعتلك بس التخفيضات الحقيقية — من غير إزعاج.', 'Only real drops — no spam.'), '/#/radar');
+      await showBrowserNotification(tr('🔔 إشعارات صفقة اشتغلت', '🔔 Safqa alerts are on'), tr('هنبعتلك بس التخفيضات الحقيقية — من غير إزعاج.', 'Only real drops — no spam.'), '/radar');
       toast(tr('الإشعارات اشتغلت ✅', 'Notifications on ✅'));
     } else toast(tr('الإذن مرفوض — تقدر تغيّره من إعدادات المتصفح', 'Permission denied — change it in browser settings'), 'error');
   }
@@ -113,7 +113,7 @@ export function RadarPage() {
               <label className="flex items-center justify-between gap-2"><span className="flex items-center gap-2"><Moon className="h-4 w-4" />{tr('ساعات هدوء 11م–8ص (القاهرة)', 'Quiet hours 11pm–8am (Cairo)')}</span><input type="checkbox" checked={Boolean(prefs.quietHours)} onChange={(e) => setPrefs({ ...prefs, quietHours: e.target.checked ? [23, 8] : null })} className="h-4 w-4 accent-[var(--saffron)]" /></label>
               <div className="flex flex-wrap gap-1">{['phones', 'laptops', 'tablets', 'audio', 'tvs', 'appliances', 'kitchen', 'gaming', 'lifestyle'].map((c) => { const on = prefs.categories.includes(c); return <button key={c} type="button" onClick={() => setPrefs({ ...prefs, categories: on ? prefs.categories.filter((x) => x !== c) : [...prefs.categories, c] })} className={`rounded-full px-2.5 py-1 text-xs ${on ? 'bg-primary text-primary-foreground' : 'bg-accent'}`}>{({ phones: tr('موبايلات', 'Phones'), laptops: tr('لابتوب', 'Laptops'), tablets: tr('تابلت', 'Tablets'), audio: tr('صوتيات', 'Audio'), tvs: tr('شاشات', 'TVs'), appliances: tr('أجهزة', 'Appliances'), kitchen: tr('مطبخ', 'Kitchen'), gaming: tr('ألعاب', 'Gaming'), lifestyle: tr('ساعات', 'Wearables') } as Record<string, string>)[c]}</button>; })}</div>
               <p className="text-[11px] text-muted">{tr('لو ماختارتش أقسام، هيوصلك من كل الأقسام.', 'No category selected = all categories.')}</p>
-              <Button size="sm" variant="outline" onClick={(e) => { confetti({ x: e.clientX, y: e.clientY }); void showBrowserNotification(tr('⚡ تجربة تنبيه من صفقة', '⚡ Safqa test alert'), tr('كده التنبيهات شغالة تمام.', 'Alerts are working.'), '/#/radar'); toast(tr('اتبعت تنبيه تجربة', 'Test alert sent')); }}>{tr('جرّب تنبيه', 'Send a test alert')}</Button>
+              <Button size="sm" variant="outline" onClick={(e) => { confetti({ x: e.clientX, y: e.clientY }); void showBrowserNotification(tr('⚡ تجربة تنبيه من صفقة', '⚡ Safqa test alert'), tr('كده التنبيهات شغالة تمام.', 'Alerts are working.'), '/radar'); toast(tr('اتبعت تنبيه تجربة', 'Test alert sent')); }}>{tr('جرّب تنبيه', 'Send a test alert')}</Button>
             </div>
           </Card>
 

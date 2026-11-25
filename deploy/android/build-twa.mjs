@@ -13,7 +13,7 @@ import { join } from 'node:path';
 const require = createRequire(join(process.cwd(), 'package.json'));
 const { AndroidSdkTools, Config, ConsoleLog, GradleWrapper, JdkHelper, TwaGenerator, TwaManifest } = require('@bubblewrap/core');
 
-const SITE = process.env.SAFQA_SITE || 'https://safqa-eg-safqa.static.hf.space';
+const SITE = process.env.SAFQA_SITE || 'https://safqaeg.pages.dev';
 const version = process.env.SAFQA_APP_VERSION || '3.0.0';
 const versionCode = Number(process.env.SAFQA_APP_VERSION_CODE || 3);
 const out = process.env.SAFQA_TWA_DIR || join(process.cwd(), 'project');

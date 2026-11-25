@@ -31,7 +31,7 @@ export function PayPage() {
   const [tiers, setTiers] = useState<EdgeTier[]>([]);
   const [pay, setPay] = useState<PayInfo | null>(null);
   const [up, setUp] = useState<boolean | null>(null);
-  const [tier, setTier] = useState<EdgeTier['id']>(() => (new URLSearchParams(window.location.hash.split('?')[1]).get('tier') as EdgeTier['id']) || 'gold');
+  const [tier, setTier] = useState<EdgeTier['id']>(() => (new URLSearchParams(window.location.search).get('tier') as EdgeTier['id']) || 'gold');
   const [months, setMonths] = useState(1);
   const [codeOpen, setCodeOpen] = useState(false);
   const [code, setCode] = useState('');
@@ -88,7 +88,7 @@ export function PayPage() {
         <TelegramFollowButton compact />
       </PageHeader>
       {up === false ? <Card><p>⚠️ {tr('الدفع محتاج السيرفر وهو مش متاح دلوقتي — جرّب كمان شوية.', 'Payments need the server, which is unreachable right now.')}</p></Card> : null}
-      {!user || !linked ? <Card><p className="font-semibold">{tr('سجّل دخول الأول عشان باقتك تتربط بحسابك على الموقع والتطبيق وتيليجرام.', 'Sign in first so your plan syncs across web, app and Telegram.')}</p><a href="#/login" className="press mt-3 inline-flex rounded-full bg-primary px-4 py-2 font-semibold text-primary-foreground">{tr('تسجيل الدخول', 'Sign in')}</a>{user && !linked ? <p className="t-meta mt-2">{tr('حسابك الحالي محفوظ في المتصفح بس — اخرج وادخل تاني بنفس الإيميل والباسورد وهيتنقل للسيرفر تلقائي.', 'Your current account lives only in this browser — sign out and back in and it moves to the server automatically.')}</p> : null}</Card> : null}
+      {!user || !linked ? <Card><p className="font-semibold">{tr('سجّل دخول الأول عشان باقتك تتربط بحسابك على الموقع والتطبيق وتيليجرام.', 'Sign in first so your plan syncs across web, app and Telegram.')}</p><a href="/login" className="press mt-3 inline-flex rounded-full bg-primary px-4 py-2 font-semibold text-primary-foreground">{tr('تسجيل الدخول', 'Sign in')}</a>{user && !linked ? <p className="t-meta mt-2">{tr('حسابك الحالي محفوظ في المتصفح بس — اخرج وادخل تاني بنفس الإيميل والباسورد وهيتنقل للسيرفر تلقائي.', 'Your current account lives only in this browser — sign out and back in and it moves to the server automatically.')}</p> : null}</Card> : null}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {tiers.map((x) => (

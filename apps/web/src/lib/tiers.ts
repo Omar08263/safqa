@@ -4,7 +4,7 @@ import type { Cue } from './sound';
 
 /**
  * Safqa memberships. Prices are EGP / month and match the real backend
- * (apps/edge/src/tiers.ts, GET /api/v2/tiers) and the InstaPay checkout at #/pay.
+ * (apps/edge/src/tiers.ts, GET /api/v2/tiers) and the InstaPay checkout at /pay.
  * The member's tier always comes from the server (GET /api/auth/me) and is
  * cached locally, so limits still apply offline. Signed-out visitors are «مجاني».
  * Limits marked `live` are enforced in the app today.
@@ -76,7 +76,7 @@ export const perks: Perk[] = [
   { ar: 'من غير إعلانات', en: 'No ads', values: v(true, true, true, true), live: true },
 ];
 
-export const payUrl = (id: TierId) => `#/pay?tier=${id}`;
+export const payUrl = (id: TierId) => `/pay?tier=${id}`;
 
 // ---------- the member's tier, from the server ----------
 const CACHE_KEY = 'safqa.serverTier.v1';

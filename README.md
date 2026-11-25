@@ -34,7 +34,7 @@
 <p><b>Safqa (صفقة, “a deal”)</b> tracks prices across Egyptian stores, spots inflated “was” prices,<br/>and has a panel of AI agents argue about every deal before you spend a pound.</p>
 
 <p>
-  <a href="https://safqa-eg-safqa.static.hf.space"><img alt="Open the live demo" src="https://img.shields.io/badge/%E2%96%B6%20%20live%20demo-try%20Safqa%20now-c9840a?style=for-the-badge&labelColor=1c1915&logo=huggingface&logoColor=FFD21E"></a>
+  <a href="https://safqaeg.pages.dev"><img alt="Open the live demo" src="https://img.shields.io/badge/%E2%96%B6%20%20live%20demo-try%20Safqa%20now-c9840a?style=for-the-badge&labelColor=1c1915&logo=huggingface&logoColor=FFD21E"></a>
 </p>
 
 <p><a href="#showcase"><b>Showcase</b></a> · <a href="#features"><b>Features</b></a> · <a href="#v3"><b>v3 app</b></a> · <a href="#how-it-works"><b>How it works</b></a> · <a href="#agent-debate"><b>Agents</b></a> · <a href="#architecture"><b>Architecture</b></a> · <a href="#quick-start"><b>Quick start</b></a> · <a href="#deploy"><b>Deploy</b></a> · <a href="#roadmap"><b>Roadmap</b></a> · <a href="#العربية"><b>العربية</b></a></p>
@@ -121,7 +121,7 @@ In the static demo, accounts, watchlist, collections and reset codes live in you
 
 <p align="center">
 <a href="https://github.com/Omar08263/safqa/releases/download/v4.0.0/safqa.apk"><img alt="Download the native Android app" src="https://img.shields.io/badge/Android-Native%20app%20v4.0.0-3DDC84?style=for-the-badge&labelColor=1c1915&logo=android&logoColor=3DDC84"></a>
-<a href="https://safqa-eg-safqa.static.hf.space/#/plans"><img alt="Plans" src="https://img.shields.io/badge/Plans-4%20tiers-F5B524?style=for-the-badge&labelColor=1c1915"></a>
+<a href="https://safqaeg.pages.dev/plans"><img alt="Plans" src="https://img.shields.io/badge/Plans-4%20tiers-F5B524?style=for-the-badge&labelColor=1c1915"></a>
 <a href="https://t.me/SafqaDealsBot"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SafqaDealsBot-229ED9?style=for-the-badge&labelColor=1c1915&logo=telegram&logoColor=white"></a>
 </p>
 
@@ -149,8 +149,8 @@ In the static demo, accounts, watchlist, collections and reset codes live in you
 
 <p align="center">
 <a href="https://github.com/Omar08263/safqa/releases/download/v4.0.0/safqa.apk"><img alt="Download the Android APK" src="https://img.shields.io/badge/Android-Download%20APK-3DDC84?style=for-the-badge&labelColor=1c1915&logo=android&logoColor=3DDC84"></a>
-<a href="https://safqa-eg-safqa.static.hf.space/#/app"><img alt="Install the PWA" src="https://img.shields.io/badge/PWA-Install-5A0FC8?style=for-the-badge&labelColor=1c1915&logo=pwa&logoColor=white"></a>
-<a href="https://safqa-eg-safqa.static.hf.space/#/toolbox"><img alt="402 offline tools" src="https://img.shields.io/badge/Toolbox-402%20offline%20tools-d99a1b?style=for-the-badge&labelColor=1c1915"></a>
+<a href="https://safqaeg.pages.dev/app"><img alt="Install the PWA" src="https://img.shields.io/badge/PWA-Install-5A0FC8?style=for-the-badge&labelColor=1c1915&logo=pwa&logoColor=white"></a>
+<a href="https://safqaeg.pages.dev/toolbox"><img alt="402 offline tools" src="https://img.shields.io/badge/Toolbox-402%20offline%20tools-d99a1b?style=for-the-badge&labelColor=1c1915"></a>
 </p>
 
 v3 takes the best ideas from Amazon, Noon, AliExpress, Google Shopping, Keepa, CamelCamelCamel, Honey, PriceSpy and Reddit/Discord, and builds them on Safqa's real data.
@@ -185,7 +185,7 @@ No fake coupons, no invented bank offers, no fake reviews.
 <details><summary><b>Android app (TWA)</b></summary>
 
 `deploy/android/build-twa.mjs` uses Bubblewrap core to build a signed Trusted Web Activity (`space.hf.safqa.twa`, minSdk 24). It verifies with
-[`/.well-known/assetlinks.json`](https://safqa-eg-safqa.static.hf.space/.well-known/assetlinks.json), so the app opens full-screen without a URL bar. Google sign-in, notifications and offline mode run in Chrome, as on the web. The keystore stays outside the repo. Releases are on [GitHub Releases](https://github.com/Omar08263/safqa/releases/latest).
+[`/.well-known/assetlinks.json`](https://safqaeg.pages.dev/.well-known/assetlinks.json), so the app opens full-screen without a URL bar. Google sign-in, notifications and offline mode run in Chrome, as on the web. The keystore stays outside the repo. Releases are on [GitHub Releases](https://github.com/Omar08263/safqa/releases/latest).
 </details>
 
 <h2 id="backend">🛰️ Real backend: Cloudflare edge (free tier)</h2>
@@ -197,7 +197,7 @@ Accounts, sync, the live community and chat, real AI agents, moderation, **Insta
 | API | https://safqa-api.safqaeg.workers.dev |
 | Admin (owner only, Google + allowlist) | https://safqa-admin.pages.dev · [Android APK](https://github.com/Omar08263/safqa/releases/download/admin-v1.0.0/safqa-admin.apk) |
 | Telegram | [@SafqaDealsBot](https://t.me/SafqaDealsBot) — deals, price-drop alerts, daily digest, AI price answers in Egyptian Arabic |
-| On the site | [`#/pay`](https://safqa-eg-safqa.static.hf.space/#/pay) plans + InstaPay · [`#/live`](https://safqa-eg-safqa.static.hf.space/#/live) live community |
+| On the site | [`/pay`](https://safqaeg.pages.dev/pay) plans + InstaPay · [`/live`](https://safqaeg.pages.dev/live) live community |
 
 Details, models, payment flow, limits and what is still demo: **[docs/backend.md](docs/backend.md)**.
 
@@ -460,7 +460,7 @@ After a fetch, JSON-LD (`parseJsonLdOffer`) is the only price/title extractor. M
   <a href="https://render.com/deploy?repo=https://github.com/Omar08263/safqa"><img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" height="44"></a>
 </p>
 
-- **Live demo (free Hugging Face static Space):** <https://safqa-eg-safqa.static.hf.space>. It is the normal web app built with `VITE_DEMO_MODE=static`, answering `/api/*` in the browser from a snapshot recorded from a seeded API. Sign-in, watchlist and alerts are emulated per browser; admin and live events are off. See [`deploy/hf`](deploy/hf/README.md), which also has a single-container image (Postgres, Redis and the API on port 7860).
+- **Live demo (free Hugging Face static Space):** <https://safqaeg.pages.dev>. It is the normal web app built with `VITE_DEMO_MODE=static`, answering `/api/*` in the browser from a snapshot recorded from a seeded API. Sign-in, watchlist and alerts are emulated per browser; admin and live events are off. See [`deploy/hf`](deploy/hf/README.md), which also has a single-container image (Postgres, Redis and the API on port 7860).
 - **Free Render demo:** `render.yaml` at the repo root provisions a free web API (Docker), a free static site, free Postgres, and free Key Value. After pushing to GitHub, open `https://dashboard.render.com/blueprint/new?repo=https://github.com/Omar08263/safqa`, connect GitHub if asked, and click Apply. The public site URL is the `safqa-web` service; demo login is `demo@safqa.app` / `demo1234`. Free Postgres expires after 30 days, free web services spin down after 15 minutes idle, and the background worker is not included (workers are not free). `LLM_PROVIDER=mock` so no model keys are required.
 - **Web (other hosts):** Vercel (or any static host). Build command `pnpm --filter @safqa/web build`, output `apps/web/dist`. Set `VITE_API_URL` to the public API origin. The service worker registers in production builds.
 - **API and worker:** a small VPS (Hetzner or similar). Copy the repo, set a real `AUTH_SECRET`, and run `docker compose up -d`. Put Caddy or nginx in front of port 8787 for TLS. Do not publish Postgres or Redis.

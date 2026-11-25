@@ -9,7 +9,7 @@ import Constants from 'expo-constants';
 import { serverSnapshot } from './api';
 
 const extra = (Constants.expoConfig?.extra ?? {}) as { snapshotUrl?: string; siteUrl?: string };
-export const SITE_URL = (extra.siteUrl ?? 'https://safqa-eg-safqa.static.hf.space').replace(/\/$/, '');
+export const SITE_URL = (extra.siteUrl ?? 'https://safqaeg.pages.dev').replace(/\/$/, '');
 export const SNAPSHOT_URL = extra.snapshotUrl ?? `${SITE_URL}/demo/snapshot.json`;
 const CACHE_KEY = 'safqa.snapshot.v1';
 

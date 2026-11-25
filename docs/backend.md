@@ -9,7 +9,7 @@ working on its own (snapshot + in-browser demo API) if the backend is ever down.
 | Admin app (Pages `safqa-admin`, PWA) | https://safqa-admin.pages.dev | `apps/admin` |
 | Admin Android app (TWA) | [safqa-admin.apk](https://github.com/Omar08263/safqa/releases/download/admin-v1.0.0/safqa-admin.apk) | `deploy/android/build-admin-twa.mjs` |
 | Telegram bot | https://t.me/SafqaDealsBot | `apps/edge/src/telegram.ts` |
-| Site (HF static Space) | https://safqa-eg-safqa.static.hf.space (`#/pay`, `#/live`) | `apps/web` |
+| Site (HF static Space) | https://safqaeg.pages.dev (`/pay`, `/live`) | `apps/web` |
 
 ## Storage
 * **D1** (`safqa`): users, sessions (hashed refresh tokens), watchlist, alerts, synced per-user state (`user_kv`),

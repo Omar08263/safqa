@@ -64,7 +64,7 @@ on('POST', '/api/v2/admin/snapshot', async (c) => {
       const hit = w.target != null && d.price <= w.target;
       await c.env.DB.prepare('INSERT INTO alerts (id,user_id,type,title,body,product_id,read,created_at) VALUES (?,?,?,?,?,?,0,?)')
         .bind(uid('al_'), w.user_id, hit ? 'target_hit' : 'price_drop', hit ? `🎯 ${d.title} وصل للسعر اللي عايزه` : `📉 ${d.title} نزل ${Math.round(d.pct)}%`, `من ${Math.round(d.old)} لـ ${Math.round(d.price)} جنيه في ${d.store ?? ''}`, d.id, nowIso()).run();
-      if (w.chat_id) await T.enqueue(c.env, w.chat_id, `${hit ? '🎯' : '📉'} <b>${d.title}</b> في قايمة متابعتك ${hit ? 'وصل للسعر اللي حددته!' : `نزل ${Math.round(d.pct)}%`}\n💸 ${Math.round(d.old)} ← <b>${Math.round(d.price)} ج</b>`, [[{ text: '🛒 افتح', url: `${c.env.SITE_URL}/#/product/${d.id}` }]]);
+      if (w.chat_id) await T.enqueue(c.env, w.chat_id, `${hit ? '🎯' : '📉'} <b>${d.title}</b> في قايمة متابعتك ${hit ? 'وصل للسعر اللي حددته!' : `نزل ${Math.round(d.pct)}%`}\n💸 ${Math.round(d.old)} ← <b>${Math.round(d.price)} ج</b>`, [[{ text: '🛒 افتح', url: `${c.env.SITE_URL}/product/${d.id}` }]]);
       watchN++;
     }
   }

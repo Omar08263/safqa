@@ -68,12 +68,12 @@ export function LoginPage() {
   const [remember, setRemember] = useState(() => window.localStorage.getItem('safqa.rememberEmail') ?? '');
 
   useEffect(() => {
-    const hash = new URLSearchParams(window.location.hash.replace(/^#\/?login\??/, '').replace(/^#/, ''));
+    const hash = new URLSearchParams(window.location.search || window.location.hash.replace(/^#/, ''));
     const accessToken = hash.get('accessToken');
     const refreshToken = hash.get('refreshToken');
     if (!accessToken || !refreshToken) return;
     void acceptTokens(accessToken, refreshToken).then(() => {
-      window.location.hash = '';
+      window.history.replaceState(null, '', '/login');
       void navigate({ to: '/dashboard' });
     });
   }, [acceptTokens, navigate]);

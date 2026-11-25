@@ -11,8 +11,8 @@
     "primaryColor": "#0E6B52",
     "description": "صفقة: أسعار حقيقية من المتاجر المصرية كل يوم، كاشف الخصومات الوهمية، ومراقبة الأسعار بتنبيهات.",
     "extra": {
-      "snapshotUrl": "https://safqa-eg-safqa.static.hf.space/demo/snapshot.json",
-      "siteUrl": "https://safqa-eg-safqa.static.hf.space",
+      "snapshotUrl": "https://safqaeg.pages.dev/demo/snapshot.json",
+      "siteUrl": "https://safqaeg.pages.dev",
       "supportsRTL": true,
       "forcesRTL": true,
       "apiUrl": "https://safqa-api.safqaeg.workers.dev",

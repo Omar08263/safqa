@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>صفقة نقلت لعنوان جديد — safqaeg.pages.dev</title>
+<link rel="canonical" href="https://safqaeg.pages.dev/">
+<meta name="robots" content="noindex">
+<script>
+  // Safqa moved to https://safqaeg.pages.dev (clean URLs, faster, no index.html).
+  // Old links keep working: /index.html#/product/x → /product/x.
+  (function () {
+    var NEW = 'https://safqaeg.pages.dev';
+    var h = location.hash || '';
+    // Admin app Google sign-in still returns here (registered redirect URI).
+    if (/(^#|&)state=admin\./.test(h)) { location.replace('https://safqa-admin.pages.dev/' + h); return; }
+    var path = '/';
+    if (h.charAt(1) === '/') { path = h.slice(1); h = ''; }
+    else if (/id_token=|error=/.test(h)) { path = '/login'; h = ''; }
+    var q = location.search || '';
+    location.replace(NEW + path + (path.indexOf('?') === -1 ? q : '') + h);
+  })();
+</script>
+<style>body{font-family:system-ui,sans-serif;background:#12110e;color:#f4eee2;display:grid;place-items:center;min-height:100vh;margin:0;text-align:center}a{color:#f5b524}</style>
+</head>
+<body>
+<main>
+  <p style="font-size:48px;margin:0">🛒</p>
+  <h1>صفقة نقلت لعنوان جديد</h1>
+  <p>لو الصفحة ما اتحولتش لوحدها: <a href="https://safqaeg.pages.dev/">safqaeg.pages.dev</a></p>
+</main>
+</body>
+</html>

@@ -8,9 +8,8 @@
  * fires. The OpenID implicit redirect flow does not need the opener, so it
  * is the primary path.
  *
- * The live origin uses a hash router (`#/login`). Google returns
- * `#id_token=...&state=...` on the same origin; that fragment MUST be read
- * and cleared before the hash router starts, or it will be treated as a route.
+ * Google returns to `/auth/callback#id_token=...&state=...`; that fragment is
+ * read and cleared before the router starts.
  */
 
 export const GOOGLE_CLIENT_ID = String(
@@ -18,8 +17,11 @@ export const GOOGLE_CLIENT_ID = String(
 );
 export const GOOGLE_AUTHORIZE_URL =
   'https://accounts.google.com/o/oauth2/v2/auth';
-/** Must match a registered Authorized redirect URI exactly — no path, no trailing slash. */
-export const GOOGLE_REDIRECT_URI = 'https://safqa-eg-safqa.static.hf.space';
+/** Must match a registered Authorized redirect URI exactly. */
+export const SITE_ORIGIN = 'https://safqaeg.pages.dev';
+export const GOOGLE_REDIRECT_URI = `${SITE_ORIGIN}/auth/callback`;
+/** The old Hugging Face origin (now a redirect) is registered without a path; the admin app still uses it. */
+export const LEGACY_REDIRECT_ORIGIN = 'https://safqa-eg-safqa.static.hf.space';
 
 const STATE_KEY = 'safqa.google.oauth.state';
 const NONCE_KEY = 'safqa.google.oauth.nonce';
@@ -54,7 +56,9 @@ export function redirectUriForOrigin(origin: string): string {
   // location.origin never has a trailing slash. On the live Space this is
   // exactly the registered URI. Elsewhere (local dev) use the current origin
   // so a mismatch is obvious instead of silently bouncing to production.
-  return origin.replace(/\/$/, '') || GOOGLE_REDIRECT_URI;
+  const o = origin.replace(/\/$/, '');
+  if (!o) return GOOGLE_REDIRECT_URI;
+  return o === LEGACY_REDIRECT_ORIGIN ? o : `${o}/auth/callback`;
 }
 
 export function buildGoogleAuthorizeUrl(opts: {

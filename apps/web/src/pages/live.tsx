@@ -32,7 +32,7 @@ export function LivePage() {
   const tr = useTr();
   const { user } = useSession();
   const [up, setUp] = useState<boolean | null>(null);
-  const [tab, setTab] = useState<'chat' | 'feed'>(() => (new URLSearchParams(window.location.hash.split('?')[1] ?? window.location.search).get('tab') === 'feed' ? 'feed' : 'chat'));
+  const [tab, setTab] = useState<'chat' | 'feed'>(() => (new URLSearchParams(window.location.search).get('tab') === 'feed' ? 'feed' : 'chat'));
   const [rules, setRules] = useState<{ rules: { id: string; ar: string }[]; version: string } | null>(null);
   const [needRules, setNeedRules] = useState(false);
   const linked = Boolean(user) && signedInToBackend();
@@ -53,7 +53,7 @@ export function LivePage() {
           <button type="button" onClick={acceptRules} className="press mt-3 rounded-full bg-primary px-5 py-2 font-bold text-primary-foreground">{tr('موافق على القوانين', 'I accept the rules')}</button>
         </Card>
       ) : null}
-      {!linked ? <Card>{tr('سجّل دخول عشان تكتب. القراءة متاحة للكل.', 'Sign in to write. Reading is open to everyone.')} <a className="text-primary underline" href="#/login">{tr('تسجيل الدخول', 'Sign in')}</a></Card> : null}
+      {!linked ? <Card>{tr('سجّل دخول عشان تكتب. القراءة متاحة للكل.', 'Sign in to write. Reading is open to everyone.')} <a className="text-primary underline" href="/login">{tr('تسجيل الدخول', 'Sign in')}</a></Card> : null}
       <div className="flex gap-2">
         <button type="button" onClick={() => setTab('chat')} className={`press rounded-full px-4 py-2 font-semibold ${tab === 'chat' ? 'bg-primary text-primary-foreground' : 'border border-border'}`}><MessageSquare className="me-1 inline h-4 w-4" />{tr('الدردشة', 'Chat')}</button>
         <button type="button" onClick={() => setTab('feed')} className={`press rounded-full px-4 py-2 font-semibold ${tab === 'feed' ? 'bg-primary text-primary-foreground' : 'border border-border'}`}><Users className="me-1 inline h-4 w-4" />{tr('المنشورات', 'Posts')}</button>

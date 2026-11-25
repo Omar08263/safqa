@@ -6,7 +6,8 @@
 // sync across web, app, admin and Telegram; product reads stay on the bundled
 // snapshot (instant). If the backend is unreachable the call falls back to the
 // in-browser demo engine.
-export const EDGE_URL = String(import.meta.env.VITE_EDGE_URL ?? 'https://safqa-api.safqaeg.workers.dev').replace(/\/$/, '');
+import { EDGE_URL, refreshAccess, setNativeFetch } from './auth-tokens';
+export { EDGE_URL };
 export const TELEGRAM_BOT_URL = `https://t.me/${import.meta.env.VITE_TELEGRAM_BOT || 'SafqaDealsBot'}`;
 
 const ACCESS = 'safqa.access';
@@ -19,7 +20,7 @@ export async function edgeUp(force = false): Promise<boolean> {
   if (!force && healthy !== null && Date.now() - checkedAt < 60_000) return healthy;
   try {
     const ctl = new AbortController();
-    const t = setTimeout(() => ctl.abort(), 3500);
+    const t = setTimeout(() => ctl.abort(), 8000);
     const r = await (realFetch ?? fetch)(`${EDGE_URL}/api/health`, { signal: ctl.signal });
     clearTimeout(t);
     healthy = r.ok;
@@ -33,16 +34,7 @@ export const isEdgeToken = (t: string | null) => Boolean(t && t.split('.').lengt
 
 let realFetch: typeof fetch | null = null;
 
-async function refreshTokens(): Promise<string | null> {
-  const r = localStorage.getItem(REFRESH);
-  if (!r || !realFetch) return null;
-  const res = await realFetch(`${EDGE_URL}/api/auth/refresh`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ refreshToken: r }) });
-  if (!res.ok) return null;
-  const j = await res.json();
-  localStorage.setItem(ACCESS, j.accessToken);
-  localStorage.setItem(REFRESH, j.refreshToken);
-  return j.accessToken as string;
-}
+const refreshTokens = () => (localStorage.getItem(REFRESH) ? refreshAccess() : Promise.resolve(null));
 
 export class EdgeError extends Error {
   constructor(public status: number, public code: string, message: string, public data?: unknown) {
@@ -88,13 +80,22 @@ export function installEdgeBridge() {
   const demoFetch = window.fetch.bind(window);
   // The un-patched network fetch (the demo API keeps it for non-/api calls).
   realFetch = (input, init) => demoFetch(input instanceof Request || String(input).startsWith('http') ? input : new URL(String(input), EDGE_URL).toString(), init);
+  setNativeFetch(realFetch);
   void edgeUp();
   window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
     const req = input instanceof Request ? input : null;
     const url = new URL(req ? req.url : String(input), window.location.href);
-    if (url.origin !== window.location.origin || !FORWARD.test(url.pathname) || !(await edgeUp())) return demoFetch(input, init);
-    const method = (init?.method || req?.method || 'GET').toUpperCase();
+    if (url.origin !== window.location.origin || !FORWARD.test(url.pathname)) return demoFetch(input, init);
     const headers = new Headers(init?.headers || req?.headers);
+    const bearer = (headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
+    // A real backend session must never be answered by the in-browser demo: the demo
+    // would say 401 and the session would be thrown away. Offline → a retryable 503.
+    const edgeSession = isEdgeToken(bearer) || (url.pathname.startsWith('/api/auth/') && isEdgeToken(localStorage.getItem(ACCESS)));
+    if (!(await edgeUp(edgeSession && healthy === false))) {
+      if (!edgeSession) return demoFetch(input, init);
+      return new Response(JSON.stringify({ error: { code: 'offline', message: 'السيرفر مش متاح دلوقتي — جرّب تاني بعد شوية' } }), { status: 503, headers: { 'content-type': 'application/json' } });
+    }
+    const method = (init?.method || req?.method || 'GET').toUpperCase();
     const body = typeof init?.body === 'string' ? init.body : req ? await req.text() : undefined;
     const auth = (headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
     // A token from the old in-browser demo can't talk to the backend: keep that session local.
@@ -108,6 +109,7 @@ export function installEdgeBridge() {
       return res;
     } catch {
       healthy = false;
+      if (edgeSession) return new Response(JSON.stringify({ error: { code: 'offline', message: 'offline' } }), { status: 503, headers: { 'content-type': 'application/json' } });
       return demoFetch(input, init);
     }
   };

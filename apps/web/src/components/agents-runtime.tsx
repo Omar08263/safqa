@@ -142,7 +142,7 @@ export function AgentsRuntime() {
         setBanner(star);
         if (star.exceptional) setTimeout(() => confetti({ x: window.innerWidth / 2, y: 120, count: 120 }), 300);
       }
-      if (prefs.browser && !quiet) for (const x of fresh.slice(0, 3)) void showBrowserNotification(x.headline, x.body, `/#/product/${x.productId}`);
+      if (prefs.browser && !quiet) for (const x of fresh.slice(0, 3)) void showBrowserNotification(x.headline, x.body, `/product/${x.productId}`);
       for (const x of fresh.slice(0, 5)) logAgent({ id: `notify:${x.id}`, agentId: x.exceptional ? 'barq' : 'jaras', kind: 'notify', ar: `بعت تنبيه: ${x.headline}`, en: `Sent alert: ${x.headlineEn}` });
     };
     run();

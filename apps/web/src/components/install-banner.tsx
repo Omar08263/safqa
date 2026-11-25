@@ -19,7 +19,7 @@ export function SmartInstallBanner() {
     const visits = st.visits + 1;
     writeLocal(KEY, { ...st, visits });
     if (st.snoozeUntil && st.snoozeUntil > Date.now()) return;
-    if (location.hash.includes('/app')) return;
+    if (location.pathname.startsWith('/app')) return;
     const t = setTimeout(() => setShow(true), visits >= 2 ? 6000 : 45_000);
     return () => clearTimeout(t);
   }, []);

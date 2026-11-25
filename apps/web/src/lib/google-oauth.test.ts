@@ -31,7 +31,7 @@ describe('buildGoogleAuthorizeUrl', () => {
     expect(url.origin + url.pathname).toBe(GOOGLE_AUTHORIZE_URL);
     expect(url.searchParams.get('client_id')).toBe(clientId);
     expect(url.searchParams.get('redirect_uri')).toBe(
-      'https://safqa-eg-safqa.static.hf.space',
+      'https://safqaeg.pages.dev/auth/callback',
     );
     expect(url.searchParams.get('redirect_uri')?.endsWith('/')).toBe(false);
     expect(url.searchParams.get('response_type')).toBe('id_token');
@@ -43,7 +43,11 @@ describe('buildGoogleAuthorizeUrl', () => {
 });
 
 describe('redirectUriForOrigin', () => {
-  it('strips a trailing slash and keeps the live origin exact', () => {
+  it('uses the clean /auth/callback path on the site origin', () => {
+    expect(redirectUriForOrigin('https://safqaeg.pages.dev')).toBe('https://safqaeg.pages.dev/auth/callback');
+    expect(redirectUriForOrigin('https://safqaeg.pages.dev/')).toBe('https://safqaeg.pages.dev/auth/callback');
+  });
+  it('keeps the legacy HF origin exact (no path)', () => {
     expect(redirectUriForOrigin('https://safqa-eg-safqa.static.hf.space')).toBe(
       'https://safqa-eg-safqa.static.hf.space',
     );

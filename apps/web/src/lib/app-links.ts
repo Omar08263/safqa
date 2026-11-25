@@ -3,7 +3,7 @@
 export const APP_VERSION = '4.0.0';
 export const APK_URL = `https://github.com/Omar08263/safqa/releases/download/v${APP_VERSION}/safqa.apk`;
 export const RELEASES_URL = `https://github.com/Omar08263/safqa/releases/tag/v${APP_VERSION}`;
-export const SITE_URL = 'https://safqa-eg-safqa.static.hf.space';
+export const SITE_URL = 'https://safqaeg.pages.dev';
 
 export function platform(): 'android' | 'ios' | 'desktop' {
   const ua = navigator.userAgent;

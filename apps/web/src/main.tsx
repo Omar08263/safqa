@@ -1,4 +1,5 @@
 import './lib/admin-bounce';
+import './lib/clean-url';
 import './lib/device';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from '@tanstack/react-router';
@@ -13,7 +14,7 @@ import { PrefsProvider } from './lib/prefs';
 import { SessionProvider } from './lib/session';
 import './styles.css';
 
-// Must run before the hash router is created: Google returns #id_token=...
+// Must run before the router is created: Google returns /auth/callback#id_token=...
 captureGoogleRedirectFromLocation();
 
 const queryClient = new QueryClient({
@@ -31,15 +32,14 @@ if (import.meta.env.VITE_DEMO_MODE === 'static') {
   // The member's tier (limits, perks, flair) comes from the server; cached for offline.
   void (await import('./lib/tiers')).syncServerTier();
   const google = await completeGoogleRedirectLogin();
-  if (google?.ok) window.location.hash = '#/dashboard';
-  else if (google && !google.ok) window.location.hash = '#/login';
+  if (google?.ok) window.history.replaceState(null, '', '/dashboard');
+  else if (google && !google.ok) window.history.replaceState(null, '', '/login');
+  else if (window.location.pathname === '/auth/callback') window.history.replaceState(null, '', '/login');
 }
 const { router } = await import('./router');
 
 // Invite links: remember who invited this browser (local only).
-const ref = new URLSearchParams(
-  window.location.hash.split('?')[1] ?? window.location.search,
-).get('ref');
+const ref = new URLSearchParams(window.location.search).get('ref');
 if (ref) {
   const key = 'safqa.referral.v1';
   const current = JSON.parse(window.localStorage.getItem(key) ?? '{}');

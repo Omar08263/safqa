@@ -1,5 +1,6 @@
 import { dealText } from '../components/social';
 import { formatEGP, localized, type MessageKey } from '@safqa/shared';
+import { go } from '../lib/nav';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { BellRing, Calculator, Download, ExternalLink, GitCompare, Layers, Printer, QrCode, ShieldAlert, ShoppingBag, Sparkles, Star, Target, TrendingDown, Zap } from 'lucide-react';
@@ -65,7 +66,7 @@ export function ProductPage({ id }: { id: string }) {
     },
     onError: (error: unknown) => {
       const msg = error instanceof Error ? error.message : '';
-      if (/limit/i.test(msg)) toast(tr('المراقبة مليانة في باقتك. فعّل «فضّي» ببلاش من صفحة الباقات أو شيل منتج قديم 🙏', 'Your watchlist is full. Switch on Silver for free on the Plans page, or remove an item.'), 'error', { action: { label: tr('الباقات', 'Plans'), onClick: () => { window.location.hash = '#/plans'; } } });
+      if (/limit/i.test(msg)) toast(tr('المراقبة مليانة في باقتك. فعّل «فضّي» ببلاش من صفحة الباقات أو شيل منتج قديم 🙏', 'Your watchlist is full. Switch on Silver for free on the Plans page, or remove an item.'), 'error', { action: { label: tr('الباقات', 'Plans'), onClick: () => go('/plans') } });
       else toast(tr('معرفتش أضيفه للمراقبة دلوقتي. جرّب تاني كمان شوية', 'Could not add it right now. Try again in a bit.'), 'error');
     },
   });

@@ -3,9 +3,9 @@
 //   so every page — including the 400-tool toolbox — opens with no connection.
 // - Hashed build assets & product photos: cache-first (they never change).
 // - Pages, demo snapshot and GET API calls: network-first, falling back to the last synced copy.
-const VERSION = 'safqa-v5';
+const VERSION = 'safqa-v6';
 const MEDIA = 'safqa-media-v1';
-const SHELL = ['/', '/index.html', '/privacy.html', '/terms.html', '/manifest.webmanifest', '/favicon.svg', '/brand/safqa-mark.svg', '/brand/icon-192.png', '/brand/icon-512.png', '/demo/snapshot.json'];
+const SHELL = ['/', '/privacy.html', '/terms.html', '/manifest.webmanifest', '/favicon.svg', '/brand/safqa-mark.svg', '/brand/icon-192.png', '/brand/icon-512.png', '/demo/snapshot.json'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -60,7 +60,7 @@ self.addEventListener('fetch', (event) => {
   }
   const authed = req.headers.has('authorization');
   const isLegal = url.pathname === '/privacy.html' || url.pathname === '/terms.html';
-  const key = isLegal ? req : req.mode === 'navigate' ? '/index.html' : req;
+  const key = isLegal ? req : req.mode === 'navigate' ? '/' : req;
   event.respondWith(
     fetch(req)
       .then((res) => {
@@ -70,7 +70,7 @@ self.addEventListener('fetch', (event) => {
         }
         return res;
       })
-      .catch(() => caches.match(key, { ignoreSearch: url.pathname === '/demo/snapshot.json' }).then((hit) => hit || (isLegal ? undefined : caches.match('/index.html')))),
+      .catch(() => caches.match(key, { ignoreSearch: url.pathname === '/demo/snapshot.json' }).then((hit) => hit || (isLegal ? undefined : caches.match('/')))),
   );
 });
 

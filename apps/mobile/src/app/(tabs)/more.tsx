@@ -20,8 +20,8 @@ export default function More() {
     { emoji: '🧮', title: 'أدوات الشراء الذكي', hint: 'التقسيط، الخصم الحقيقي، تحويل العملات', go: () => router.push('/tools') },
     { emoji: '⚙️', title: 'الإعدادات', hint: 'المظهر، الاهتزاز، التنبيهات', go: () => router.push('/settings') },
     { emoji: '🌐', title: 'افتح موقع صفقة', hint: 'المقارنة والمجتمع ووكلاء الذكاء', go: () => void WebBrowser.openBrowserAsync(SITE_URL) },
-    { emoji: '💬', title: 'المجتمع المباشر', hint: 'الدردشة والمنشورات مع الوكلاء الأذكياء', go: () => void WebBrowser.openBrowserAsync(`${SITE_URL}/#/live`) },
-    { emoji: '📣', title: 'ابعت صفقة لصاحبك', hint: 'شارك التطبيق', go: () => void Share.share({ message: `صفقة: بتكشف الخصومات الوهمية وبتقارن أسعار المتاجر المصرية 🇪🇬\n${SITE_URL}/#/app` }) },
+    { emoji: '💬', title: 'المجتمع المباشر', hint: 'الدردشة والمنشورات مع الوكلاء الأذكياء', go: () => void WebBrowser.openBrowserAsync(`${SITE_URL}/live`) },
+    { emoji: '📣', title: 'ابعت صفقة لصاحبك', hint: 'شارك التطبيق', go: () => void Share.share({ message: `صفقة: بتكشف الخصومات الوهمية وبتقارن أسعار المتاجر المصرية 🇪🇬\n${SITE_URL}/app` }) },
     { emoji: '👋', title: 'شوف الجولة التعريفية تاني', hint: '30 ثانية', go: () => router.push('/onboarding') },
   ];
   return (

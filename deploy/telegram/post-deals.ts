@@ -6,7 +6,7 @@
  * Env (read from the process or from /home/box/.safqa/telegram.env if present):
  *   TELEGRAM_BOT_TOKEN  bot token from @BotFather (never commit it)
  *   TELEGRAM_CHAT_ID    channel username (@safqa_eg) or numeric chat id
- *   SAFQA_SITE          default https://safqa-eg-safqa.static.hf.space
+ *   SAFQA_SITE          default https://safqaeg.pages.dev
  * Without a token it prints the message and exits 0, so routines never fail.
  * The same deal set is not posted twice (state in ~/.safqa/telegram-last.json).
  */
@@ -24,7 +24,7 @@ if (existsSync(envFile)) {
 }
 const token = process.env.TELEGRAM_BOT_TOKEN || '';
 const chat = process.env.TELEGRAM_CHAT_ID || '';
-const site = (process.env.SAFQA_SITE || 'https://safqa-eg-safqa.static.hf.space').replace(/\/$/, '');
+const site = (process.env.SAFQA_SITE || 'https://safqaeg.pages.dev').replace(/\/$/, '');
 const dry = process.argv.includes('--dry-run') || !token || !chat;
 const snapArg = process.argv.find((a) => a.startsWith('--snapshot='))?.split('=')[1];
 const statePath = resolve(homedir(), '.safqa/telegram-last.json');
@@ -58,9 +58,9 @@ const when = new Intl.DateTimeFormat('ar-EG-u-nu-latn', { timeZone: 'Africa/Cair
 const lines = deals.map((p, i) => {
   const o = p.bestOffer!;
   const off = o.listPriceEgp && o.listPriceEgp > o.priceEgp ? ` <s>${fmt(o.listPriceEgp)}</s>` : '';
-  return `${['🥇', '🥈', '🥉', '4️⃣', '5️⃣'][i]} <a href="${site}/#/product/${p.id}">${esc(p.titleAr)}</a>\n   💰 <b>${fmt(o.priceEgp)}</b>${off} · ${esc(o.store.nameAr)} · درجة ${o.dealScore}/100`;
+  return `${['🥇', '🥈', '🥉', '4️⃣', '5️⃣'][i]} <a href="${site}/product/${p.id}">${esc(p.titleAr)}</a>\n   💰 <b>${fmt(o.priceEgp)}</b>${off} · ${esc(o.store.nameAr)} · درجة ${o.dealScore}/100`;
 });
-const text = [`📡 <b>أقوى عروض النهارده من صفقة</b> (${when})`, 'أسعار حقيقية من صفحات المتاجر نفسها، والخصومات الوهمية مستبعدة.', '', ...lines, '', `🔎 كل العروض: ${site}/#/radar`].join('\n');
+const text = [`📡 <b>أقوى عروض النهارده من صفقة</b> (${when})`, 'أسعار حقيقية من صفحات المتاجر نفسها، والخصومات الوهمية مستبعدة.', '', ...lines, '', `🔎 كل العروض: ${site}/radar`].join('\n');
 
 const fingerprint = deals.map((p) => `${p.id}:${p.bestOffer!.priceEgp}`).join('|');
 const last = existsSync(statePath) ? JSON.parse(readFileSync(statePath, 'utf8')) : {};

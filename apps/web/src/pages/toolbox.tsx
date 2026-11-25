@@ -139,7 +139,7 @@ function ToolPanel({ tool, fav, onFav, onClose }: { tool: Tool; fav: boolean; on
         <div className="flex gap-1">
           <button type="button" onClick={onFav} className="rounded-full bg-accent p-2" aria-label={tr('مفضلة', 'Favourite')}><Star className={`h-4 w-4 ${fav ? 'fill-[var(--saffron)] text-[var(--saffron)]' : ''}`} /></button>
           <button type="button" onClick={() => { void navigator.clipboard?.writeText(text); toast(tr('اتنسخت النتيجة', 'Result copied')); }} className="rounded-full bg-accent p-2" aria-label={tr('نسخ', 'Copy')}><Copy className="h-4 w-4" /></button>
-          <button type="button" onClick={() => { const url = `${location.origin}${location.pathname}#/toolbox?tool=${tool.id}`; if (navigator.share) void navigator.share({ title: tool.ar, text, url }).catch(() => {}); else { void navigator.clipboard?.writeText(url); toast(tr('اتنسخ اللينك', 'Link copied')); } }} className="rounded-full bg-accent p-2" aria-label={tr('مشاركة', 'Share')}><Share2 className="h-4 w-4" /></button>
+          <button type="button" onClick={() => { const url = `${location.origin}/toolbox?tool=${tool.id}`; if (navigator.share) void navigator.share({ title: tool.ar, text, url }).catch(() => {}); else { void navigator.clipboard?.writeText(url); toast(tr('اتنسخ اللينك', 'Link copied')); } }} className="rounded-full bg-accent p-2" aria-label={tr('مشاركة', 'Share')}><Share2 className="h-4 w-4" /></button>
           <button type="button" onClick={onClose} className="rounded-full bg-accent p-2" aria-label={tr('قفل', 'Close')}><X className="h-4 w-4" /></button>
         </div>
       </div>

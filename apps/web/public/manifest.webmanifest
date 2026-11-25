@@ -50,7 +50,7 @@
     {
       "name": "رادار العروض",
       "short_name": "الرادار",
-      "url": "/#/radar",
+      "url": "/radar",
       "icons": [
         {
           "src": "/brand/icon-192.png",
@@ -62,7 +62,7 @@
     {
       "name": "بحث",
       "short_name": "بحث",
-      "url": "/#/search",
+      "url": "/search",
       "icons": [
         {
           "src": "/brand/icon-192.png",
@@ -74,7 +74,7 @@
     {
       "name": "صندوق العدة",
       "short_name": "الأدوات",
-      "url": "/#/toolbox",
+      "url": "/toolbox",
       "icons": [
         {
           "src": "/brand/icon-192.png",
@@ -86,7 +86,7 @@
     {
       "name": "المجتمع",
       "short_name": "المجتمع",
-      "url": "/#/community",
+      "url": "/community",
       "icons": [
         {
           "src": "/brand/icon-192.png",

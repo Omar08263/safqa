@@ -2,10 +2,12 @@
 <html lang="ar" dir="rtl">
   <head>
     <script>
-      // Capture Google's implicit-flow fragment before the hash router boots.
+      // Clean URLs + capture Google's implicit-flow fragment before the router boots.
       (() => {
         var h = location.hash || '';
-        if (h.charAt(1) === '/') return;
+        // Old links: /index.html#/login → /login (see src/lib/clean-url.ts).
+        if (h.charAt(1) === '/') { history.replaceState(null, '', h.slice(1)); return; }
+        if (/\/index\.html$/.test(location.pathname)) history.replaceState(null, '', location.pathname.replace(/index\.html$/, '') + location.search + h);
         if (h.indexOf('id_token=') === -1 && h.indexOf('error=') === -1) return;
         // Admin app sign-in (state "admin.*") goes on to the admin app; see src/lib/admin-bounce.ts.
         if (/(^#|&)state=admin\./.test(h)) { location.replace('https://safqa-admin.pages.dev/' + h); return; }
@@ -24,9 +26,12 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="صفقة Safqa — اعرف السعر العادل قبل ما تدفع" />
     <meta property="og:description" content="تتبّع أسعار نون وأمازون مصر وبي.تك، اكشف الخصم المضخّم، وتنبيهات لحظية." />
-    <meta property="og:image" content="/brand/og-image.png" />
+    <meta property="og:image" content="https://safqaeg.pages.dev/brand/og-image.png" />
+    <meta property="og:url" content="https://safqaeg.pages.dev/" />
+    <link rel="canonical" href="https://safqaeg.pages.dev/" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="/brand/og-image.png" />
+    <meta name="twitter:image" content="https://safqaeg.pages.dev/brand/og-image.png" />
+    <link rel="preconnect" href="https://safqa-api.safqaeg.workers.dev" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

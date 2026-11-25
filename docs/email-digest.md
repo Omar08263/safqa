@@ -3,7 +3,7 @@
 The live site is a free static Space with no server that could store email
 addresses, so subscription is **double opt-in by email**:
 
-1. On `/#/radar` the visitor types their address, ticks an explicit consent box,
+1. On `/radar` the visitor types their address, ticks an explicit consent box,
    and Safqa opens a pre-filled email to **rxcc@agentmail.to** with the subject
    `SAFQA SUBSCRIBE`. Sending it from their own mailbox proves the address is
    theirs and that they asked.

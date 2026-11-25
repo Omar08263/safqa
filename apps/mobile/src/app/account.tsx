@@ -46,7 +46,7 @@ export default function Account() {
   };
 
   const input = [t.body, { color: c.ink, borderColor: c.line, borderWidth: 1, borderRadius: radius.md, paddingHorizontal: 14, minHeight: 50, textAlign: 'right' as const, backgroundColor: c.bg }];
-  const openPay = (id: string) => void WebBrowser.openBrowserAsync(`${SITE_URL}/#/pay?tier=${id}`);
+  const openPay = (id: string) => void WebBrowser.openBrowserAsync(`${SITE_URL}/pay?tier=${id}`);
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -77,7 +77,7 @@ export default function Account() {
             <TextInput value={password} onChangeText={setPassword} placeholder="كلمة السر (8 حروف أو أكتر)" placeholderTextColor={c.muted} accessibilityLabel="كلمة السر" secureTextEntry autoComplete={mode === 'login' ? 'current-password' : 'new-password'} style={input} onSubmitEditing={() => void submit()} />
             {error ? <Text style={[t.small, { color: c.clay }]} accessibilityLiveRegion="assertive">{error}</Text> : null}
             {busy ? <ActivityIndicator color={c.palm} /> : <Button label={mode === 'login' ? 'ادخل' : 'اعمل الحساب'} kind="palm" onPress={() => void submit()} />}
-            <Pressable onPress={() => void WebBrowser.openBrowserAsync(`${SITE_URL}/#/login`)} accessibilityRole="link">
+            <Pressable onPress={() => void WebBrowser.openBrowserAsync(`${SITE_URL}/login`)} accessibilityRole="link">
               <Text style={[t.meta, { color: c.muted, textAlign: 'center' }]}>بتدخل بجوجل على الموقع؟ ادخل من الموقع واعمل كلمة سر من حسابك، وبعدين استخدمها هنا.</Text>
             </Pressable>
           </Card>

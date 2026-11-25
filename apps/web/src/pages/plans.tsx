@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { PageHeader, useToast } from '../fx/fx';
 import { usePrefs } from '../lib/prefs';
 import { haptic, play } from '../lib/sound';
+import { go } from '../lib/nav';
 import { payUrl, perks, type Tier, tiers, useTier } from '../lib/tiers';
 import { useTr } from '../lib/tr';
 
@@ -29,7 +30,7 @@ export function PlansPage() {
       toast(mine.id === 'free' ? tr('إنت على المجاني بالفعل 🌱', "You're already on Free 🌱") : tr('باقتك بترجع مجاني لوحدها لما مدتها تخلص، من غير ما تخسر حاجة.', 'Your plan returns to Free by itself when it ends; nothing is lost.'), 'info');
       return;
     }
-    window.location.hash = payUrl(t.id).slice(1);
+    go(payUrl(t.id));
   }
 
   return (
@@ -71,7 +72,7 @@ export function PlansPage() {
                 ) : t.id === 'free' ? (
                   <button type="button" onClick={() => choose(t)} className="press h-11 w-full rounded-full border border-border bg-background font-semibold hover:bg-accent">{tr('إزاي أرجع للمجاني؟', 'How do I go back to Free?')}</button>
                 ) : (
-                  <a href={payUrl(t.id)} onClick={() => choose(t)} aria-label={tr(`رقّي لباقة ${t.ar} بـ ${t.priceAr}`, `Upgrade to ${t.en} for ${t.priceEn}`)} className="press shine flex h-11 w-full items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground">
+                  <a href={payUrl(t.id)} onClick={(e) => { e.preventDefault(); choose(t); }} aria-label={tr(`رقّي لباقة ${t.ar} بـ ${t.priceAr}`, `Upgrade to ${t.en} for ${t.priceEn}`)} className="press shine flex h-11 w-full items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground">
                     {mine.priceEgp > t.priceEgp ? tr('باقتك أعلى من دي ✓', 'Your plan is higher ✓') : tr(`رقّي لـ${t.ar} ${t.emoji}`, `Upgrade to ${t.en} ${t.emoji}`)}
                   </a>
                 )}

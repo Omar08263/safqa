@@ -118,7 +118,7 @@ export default function ProductScreen() {
           label="شارك"
           kind="ghost"
           icon="📤"
-          onPress={() => void Share.share({ message: `${p.titleAr}\n${egp(o?.priceEgp)} في ${o?.store.nameAr ?? ''}${o?.fakeDiscount ? '\n⚠️ الخصم ده وهمي حسب صفقة' : ''}\n${SITE_URL}/#/product/${p.id}` })}
+          onPress={() => void Share.share({ message: `${p.titleAr}\n${egp(o?.priceEgp)} في ${o?.store.nameAr ?? ''}${o?.fakeDiscount ? '\n⚠️ الخصم ده وهمي حسب صفقة' : ''}\n${SITE_URL}/product/${p.id}` })}
         />
       </View>
     </View>

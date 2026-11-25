@@ -1,9 +1,10 @@
 // Safqa admin — a dependency-free PWA. Talks only to the Safqa edge API.
 const API = 'https://safqa-api.safqaeg.workers.dev';
-const SITE = 'https://safqa-eg-safqa.static.hf.space';
+const SITE = 'https://safqaeg.pages.dev';
 const GOOGLE_CLIENT_ID = '700154178904-k0hi0kp5v19m775u8t1bt6m6mnfhrghc.apps.googleusercontent.com';
 // Google only knows the Space as a redirect URI; the Space forwards admin logins here (state starts with "admin.").
-const GOOGLE_REDIRECT = SITE;
+// Google returns to the old HF origin (registered redirect URI); it forwards admin.* states here.
+const GOOGLE_REDIRECT = 'https://safqa-eg-safqa.static.hf.space';
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -216,7 +217,7 @@ VIEWS.catalog = async (v) => {
   const s = await api('/api/v2/admin/stats');
   const snap = await fetch(`${API}/api/v2/snapshot`).then((r) => r.json()).catch(() => null);
   v.innerHTML = `<div class="grid g4"><div class="card kpi"><span class="e">🕒</span><div class="v" style="font-size:20px">${s.snapshot ? ago(s.snapshot.recordedAt) : '—'}</div><div class="l">آخر سحب للأسعار (تحديث يومي 8 الصبح بتوقيت القاهرة)</div></div><div class="card kpi"><span class="e">🛒</span><div class="v">${s.products}</div><div class="l">منتج بأسعار حقيقية</div></div><div class="card kpi"><span class="e">📤</span><div class="v" style="font-size:20px">${s.snapshot ? ago(s.snapshot.pushedAt) : '—'}</div><div class="l">آخر رفع للباك إند</div></div></div>
-  <div class="card tw" style="margin-top:12px"><table><thead><tr><th>المنتج</th><th>أرخص سعر</th><th>المتاجر</th><th>تقييم الصفقة</th></tr></thead><tbody>${(snap?.all || []).map((p) => `<tr><td><a href="${SITE}/#/product/${p.id}" target="_blank">${esc(p.titleAr)}</a><div class="small muted">${esc(p.titleEn)}</div></td><td><b>${fmt(p.lowestPriceEgp)} ج</b></td><td class="small">${p.offerCount} · ${esc(p.bestOffer?.store?.nameAr || '')}</td><td>${p.bestOffer?.dealScore ?? '—'}/100</td></tr>`).join('')}</tbody></table></div>`;
+  <div class="card tw" style="margin-top:12px"><table><thead><tr><th>المنتج</th><th>أرخص سعر</th><th>المتاجر</th><th>تقييم الصفقة</th></tr></thead><tbody>${(snap?.all || []).map((p) => `<tr><td><a href="${SITE}/product/${p.id}" target="_blank">${esc(p.titleAr)}</a><div class="small muted">${esc(p.titleEn)}</div></td><td><b>${fmt(p.lowestPriceEgp)} ج</b></td><td class="small">${p.offerCount} · ${esc(p.bestOffer?.store?.nameAr || '')}</td><td>${p.bestOffer?.dealScore ?? '—'}/100</td></tr>`).join('')}</tbody></table></div>`;
 };
 
 VIEWS.broadcast = async (v) => {

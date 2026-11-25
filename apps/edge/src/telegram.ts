@@ -21,14 +21,14 @@ const send = (env: Env, chat: string | number, text: string, buttons?: Btn[][]) 
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const fmt = (n: number | null | undefined) => (n == null ? '؟' : Math.round(n).toLocaleString('en-US'));
-const productUrl = (env: Env, id: string) => `${env.SITE_URL}/#/product/${id}`;
+const productUrl = (env: Env, id: string) => `${env.SITE_URL}/product/${id}`;
 
 export const CATS: [string, string][] = [['phones', '📱 موبايلات'], ['audio', '🎧 سماعات'], ['tvs', '📺 شاشات'], ['appliances', '🏠 أجهزة منزلية'], ['lifestyle', '⌚ ساعات']];
 const MENU: Btn[][] = [
   [{ text: '🔥 أحسن العروض', callback_data: 'deals' }, { text: '🔎 دوّر على منتج', callback_data: 'search' }],
   [{ text: '⚙️ تنبيهاتي', callback_data: 'settings' }, { text: '📰 ملخص النهارده', callback_data: 'digest' }],
   [{ text: '🤖 اسأل صقر', callback_data: 'ask' }, { text: '🔗 اربط حسابي', callback_data: 'link' }],
-  [{ text: '🌐 افتح صفقة', url: 'https://safqa-eg-safqa.static.hf.space' }],
+  [{ text: '🌐 افتح صفقة', url: 'https://safqaeg.pages.dev' }],
 ];
 
 interface Link { chat_id: string; user_id: string | null; subscribed: number; categories: string; threshold: number; digest: number; first_name: string | null; mode: string | null }
@@ -96,7 +96,7 @@ export async function handleUpdate(env: Env, u: Record<string, any>) {
     if (data === 'settings') return sendSettings(env, chat, l);
     if (data === 'search') { await env.DB.prepare("UPDATE tg_links SET mode='search' WHERE chat_id=?").bind(chat).run(); return send(env, chat, '🔎 اكتبلي اسم المنتج اللي بتدوّر عليه (مثلاً: ايفون 17 أو تكييف شارب)'); }
     if (data === 'ask') { await env.DB.prepare("UPDATE tg_links SET mode='ask' WHERE chat_id=?").bind(chat).run(); return send(env, chat, '🦅 أنا صقر، كبير صيادي العروض (🤖 وكيل ذكي). اسألني أي حاجة عن الأسعار والعروض!'); }
-    if (data === 'link') return send(env, chat, l.user_id ? '✅ حسابك في صفقة مربوط بالفعل. التنبيهات بتاعة قايمة متابعتك هتوصلك هنا.' : '🔗 عشان تربط حسابك: افتح صفقة ← حسابي ← «اربط تيليجرام»، وهيفتحلك البوت مربوط على طول.', [[{ text: '🌐 افتح حسابي في صفقة', url: `${env.SITE_URL}/#/account` }]]);
+    if (data === 'link') return send(env, chat, l.user_id ? '✅ حسابك في صفقة مربوط بالفعل. التنبيهات بتاعة قايمة متابعتك هتوصلك هنا.' : '🔗 عشان تربط حسابك: افتح صفقة ← حسابي ← «اربط تيليجرام»، وهيفتحلك البوت مربوط على طول.', [[{ text: '🌐 افتح حسابي في صفقة', url: `${env.SITE_URL}/account` }]]);
     if (data === 'stop' || data === 'sub') await env.DB.prepare('UPDATE tg_links SET subscribed=? WHERE chat_id=?').bind(data === 'sub' ? 1 : 0, chat).run();
     if (data === 'dg') await env.DB.prepare('UPDATE tg_links SET digest=1-digest WHERE chat_id=?').bind(chat).run();
     if (data.startsWith('th:')) await env.DB.prepare('UPDATE tg_links SET threshold=? WHERE chat_id=?').bind(Number(data.slice(3)) || 5, chat).run();
@@ -126,7 +126,7 @@ export async function handleUpdate(env: Env, u: Record<string, any>) {
   if (text === '/menu' || text === '/help') return send(env, chat, '📋 القائمة:\n/deals أحسن العروض\n/search اسم المنتج\n/settings التنبيهات\n/digest ملخص النهارده\n/link ربط حسابك\n/stop وقف التنبيهات', MENU);
   if (text.startsWith('/link')) {
     const code = text.split(/\s+/)[1];
-    return send(env, chat, code ? await linkAccount(env, chat, code) : '🔗 هات الكود من صفحة حسابي في صفقة وابعته كده: /link الكود', [[{ text: '🌐 حسابي في صفقة', url: `${env.SITE_URL}/#/account` }]]);
+    return send(env, chat, code ? await linkAccount(env, chat, code) : '🔗 هات الكود من صفحة حسابي في صفقة وابعته كده: /link الكود', [[{ text: '🌐 حسابي في صفقة', url: `${env.SITE_URL}/account` }]]);
   }
   if (text.startsWith('/search')) {
     const q = text.replace(/^\/search(@\w+)?/, '').trim();
