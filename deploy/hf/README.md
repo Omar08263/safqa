@@ -1,6 +1,6 @@
 # Hugging Face deploy
 
-Live demo: https://safqa-eg-safqa.static.hf.space (Space: https://huggingface.co/spaces/safqa-eg/safqa)
+Live site: https://safqaeg.pages.dev (Cloudflare Pages). The old Space https://safqa-eg-safqa.static.hf.space now redirects there and mirrors demo/snapshot.json + media/ for older app builds.
 
 ## Static Space (free, what runs now)
 
@@ -11,7 +11,7 @@ The static demo is the normal web app built with `VITE_DEMO_MODE=static`:
   `demo/snapshot.json`, recorded from a real seeded API by `record-snapshot.mjs`.
 - Login (`demo@safqa.app` / `demo1234`), register, watchlist, alerts, and settings are
   emulated per browser in localStorage. Admin and live events are off.
-- Routes use `#/` URLs, because static hosting has no SPA rewrite.
+- Routes are clean history URLs (`/login`, `/product/x`); Cloudflare Pages serves index.html for every path (`apps/web/public/_redirects`). Old `#/` links are rewritten on load.
 
 Redeploy: start a seeded API (`SEED_ON_BOOT=true`), then
 `SAFQA_API=http://localhost:8787 HF_TOKEN=... deploy/hf/deploy-static.sh`.

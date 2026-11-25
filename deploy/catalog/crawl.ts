@@ -14,7 +14,7 @@ import { categorize, canonicalUrl, condition, extractProduct, guessBrand, matchK
 import { pushCatalog, type BuiltProduct } from './push.ts';
 import { aiCategorize } from './ai.ts';
 
-export const UA = 'SafqaBot/5.0 (+https://safqa-eg-safqa.static.hf.space/#/about; price comparison; contact via site)';
+export const UA = 'SafqaBot/5.0 (+https://safqaeg.pages.dev/about; price comparison; contact via site)';
 const args = process.argv.slice(2);
 const flag = (n: string) => args.includes(`--${n}`);
 const opt = (n: string) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : undefined; };

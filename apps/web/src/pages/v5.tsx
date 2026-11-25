@@ -93,7 +93,7 @@ export function V5ProductPage({ id }: { id: string }) {
   const offer = p.bestOffer!;
   const cat = p.category ?? { slug: 'other', nameAr: 'متنوع', nameEn: 'Other' };
   const title = localized(locale, { ar: p.titleAr, en: p.titleEn });
-  const share = `${location.origin}${location.pathname}#/p/${p.id}`;
+  const share = `${location.origin}/p/${p.id}`;
   const saving = p.offers.length > 1 ? Math.max(...p.offers.filter((o) => o.inStock).map((o) => o.priceEgp)) - offer.priceEgp : 0;
   return (
     <div className="space-y-6">

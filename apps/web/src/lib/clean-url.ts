@@ -14,4 +14,11 @@ if (hash.startsWith('#/')) {
 }
 const next = `${path}${q}${h}`;
 if (next !== `${pathname}${search}${hash}`) window.history.replaceState(window.history.state, '', next);
+
+// An old #/ link clicked while the app is already open (same document, no reload).
+window.addEventListener('hashchange', () => {
+  if (!window.location.hash.startsWith('#/')) return;
+  const to = window.location.hash.slice(1);
+  void import('./nav').then(({ go }) => go(to, true));
+});
 export {};
