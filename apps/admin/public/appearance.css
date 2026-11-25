@@ -23,3 +23,5 @@ html[data-theme="white"]{
 .look-preview{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;text-align:center;font-size:16px}
 .look-wrap{position:relative}
 .login-look{position:fixed;top:calc(12px + env(safe-area-inset-top));inset-inline-start:12px;z-index:5;display:flex;gap:6px}
+
+.login-look .look-panel{inset-inline-end:auto;inset-inline-start:0;}
