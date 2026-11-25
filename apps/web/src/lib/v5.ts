@@ -7,7 +7,7 @@ import { EDGE_URL, edge } from './edge';
 import { play } from './sound';
 
 export interface V5Extra { heat: number; hot: number; cold: number; low: number | null; med30: number | null; dropPct: number | null; dropAt: string | null; firstSeen: string; checkedAt: string | null }
-export type V5Card = ProductCard & { image?: string | null; condition?: string; v5?: V5Extra };
+export type V5Card = ProductCard & { image?: string | null; /** store the photo came from (may differ from the best-price store) */ imageStore?: string | null; condition?: string; v5?: V5Extra };
 export interface V5Offer { store: { slug: string; nameAr: string; nameEn: string; domain: string }; url: string; priceEgp: number; listPriceEgp: number | null; inStock: boolean; checkedAt: string; source: string; userReported: boolean; points: number }
 export interface Prediction { verdict: 'buy' | 'wait' | 'fair' | 'unknown'; confidence: number; reasonAr: string; reasonEn: string; low90?: number; median?: number; trend?: number }
 export interface DnaFactor { key: string; points: number; ar: string; en: string; tone: 'good' | 'bad' | 'neutral' }

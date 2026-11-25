@@ -400,3 +400,6 @@ nav a[data-section][aria-current="page"] { background: var(--accent-soft); color
 @keyframes drop-glow { 0%, 100% { background: transparent; } 30% { background: color-mix(in srgb, var(--palm) 14%, transparent); } }
 .since-viewed-new { animation: drop-glow 2.4s ease-in-out 1; }
 @media (prefers-reduced-motion: reduce) { .price-flip, .ticker-flash, .dna-row, .since-viewed-new { animation: none !important; } }
+
+/* Cards with corner badges reserve a top band so badges never sit on the product photo (QA v6). */
+.media-tile.has-badges > img { padding: 17% 7% 6%; }

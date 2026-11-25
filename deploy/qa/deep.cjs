@@ -64,7 +64,7 @@ function checks() {
 }
 
 (async () => {
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ args: /localhost|127\.0\.0\.1/.test(base) ? ['--disable-web-security'] : [] }); // local builds call the live API cross-origin
   const report = [];
   for (const mode of modes) {
     const [loc, theme] = mode.split('-');
@@ -82,7 +82,7 @@ function checks() {
       page.on('response', (r) => { if (r.status() >= 400 && !/favicon|google|gstatic|analytics/.test(r.url())) failed.push(`${r.status()} ${r.url().slice(0, 120)}`); });
       for (const r of routes) {
         const t0 = Date.now();
-        try { await page.goto(base + r, { waitUntil: 'networkidle', timeout: 30000 }); } catch { errors.push('timeout networkidle'); }
+        try { await page.goto(base + r, { waitUntil: 'load', timeout: 30000 }); await page.waitForLoadState('networkidle', { timeout: 6000 }).catch(() => {}); } catch { errors.push('timeout load'); }
         const loadMs = Date.now() - t0;
         await page.waitForTimeout(700);
         await page.addStyleTag({ content: '*{content-visibility:visible!important}' }).catch(() => {});

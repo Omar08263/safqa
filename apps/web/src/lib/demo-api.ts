@@ -66,9 +66,26 @@ function token(): string {
   return `demo_${Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('')}`;
 }
 
+/**
+ * Installs the snapshot-backed /api/* handler right away and downloads the snapshot in the
+ * background: first paint no longer waits for ~2 MB of JSON (mobile LCP), and the first
+ * same-origin /api call simply waits for it.
+ */
 export async function installDemoApi(snapshotUrl: string): Promise<void> {
   const realFetch = window.fetch.bind(window);
-  const snap: Snapshot = await realFetch(snapshotUrl).then((r) => r.json());
+  let demo: Promise<typeof window.fetch> | null = null;
+  const getDemo = () => (demo ??= realFetch(snapshotUrl).then((r) => r.json()).then((snap: Snapshot) => buildDemo(snap, realFetch)));
+  window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = new URL(input instanceof Request ? input.url : String(input), window.location.href);
+    if (url.origin !== window.location.origin || !url.pathname.startsWith('/api/')) return realFetch(input, init);
+    return (await getDemo())(input, init);
+  };
+  // Warm it once the page is idle (offline fallback + demo account).
+  const idle = (window as unknown as { requestIdleCallback?: (f: () => void) => void }).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 1500));
+  idle(() => void getDemo().catch(() => null));
+}
+
+function buildDemo(snap: Snapshot, realFetch: typeof window.fetch): typeof window.fetch {
 
   const load = (): State => {
     try {
@@ -492,7 +509,7 @@ export async function installDemoApi(snapshotUrl: string): Promise<void> {
     return fail(404, 'not_found', `No demo route for ${method} ${path}`);
   }
 
-  window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+  const demoFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
     const request = input instanceof Request ? input : null;
     const url = new URL(
       request ? request.url : String(input),
@@ -521,4 +538,5 @@ export async function installDemoApi(snapshotUrl: string): Promise<void> {
       state = load();
     },
   };
+  return demoFetch as typeof window.fetch;
 }

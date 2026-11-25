@@ -15,13 +15,13 @@ const imgSrc = (u?: string | null, w = 400) => {
   if (/cdn\.shopify\.com/.test(u)) return u.includes('?') ? `${u}&width=${w}` : `${u}?width=${w}`;
   return u;
 };
-export function RemoteThumb({ src, alt, slug, className = 'w-full' }: { src?: string | null; alt: string; slug?: string; className?: string }) {
+export function RemoteThumb({ src, alt, slug, className = 'w-full', priority = false }: { src?: string | null; alt: string; slug?: string; className?: string; priority?: boolean }) {
   const [bad, setBad] = useState(false);
-  const s = imgSrc(src);
+  const s = imgSrc(src, priority ? 800 : 400);
   return (
     <div className={`media-tile group/tile ${className}`}>
       {s && !bad ? (
-        <img src={s} alt={alt} loading="lazy" decoding="async" referrerPolicy="no-referrer" width={400} height={400} onError={() => setBad(true)} className="transition duration-500 group-hover:scale-[1.05]" />
+        <img src={s} alt={alt} loading={priority ? 'eager' : 'lazy'} decoding={priority ? 'sync' : 'async'} {...{ fetchpriority: priority ? 'high' : 'auto' }} referrerPolicy="no-referrer" width={400} height={400} onError={() => setBad(true)} className="transition duration-500 group-hover:scale-[1.05]" />
       ) : (
         <div className="grid h-full w-full place-items-center text-4xl opacity-60" aria-hidden="true">{CAT_EMOJI[slug ?? ''] ?? '🛍️'}</div>
       )}
@@ -33,6 +33,7 @@ export const CAT_EMOJI: Record<string, string> = { phones: '📱', tablets: '�
 /** Pepper-style temperature, shown as degrees with a flame that flickers harder when hotter. */
 export function HeatBadge({ heat, compact = false }: { heat: number; compact?: boolean }) {
   const tr = useTr();
+  if (!heat || heat <= 0) return null; // a bare «0°» reads as broken; no votes/drops yet = no badge
   const level = heat >= 120 ? 'blaze' : heat >= 60 ? 'hot' : heat >= 20 ? 'warm' : 'cool';
   return (
     <span className={`heat heat-${level} num inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold leading-4`} title={tr(`سخونة الصفقة ${heat}° (تصويت + نزول حقيقي في السعر)`, `Deal heat ${heat}° (votes + real price drop)`)}>
@@ -89,12 +90,13 @@ export function V5DealCard({ product, index = 0, showVotes = true }: { product: 
   const freshDrop = x?.dropAt && Date.now() - Date.parse(x.dropAt) < 72 * 3600_000 && (x.dropPct ?? 0) > 0;
   const claimed = offer.discountPct && offer.discountPct >= 5 ? offer.discountPct : 0;
   const inCompare = compare.has(product.id);
+  const hasBadges = Boolean(freshDrop || atLow || claimed || (product.condition && product.condition !== 'new'));
   return (
     <article className={`v5-card spotlight lift group relative flex h-full flex-col rounded-3xl border border-border bg-card p-2.5 [content-visibility:auto] sm:p-3 ${(x?.heat ?? 0) >= 60 ? 'is-hot' : ''}`} style={{ ['--i' as string]: index % 12 }}>
       <Link to="/p/$id" params={{ id: product.id }} onClick={() => noteInterest(product)} className="absolute inset-0 z-10 rounded-3xl" aria-label={`${title} — ${formatEGP(offer.priceEgp, locale)}`} />
       <div className="relative">
-        <RemoteThumb src={product.image} alt={title} slug={product.category?.slug} />
-        <div className="pointer-events-none absolute start-2 top-2 flex flex-col items-start gap-1">
+        <RemoteThumb src={product.image} alt={title} slug={product.category?.slug} className={`w-full ${hasBadges ? 'has-badges' : ''}`} />
+        <div className="badge-stack pointer-events-none absolute start-2 top-2 flex max-w-[calc(100%-3.5rem)] flex-wrap items-start gap-1">
           {freshDrop ? <span className="num inline-flex items-center gap-0.5 rounded-full bg-palm px-2 py-0.5 text-[11px] font-bold leading-4 text-white"><ArrowDownRight className="h-3 w-3" />{x!.dropPct}%</span> : null}
           {atLow ? <span className="low-badge rounded-full px-2 py-0.5 text-[11px] font-bold leading-4">{tr('أقل سعر', 'Lowest')}</span> : null}
           {!freshDrop && claimed ? <span className="num rounded-full bg-black/60 px-2 py-0.5 text-[11px] font-bold leading-4 text-white" title={tr('خصم معلن من المتجر', 'Store-claimed discount')}>-{claimed}%</span> : null}

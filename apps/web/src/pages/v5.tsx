@@ -5,7 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Bell, CheckCircle2, Clock, Copy, ExternalLink, Flame, Link2, Puzzle, Radio, Share2, ShieldCheck, Sparkles, Tag, ThumbsDown, ThumbsUp, TrendingDown, XCircle } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { CardGrid, CAT_EMOJI, HeatBadge, LivePill, PredictionCard, RemoteThumb, SeriesChart, VoteBar } from '../components/v5';
+import { CardGrid, CAT_EMOJI, LivePill, PredictionCard, RemoteThumb, SeriesChart, VoteBar } from '../components/v5';
 import { CountUp, PageHeader, Skeleton, useToast } from '../fx/fx';
 import { signedInToBackend } from '../lib/edge';
 import { usePrefs } from '../lib/prefs';
@@ -75,6 +75,15 @@ export function HotPage({ cat, sort = 'heat' }: { cat?: string; sort?: string })
 }
 
 // ---------------- product ----------------
+const STORE_FALLBACK: Record<string, [string, string]> = { kimo: ['كيمو ستور', 'Kimo Store'], compumarts: ['كمبيومارتس', 'Compumarts'], tradeline: ['تريدلاين', 'Tradeline'], btech: ['بي.تك', 'B.TECH'], '2b': ['تو بي', '2B'], raya: ['راية شوب', 'Raya Shop'], sigma: ['سيجما كمبيوتر', 'Sigma Computer'], elbadr: ['البدر جروب', 'El Badr Group'], jumia: ['جوميا', 'Jumia'], 'amazon-eg': ['أمازون مصر', 'Amazon.eg'], noon: ['نون', 'noon'] };
+function storeName(p: { offers: { store: { slug: string; nameAr: string; nameEn: string } }[] }, slug: string, ar: boolean) {
+  const s = p.offers.find((o) => o.store.slug === slug)?.store;
+  return s ? (ar ? s.nameAr : s.nameEn) : (STORE_FALLBACK[slug]?.[ar ? 0 : 1] ?? slug);
+}
+/** Arabic counted noun: 1 متجر · 2 متجرين · 3–10 متاجر · 11+ متجر */
+export function countAr(n: number, one: string, two: string, few: string) {
+  return n === 1 ? one : n === 2 ? two : n >= 3 && n <= 10 ? `${n} ${few}` : `${n} ${one}`;
+}
 export function V5ProductPage({ id }: { id: string }) {
   const { locale } = usePrefs();
   const tr = useTr();
@@ -89,7 +98,8 @@ export function V5ProductPage({ id }: { id: string }) {
     onSuccess: () => toast(tr('اتضاف للمراقبة 👀 — هنبلغك لما السعر ينزل', 'Watching 👀 — we will tell you when it drops'), 'success'),
     onError: (e: Error) => toast(/402|tier/.test(e.message) ? tr('وصلت لحد باقتك في المراقبة — رقّي باقتك من صفحة الباقات', 'Watchlist limit reached for your plan') : tr('سجّل دخول الأول عشان تراقب المنتج', 'Sign in to watch this product'), 'error'),
   });
-  if (q.isPending) return <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]"><Skeleton className="aspect-square w-full rounded-3xl" /><div className="space-y-3"><Skeleton className="h-8 w-3/4" /><Skeleton className="h-12 w-1/2" /><Skeleton className="h-40 w-full" /></div></div>;
+  // Same outer structure as the loaded page (breadcrumb row + grid), so nothing jumps when data lands (CLS).
+  if (q.isPending) return <div className="space-y-6" aria-busy="true"><div className="t-meta flex h-4 items-center"><Skeleton className="h-3 w-32" /></div><div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]"><div><Skeleton className="aspect-square w-full rounded-3xl" /><div className="mt-2 h-6" /></div><div className="space-y-4"><Skeleton className="h-8 w-3/4" /><Skeleton className="h-36 w-full rounded-3xl" /><Skeleton className="h-12 w-2/3 rounded-full" /><Skeleton className="h-40 w-full rounded-3xl" /></div></div></div>;
   if (q.isError || !p) return <Offline onRetry={() => q.refetch()} />;
   const offer = p.bestOffer!;
   const cat = p.category ?? { slug: 'other', nameAr: 'متنوع', nameEn: 'Other' };
@@ -104,8 +114,14 @@ export function V5ProductPage({ id }: { id: string }) {
       </nav>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
         <div className="relative lg:sticky lg:top-24 lg:self-start">
-          <RemoteThumb src={p.image} alt={title} slug={cat.slug} className="w-full rounded-3xl" />
-          <div className="absolute start-3 top-3 flex flex-col items-start gap-1.5 rounded-2xl bg-card/90 p-1.5 shadow-sm backdrop-blur">{p.v5 ? <HeatBadge heat={p.v5.heat} /> : null}<LivePill /></div>
+          <RemoteThumb src={p.image} alt={title} slug={cat.slug} className="w-full rounded-3xl" priority />
+          {/* Nothing sits on the photo: heat lives in the vote bar, provenance + live status below the image. */}
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-2 px-1">
+            <LivePill />
+            {p.image && p.imageStore && p.imageStore !== offer.store.slug ? (
+              <span className="t-meta inline-flex items-center gap-1" data-qa="image-credit">📷 {tr(`الصورة من موقع ${storeName(p, p.imageStore, true)}`, `Photo from ${storeName(p, p.imageStore, false)}`)}</span>
+            ) : null}
+          </div>
         </div>
         <div className="min-w-0 space-y-4">
           <div>
@@ -144,8 +160,13 @@ export function V5ProductPage({ id }: { id: string }) {
       </div>
       <section className="rounded-3xl border border-border bg-card p-4">
         <h2 className="flex items-center gap-2 text-lg font-bold"><TrendingDown className="h-5 w-5 text-primary" />{tr('تاريخ السعر الحقيقي', 'Real price history')}</h2>
-        <p className="t-meta mb-2">{tr(`${p.history.length} نقطة سعر متسجلة من ${p.offers.length} ${p.offers.length > 1 ? 'متاجر' : 'متجر'} — كل نقطة = تغيير حقيقي شفناه.`, `${p.history.length} recorded price points from ${p.offers.length} store(s).`)}</p>
-        <SeriesChart series={p.series} low={p.v5?.low} />
+        <p className="t-meta mb-2">{tr(`${countAr(p.history.length, 'نقطة سعر', 'نقطتين سعر', 'نقط سعر')} من ${countAr(p.offers.length, 'متجر', 'متجرين', 'متاجر')} — كل نقطة = تغيير حقيقي شفناه.`, `${p.history.length} recorded price point${p.history.length === 1 ? '' : 's'} from ${p.offers.length} store${p.offers.length === 1 ? '' : 's'}.`)}</p>
+        {p.series.length >= 2 ? <SeriesChart series={p.series} low={p.v5?.low} /> : (
+          <div className="flex items-center gap-3 rounded-2xl bg-accent/50 px-4 py-3 text-sm" data-qa="history-empty">
+            <span className="text-2xl" aria-hidden="true">📈</span>
+            <span>{tr(`بدأنا نسجّل السعر ${ago(p.v5?.firstSeen ?? p.v5?.checkedAt ?? new Date().toISOString(), true)} — الرسم هيظهر أول ما السعر يتغير، وهنبلغك لو نزل.`, `Tracking started ${ago(p.v5?.firstSeen ?? p.v5?.checkedAt ?? new Date().toISOString(), false)}. The chart appears with the first real price change.`)}</span>
+          </div>
+        )}
       </section>
       <section className="rounded-3xl border border-border bg-card p-4">
         <h2 className="text-lg font-bold">{tr('الأسعار في كل المتاجر', 'Prices across stores')}</h2>
@@ -364,8 +385,8 @@ export function DealDnaCard({ dna }: { dna: { score: number; grade: string; fact
       <ul className="mt-3 space-y-1.5">
         {dna.factors.map((f, i) => (
           <li key={f.key} className="dna-row flex items-center gap-2 text-sm" style={{ animationDelay: `${i * 70}ms` }}>
-            <span className={`num w-10 flex-none text-end font-bold ${f.tone === 'good' ? 'text-palm' : f.tone === 'bad' ? 'text-destructive' : 'text-muted'}`}>{f.points > 0 ? `+${f.points}` : f.points}</span>
-            <span className="min-w-0 flex-1">{locale === 'ar' ? f.ar : f.en}</span>
+            <span className={`num w-10 flex-none text-end font-bold ${f.tone === 'good' ? 'text-palm' : f.tone === 'bad' ? 'text-destructive' : 'text-muted'}`}>{f.points === 0 ? <span aria-label={tr('لسه', 'pending')} title={tr('مش داخل في الحساب لسه', 'Not scored yet')}>⏳</span> : f.points > 0 ? `+${f.points}` : f.points}</span>
+            <span className={`min-w-0 flex-1 ${f.points === 0 ? 'text-muted' : ''}`}>{locale === 'ar' ? f.ar : f.en}</span>
           </li>
         ))}
       </ul>
