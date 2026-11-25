@@ -1,0 +1,53 @@
+# STAGED: copy to .github/workflows/pulse.yml once the gh token has the `workflow` scope
+# (gh auth refresh -s workflow). Until then the Worker cron runs the same probes (apps/edge/src/systems/uptime.ts).
+# 🟢 نبض صفقة + ♿ مفتّش الجودة — free GitHub Actions (public repo).
+# Uptime probes every 10 min (Upptime-style) and a daily Lighthouse/axe audit.
+# Results go to the `status-data` branch (data only, never merged into main);
+# the site's /status page, the Hub and the master orchestrator read them via raw.githubusercontent.com.
+name: pulse
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+    - cron: '30 1 * * *'   # 03:30 Cairo: quality audit
+  workflow_dispatch:
+    inputs:
+      quality:
+        description: 'Also run the Lighthouse audit now'
+        type: boolean
+        default: false
+permissions:
+  contents: write
+concurrency:
+  group: pulse
+  cancel-in-progress: false
+jobs:
+  pulse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with: { path: main, sparse-checkout: deploy/status }
+      - name: Check out status-data (create on first run)
+        run: |
+          git clone --depth 1 --branch status-data "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" data \
+            || { mkdir data && cd data && git init -q -b status-data && git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"; }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Uptime probe
+        run: node main/deploy/status/probe.mjs data
+      - name: Lighthouse audit
+        if: github.event.schedule == '30 1 * * *' || inputs.quality
+        run: |
+          mkdir -p lh
+          for p in "home|https://safqaeg.pages.dev/" "hot|https://safqaeg.pages.dev/hot" "product|https://safqaeg.pages.dev/p/p661a1c3904a9824f974a" "smart|https://safqaeg.pages.dev/smart" "status|https://safqaeg.pages.dev/status"; do
+            n="${p%%|*}"; u="${p#*|}"
+            npx -y lighthouse@12 "$u" --quiet --chrome-flags="--headless=new --no-sandbox" --output=json --output-path="lh/$n.json" --only-categories=performance,accessibility,best-practices,seo || echo "lighthouse failed for $n"
+          done
+          node main/deploy/status/quality.mjs lh data
+      - name: Publish
+        run: |
+          cd data
+          git config user.name "safqa-pulse[bot]"; git config user.email "pulse@safqaeg.pages.dev"
+          git add -A
+          git commit -qm "pulse $(date -u +%FT%TZ)" || exit 0
+          git push -q origin status-data
