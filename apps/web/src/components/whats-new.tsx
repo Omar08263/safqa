@@ -96,7 +96,7 @@ export function WhatsNewPlayer({ release, onClose }: { release: Release; onClose
     >
       <div className="aurora" style={{ '--a1': s.color, '--a2': release.accent, '--a3': '#0e6b52' } as CSSProperties} />
       <Particles color={s.color} />
-      <div className="wn-card glass-deep" style={{ transform: prefersCalm() ? undefined : `perspective(1200px) rotateY(${tilt.x * 3}deg) rotateX(${-tilt.y * 3}deg)` }}>
+      <div className="wn-card glass-deep" style={{ ["--wn-color" as string]: s.color, transform: prefersCalm() ? undefined : `perspective(1200px) rotateY(${tilt.x * 3}deg) rotateX(${-tilt.y * 3}deg)` }}>
         <div className="wn-bars" aria-hidden="true">
           {slides.map((x, n) => <i key={x.id} className={n < i ? 'done' : n === i ? 'now' : ''} style={{ '--dur': `${DUR}ms` } as CSSProperties}><b key={n === i ? `${i}-${paused}` : n} /></i>)}
         </div>
@@ -134,7 +134,7 @@ export function WhatsNew() {
   useEffect(() => {
     const latest = changelog.releases.find((r) => r.version === changelog.latest);
     const seen = readLocal<string | null>(SEEN, null);
-    const onboarded = readLocal<boolean>('safqa.welcome.v4', false);
+    const onboarded = readLocal<boolean>('safqa.welcome.v4', false) || readLocal<boolean>('safqa.tourDone.v1', false);
     if (latest && seen !== latest.version) {
       // Brand-new visitors get the welcome tour instead; they see the next release.
       if (!onboarded && !seen) writeLocal(SEEN, latest.version);
