@@ -18,7 +18,7 @@ import * as SecAgents from '../security/agents';
 type Deps = { needAdmin: (c: Ctx) => Promise<string>; body: (c: Ctx) => Promise<Record<string, unknown>> };
 
 export const TEAM: { id: Spec; ar: string; emoji: string; role: string; agents: string[] }[] = [
-  { id: 'tabib', ar: 'الطبيب', emoji: '🩺', role: 'صحة الموقع والـ API والأخطاء — بيصلّح بنفسه', agents: ['haris', 'amin'] },
+  { id: 'tabib', ar: 'الطبيب', emoji: '🩺', role: 'صحة الموقع وواجهة البرمجة (API) والأخطاء — بيصلّح بنفسه', agents: ['haris', 'amin'] },
   { id: 'katalog', ar: 'الكتالوج', emoji: '🛒', role: 'المصادر والسحب والمنتجات الجديدة', agents: ['kashaf', 'sayyad'] },
   { id: 'asaar', ar: 'الأسعار', emoji: '💹', role: 'قرّاء الأسعار والخصومات الغريبة', agents: ['radar'] },
   { id: 'amn', ar: 'الأمن', emoji: '🔐', role: 'المفاتيح والصلاحيات والهجمات', agents: ['khazna', 'sec_analyst', 'sec_anomaly', 'sec_trap', 'sec_patch'] },

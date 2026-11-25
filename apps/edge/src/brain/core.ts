@@ -95,7 +95,7 @@ export function diagnose(s: Signals): Finding[] {
   if (s.security && s.security.anomaly !== 'ok') f.push({ id: 'attack_spike', spec: 'amn', sev: s.security.anomaly === 'crit' ? 'crit' : 'warn', title: `قفزة في محاولات الهجوم (${s.security.perHour}/ساعة مقابل ${s.security.base} عادةً) — الحماية بتصدّ وبتحظر تلقائيًا`, detail: 'Hub ← 🛡️ الأمان', fixes: [] });
   for (const d of s.security?.drafts ?? []) f.push({ id: `sec_patch:${d.key}`, spec: 'amn', sev: 'info', title: `🩹 اقتراح ترقيع: ${d.title.replace(/^\[security\]\s*/, '')}`, fixes: [{ t: 'issue', target: `sec:${d.key}`, title: d.title, body: d.body }] });
   const hot = (s.rateHot ?? []).filter((r) => r.count >= 200);
-  if (hot.length) f.push({ id: 'rate_abuse', spec: 'amn', sev: 'warn', title: `${hot.length} مصدر بيضرب الـ API جامد (أعلى ${hot[0]!.count} طلب)`, detail: hot.slice(0, 3).map((r) => r.key.replace(/:[^:]*$/, ':…')).join(' · '), fixes: [] });
+  if (hot.length) f.push({ id: 'rate_abuse', spec: 'amn', sev: 'warn', title: `${hot.length} مصدر بيضرب واجهة البرمجة (API) جامد (أعلى ${hot[0]!.count} طلب)`, detail: hot.slice(0, 3).map((r) => r.key.replace(/:[^:]*$/, ':…')).join(' · '), fixes: [] });
   // 📝 المحتوى
   if (s.content && s.content.products > 100) {
     const noImg = s.content.noImage / s.content.products;

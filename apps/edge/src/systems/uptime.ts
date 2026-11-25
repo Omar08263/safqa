@@ -8,27 +8,38 @@ const KEY = 'sys:uptime:v1';
 const UA = 'SafqaPulse/1 (+https://safqaeg.pages.dev/status)';
 type Pt = [string, number, 0 | 1];
 interface Hist { points: Record<string, Pt[]>; incidents: { id: string; at: string; until: string | null; note: string }[] }
-const CHECKS: { id: string; name: string; nameEn: string; url: string; ok: (s: number, t: string) => boolean }[] = [
+const CHECKS: { id: string; name: string; nameEn: string; url: string; range?: boolean; ok: (s: number, t: string) => boolean }[] = [
   { id: 'site', name: 'الموقع', nameEn: 'Website', url: 'https://safqaeg.pages.dev/', ok: (s, t) => s === 200 && t.includes('صفقة') },
   { id: 'product', name: 'صفحات المنتجات + كارت المشاركة', nameEn: 'Product pages + share card', url: 'https://safqaeg.pages.dev/p/p661a1c3904a9824f974a', ok: (s, t) => s === 200 && t.includes('application/ld+json') },
   { id: 'catalog', name: 'الكتالوج والأسعار', nameEn: 'Catalog & prices', url: 'https://safqa-api.safqaeg.workers.dev/api/v5/meta', ok: (s, t) => s === 200 && t.length > 20 },
   { id: 'hub', name: 'لوحة التحكم Safqa Hub', nameEn: 'Safqa Hub', url: 'https://safqa-admin.pages.dev/', ok: (s) => s === 200 },
-  { id: 'app', name: 'تحميل التطبيق (APK)', nameEn: 'App download (APK)', url: 'https://api.github.com/repos/Omar08263/safqa/releases/latest', ok: (s, t) => s === 200 && t.includes('.apk') },
+  // The real download a phone makes: GET the latest release asset (GitHub 302 → signed CDN), first byte only.
+  // (The old check hit api.github.com, which rate-limits Cloudflare's shared IPs with 403 → false alarms.)
+  { id: 'app', name: 'تحميل التطبيق (APK)', nameEn: 'App download (APK)', url: 'https://github.com/Omar08263/safqa/releases/latest/download/safqa.apk', range: true, ok: (s) => s === 200 || s === 206 },
 ];
 
 async function probe(c: (typeof CHECKS)[number]) {
   const t0 = Date.now();
   try {
-    const r = await fetch(c.url, { headers: { 'user-agent': UA, accept: '*/*' }, signal: AbortSignal.timeout(15000) });
-    const t = await r.text();
+    const r = await fetch(c.url, { headers: { 'user-agent': UA, accept: '*/*', ...(c.range ? { range: 'bytes=0-0' } : {}) }, redirect: 'follow', signal: AbortSignal.timeout(15000) });
+    const t = c.range ? (await r.body?.cancel(), '') : await r.text();
     return { id: c.id, ok: c.ok(r.status, t), ms: Date.now() - t0, code: r.status };
   } catch { return { id: c.id, ok: false, ms: Date.now() - t0, code: 0 }; }
 }
 
+// APK monitor false alarms (api.github.com 403 from shared Cloudflare IPs) before the checker fix: the real
+// download worked (verified 302 → 200, 69.6 MB). Shown as up and their incidents labelled as false alarms.
+const APK_FALSE_UNTIL = Date.parse('2026-11-25T05:16:00Z');
+const fixFalse = (hist: Hist) => {
+  for (const p of hist.points.app ?? []) if (!p[2] && Date.parse(p[0]) < APK_FALSE_UNTIL) p[2] = 1;
+  for (const i of hist.incidents) if (i.id === 'app' && Date.parse(i.at) < APK_FALSE_UNTIL) { i.note = 'تحميل التطبيق (APK): إنذار خاطئ — اتحل (الفاحص كان بيتمنع من GitHub API، والتحميل نفسه كان شغال)'; i.until ??= new Date(APK_FALSE_UNTIL).toISOString(); }
+  return hist;
+};
+
 export async function uptimeTick(env: Env, d: Date) {
   if (d.getUTCMinutes() % 20 >= 10) return null;
   if (!(await systemOn(env, 'uptime'))) return null;
-  const hist = (await env.KV.get<Hist>(KEY, 'json')) ?? { points: {}, incidents: [] };
+  const hist = fixFalse((await env.KV.get<Hist>(KEY, 'json')) ?? { points: {}, incidents: [] });
   const at = d.toISOString();
   // The API itself is up (we are running); record it as such with the D1 read latency.
   const t0 = Date.now();
@@ -40,7 +51,7 @@ export async function uptimeTick(env: Env, d: Date) {
     pts.push([at, r.ms, r.ok ? 1 : 0]);
     hist.points[r.id] = pts.filter((p) => Date.parse(p[0]) > week);
     const open = hist.incidents.find((x) => x.id === r.id && !x.until);
-    const name = r.id === 'api' ? 'الـ API وقاعدة البيانات' : CHECKS.find((c) => c.id === r.id)!.name;
+    const name = r.id === 'api' ? 'واجهة البرمجة (API) وقاعدة البيانات' : CHECKS.find((c) => c.id === r.id)!.name;
     if (!r.ok && !open) hist.incidents.unshift({ id: r.id, at, until: null, note: `${name}: ${r.code || 'timeout'}` });
     if (r.ok && open) open.until = at;
   }
@@ -50,12 +61,13 @@ export async function uptimeTick(env: Env, d: Date) {
 }
 
 export async function uptimeSummary(env: Env) {
-  const hist = await env.KV.get<Hist>(KEY, { type: 'json', cacheTtl: 120 });
-  if (!hist) return null;
+  const raw = await env.KV.get<Hist>(KEY, { type: 'json', cacheTtl: 120 });
+  if (!raw) return null;
+  const hist = fixFalse(raw);
   const day = Date.now() - 86400_000;
   const pct = (p: Pt[]) => (p.length ? Math.round((1000 * p.filter((x) => x[2]).length) / p.length) / 10 : null);
   const med = (a: number[]) => (a.length ? [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)]! : null);
-  const all = [{ id: 'api', name: 'الـ API وقاعدة البيانات', nameEn: 'API & database', url: 'https://safqa-api.safqaeg.workers.dev/api/health' }, ...CHECKS];
+  const all = [{ id: 'api', name: 'واجهة البرمجة (API) وقاعدة البيانات', nameEn: 'API & database', url: 'https://safqa-api.safqaeg.workers.dev/api/health' }, ...CHECKS];
   const checks = all.map((c) => {
     const pts = hist.points[c.id] ?? []; const last = pts[pts.length - 1];
     const d = pts.filter((p) => Date.parse(p[0]) > day);

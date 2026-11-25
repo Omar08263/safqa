@@ -69,7 +69,7 @@ export function AppPage() {
               <TelegramFollowButton />
             </div>
             <p className="text-xs text-muted">
-              {rel.isLoading ? tr('بنشيك على آخر إصدار…', 'Checking the latest release…') : apk && rel.data ? tr(`آخر إصدار ${rel.data.tag_name} · ${(apk.size / 1048576).toFixed(1)} ميجا · ${new Date(rel.data.published_at).toLocaleDateString('ar-EG-u-nu-latn')} · اتنزّل ${apk.download_count} مرة`, `Latest ${rel.data.tag_name} · ${(apk.size / 1048576).toFixed(1)} MB · ${new Date(rel.data.published_at).toLocaleDateString()} · ${apk.download_count} downloads`) : tr('ملف الـ APK على GitHub Releases الخاص بالمشروع المفتوح المصدر.', 'The APK lives on the open-source project’s GitHub Releases.')}{' '}
+              {rel.isLoading ? tr('بنشيك على آخر إصدار…', 'Checking the latest release…') : apk && rel.data ? tr(`آخر إصدار ${rel.data.tag_name} · ${(apk.size / 1048576).toFixed(1)} ميجا · ${new Date(rel.data.published_at).toLocaleDateString('ar-EG-u-nu-latn')} · اتنزّل ${apk.download_count} مرة`, `Latest ${rel.data.tag_name} · ${(apk.size / 1048576).toFixed(1)} MB · ${new Date(rel.data.published_at).toLocaleDateString()} · ${apk.download_count} downloads`) : tr('ملف التطبيق (APK) على GitHub Releases الخاص بالمشروع المفتوح المصدر.', 'The APK lives on the open-source project’s GitHub Releases.')}{' '}
               <a href={RELEASES_URL} target="_blank" rel="noreferrer" className="text-primary underline">{tr('كل الإصدارات', 'All releases')}</a>
             </p>
           </div>
@@ -110,8 +110,8 @@ export function AppPage() {
             <li className="flex gap-3"><Apple className="h-5 w-5 flex-none text-primary" /><span><b>{tr('آيفون:', 'iPhone:')}</b> {tr('افتح الموقع في Safari ← زرار المشاركة ⬆️ ← «إضافة إلى الشاشة الرئيسية». (أبل مش بتسمح بتطبيقات من بره الـ App Store.)', 'Open in Safari → Share ⬆️ → “Add to Home Screen”. (Apple does not allow apps outside the App Store.)')}</span></li>
             <li className="flex gap-3"><Globe className="h-5 w-5 flex-none text-primary" /><span><b>{tr('كمبيوتر:', 'Desktop:')}</b> {tr('Chrome أو Edge ← أيقونة التثبيت في شريط العنوان.', 'Chrome or Edge → the install icon in the address bar.')}</span></li>
           </ol>
-          <p className="mt-4 rounded-xl border border-dashed border-border p-2 text-xs text-muted">{tr('الـ APK مبني من الكود المفتوح على GitHub ومش موجود على Google Play لسه، فأندرويد هيحذرك إنه «من مصدر غير معروف» — ده طبيعي لأي تطبيق بره المتجر.', 'The APK is built from the open-source repo and is not on Google Play yet, so Android warns about an “unknown source” — normal for any app outside the store.')}</p>
-          <a href={APK_URL} className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-2 font-bold text-primary-foreground"><Download className="h-4 w-4" />{tr('نزّل الـ APK', 'Download APK')}</a>
+          <p className="mt-4 rounded-xl border border-dashed border-border p-2 text-xs text-muted">{tr('ملف التطبيق (APK) مبني من الكود المفتوح على GitHub ومش موجود على Google Play لسه، فأندرويد هيحذرك إنه «من مصدر غير معروف» — ده طبيعي لأي تطبيق بره المتجر.', 'The APK is built from the open-source repo and is not on Google Play yet, so Android warns about an “unknown source” — normal for any app outside the store.')}</p>
+          <a href={APK_URL} className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-2 font-bold text-primary-foreground"><Download className="h-4 w-4" />{tr('نزّل التطبيق (APK)', 'Download APK')}</a>
         </Card>
       </div>
     </div>
