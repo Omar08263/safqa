@@ -5,7 +5,7 @@
 import * as Budget from '../infra/budget';
 import { sget, sput } from '../infra/state';
 import type { Env } from '../util';
-import { fail, nowIso, parseJ, str } from '../util';
+import { fail, nowIso, parseJ, str, timingSafeEqual } from '../util';
 import { canonicalUrl, plausibleEgp, type Extracted } from './core';
 import { storeFromHost, upsertOffer, type On } from './api';
 import { aiExtract } from './ingest';
@@ -15,7 +15,11 @@ const ROWS_PER_ITEM = 6; // worst case: new product = row + pk + 2 heat indexes 
 
 function authed(env: Env, req: Request) {
   const h = req.headers.get('authorization') ?? '';
-  if (!env.HUNTER_TOKEN || h !== `Bearer ${env.HUNTER_TOKEN}`) fail(401, 'unauthorized', 'hunter token required');
+  // Constant-time: pad both sides to one length so neither content nor length leaks through timing.
+  const want = `Bearer ${env.HUNTER_TOKEN ?? ''}`;
+  const n = Math.max(want.length, h.length, 64);
+  const ok = timingSafeEqual(h.padEnd(n, '\0'), want.padEnd(n, '\0')) && h.length === want.length;
+  if (!env.HUNTER_TOKEN || !ok) fail(401, 'unauthorized', 'hunter token required');
 }
 
 export function registerHunter(on: On) {

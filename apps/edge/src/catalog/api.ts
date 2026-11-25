@@ -12,7 +12,22 @@ import { dealDna, fakeDiscount, seasonAdvice } from './insights';
 
 // biome-ignore lint/suspicious/noExplicitAny: D1 rows.
 type Row = Record<string, any>;
-export interface Offer { s: string; u: string; p: number; l: number | null; k: 0 | 1; t: string; r?: number | null; src?: string; h: [number, number][] }
+export interface Offer { s: string; u: string; p: number; l: number | null; k: 0 | 1; t: string; r?: number | null; src?: string; h: [number, number][]; /** this store's own product image */ i?: string | null }
+
+/** Prices at or above this are store placeholders (e.g. a RAM stick listed at EGP 1,010,000), never shown. */
+export const MAX_SANE_PRICE = 1_000_000;
+
+/** Which store an image URL belongs to (Shopify shop file ids + store hosts), so the UI can say «photo from X»
+ * instead of silently showing one store's watermarked photo next to another store's price. */
+const SHOPIFY_SHOP: Record<string, string> = { '0554/5594/0776': 'kimo', '0622/7050/5109': 'compumarts', '0647/8000/9538': 'tradeline' };
+const IMG_HOSTS: [RegExp, string][] = [[/sigma-computer\.com$/, 'sigma'], [/rayashop\.com$/, 'raya'], [/(^|\.)2b\.com\.eg$/, '2b'], [/elbadrgroupeg\.store$/, 'elbadr'], [/jumia\.(is|com\.eg)$/, 'jumia'], [/btech\.com$/, 'btech'], [/kimostore\.net$/, 'kimo'], [/compumarts\.com$/, 'compumarts'], [/tradelinestores\.com$/, 'tradeline'], [/(amazon|media-amazon|ssl-images-amazon)\./, 'amazon-eg'], [/noon(cdn)?\./, 'noon']];
+export function imageStore(u?: string | null): string | null {
+  if (!u) return null;
+  const m = /cdn\.shopify\.com\/s\/files\/\d\/(\d+\/\d+\/\d+)/.exec(u);
+  if (m) return SHOPIFY_SHOP[m[1]!] ?? null;
+  try { const h = new URL(u).hostname; for (const [re, id] of IMG_HOSTS) if (re.test(h)) return id; } catch { /* not a URL */ }
+  return null;
+}
 
 export const STORE_NAMES: Record<string, [string, string, string]> = {
   kimo: ['كيمو ستور', 'Kimo Store', 'kimostore.net'], compumarts: ['كمبيومارتس', 'Compumarts', 'compumarts.com'], tradeline: ['تريدلاين', 'Tradeline', 'tradelinestores.com'],
@@ -43,7 +58,7 @@ export function toCard(r: Row) {
   const disc = r.list_price && r.list_price > r.price ? Math.round(((r.list_price - r.price) / r.list_price) * 100) : null;
   const score = Math.max(10, Math.min(99, Math.round(50 + (r.heat ?? 0) / 3)));
   return {
-    id: r.id, titleAr: r.title_ar || r.title, titleEn: r.title, brand: r.brand, model: null, ean: r.gtin ?? null, image: r.image,
+    id: r.id, titleAr: r.title_ar || r.title, titleEn: r.title, brand: r.brand, model: null, ean: r.gtin ?? null, image: r.image, imageStore: imageStore(r.image),
     category: cat ? { slug: cat.slug, nameAr: cat.ar, nameEn: cat.en } : { slug: 'other', nameAr: 'متنوع', nameEn: 'Other' },
     offerCount: r.n_offers, lowestPriceEgp: r.price, condition: r.cond,
     bestOffer: { id: `${r.id}:${r.store}`, url: r.url, title: r.title, priceEgp: r.price, listPriceEgp: r.list_price, inStock: Boolean(r.in_stock), condition: r.cond === 'new' ? 'new' : 'used', rating: null,
@@ -92,7 +107,8 @@ export async function search(env: Env, sp: URLSearchParams) {
   if (max) { filt.push('c.price<=?'); binds.push(max); }
   if (cond) { filt.push('c.cond=?'); binds.push(cond); }
   if (inStock) filt.push('c.in_stock=1');
-  const where = filt.length ? ` AND ${filt.join(' AND ')}` : '';
+  filt.push(`c.price < ${MAX_SANE_PRICE}`);
+  const where = ` AND ${filt.join(' AND ')}`;
   const q = qRaw ? normQuery(qRaw) : '';
   if (q) {
     const words = q.split(' ').filter((w) => w.length >= 3);
@@ -136,11 +152,15 @@ export async function product(env: Env, id: string, exec?: ExecutionContext) {
   // Daily best-price series across stores (step-held), for the chart.
   const series = bestSeries(offers);
   const pred = predict(series.map((x) => ({ at: x.at, price: x.price })), r.in_stock ? r.price : null);
-  const similar = (await env.DB.prepare(`SELECT ${CARD_COLS} FROM catalog WHERE category=? AND id<>? AND brand IS ? ORDER BY heat DESC LIMIT 8`).bind(r.category, id, r.brand).all<Row>()).results;
+  const similar = (await env.DB.prepare(`SELECT ${CARD_COLS} FROM catalog WHERE category=? AND id<>? AND brand IS ? AND price < 1000000 ORDER BY heat DESC LIMIT 8`).bind(r.category, id, r.brand).all<Row>()).results;
   // Refresh on view (Keepa-style): a stale Shopify offer is re-read right away in the background.
   if (exec && r.checked_at && Date.now() - Date.parse(r.checked_at) > 6 * 3600_000) exec.waitUntil(refreshProduct(env, r).catch(() => null));
+  // Show the photo of the store whose price is shown, when we have it; otherwise say whose photo it is.
+  const best = offers.filter((o) => o.k && o.p === r.price)[0] ?? offers.find((o) => o.s === r.store);
+  const ownImg = best?.i || offers.find((o) => o.s === r.store && o.i)?.i || null;
+  const image = ownImg || r.image;
   return {
-    ...toCard(r), specs: parseJ(r.specs, {}), offers: offers.sort((a, b) => b.k - a.k || a.p - b.p).map((o) => ({ store: storeInfo(o.s), url: affiliateUrl(env, o.u), priceEgp: o.p, listPriceEgp: o.l, inStock: Boolean(o.k), checkedAt: o.t, source: o.src ?? 'crawl', userReported: o.src === 'user', points: o.h.length })),
+    ...toCard(r), image, imageStore: imageStore(image) ?? (ownImg ? r.store : null), specs: parseJ(r.specs, {}), offers: offers.sort((a, b) => b.k - a.k || a.p - b.p).map((o) => ({ store: storeInfo(o.s), url: affiliateUrl(env, o.u), priceEgp: o.p, listPriceEgp: o.l, inStock: Boolean(o.k), checkedAt: o.t, source: o.src ?? 'crawl', userReported: o.src === 'user', points: o.h.length })),
     history: points, series, prediction: pred, similar: similar.map(toCard), votes: { hot: r.hot, cold: r.cold },
     dna: dealDna({ price: r.price, offers, hot: Number(r.hot), cold: Number(r.cold), checkedAt: r.checked_at }),
     fake: fakeDiscount(offers.find((o) => o.p === r.price && o.src !== 'user') ?? null),
@@ -180,6 +200,7 @@ async function readOffer(env: Env, o: Offer): Promise<{ price: number | null; in
     const avail = vars.filter((v) => v.available);
     const v = (avail.length ? avail : vars).sort((a, b) => a.price - b.price)[0];
     if (!v) return null;
+    if (v.price / 100 >= MAX_SANE_PRICE) return null; // store placeholder price: keep the last real one
     return { price: v.price / 100, inStock: avail.length > 0, listPrice: v.compare_at_price ? v.compare_at_price / 100 : null };
   }
   const r = await fetch(o.u, { headers: { 'user-agent': UA, accept: 'text/html' }, redirect: 'follow' });
@@ -378,7 +399,8 @@ export async function upsertOffer(env: Env, ex: Extracted, url: string, storeId:
   const key = matchKey({ title: ex.title, brand, gtin: ex.gtin, mpn: ex.mpn });
   const id = await productId(key);
   const now = nowIso();
-  const offer: Offer = { s: storeId, u: url, p: ex.price!, l: ex.listPrice ?? null, k: ex.inStock === false ? 0 : 1, t: now, src, h: [[Math.floor(Date.now() / 60000), ex.price!]] };
+  if (!ex.price || ex.price >= MAX_SANE_PRICE) throw new Error('implausible_price');
+  const offer: Offer = { s: storeId, u: url, p: ex.price!, l: ex.listPrice ?? null, k: ex.inStock === false ? 0 : 1, t: now, src, h: [[Math.floor(Date.now() / 60000), ex.price!]], ...(ex.image ? { i: String(ex.image).slice(0, 400) } : {}) };
   const r = await env.DB.prepare('SELECT * FROM catalog WHERE id=?').bind(id).first<Row>();
   if (r) {
     const all = parseJ<Offer[]>(r.offers, []);
