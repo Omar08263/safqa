@@ -50,6 +50,31 @@ Only for the owner: the Google allowlist on the web Hub, or a paired device in t
 
 Routes are under `/api/v2/hub/`: `owner`, `owner/autopilot`, `command`, `changes`, `changes/:id/apply|rollback`, `docs?kind=`, `growth`, `deals-hunt`, `deals-hunt/feature`, `campaign`, `brief`.
 
+## العقل الرئيسي — master AI orchestrator (apps/edge/src/brain)
+One brain over every agent. It runs on its own cron (minutes 2, 17, 32 and 47, so it gets its own query and subrequest budget). Each tick goes through these steps:
+
+1. **Sense (read-only).**
+   - Site, Hub and snapshot health checks.
+   - D1 read, plus a write probe at most once an hour.
+   - KV, the write budget and the AI budget.
+   - Client error spikes, and errors per guarded flag.
+   - Source freshness for each store, and the safqa-hunter reports.
+   - "Wild drop" ratios: many ≥80% drops from one store means a broken extractor.
+   - Rate-limit abuse, secret and CORS sanity, catalog content quality, and sign-up and checkout trends.
+2. **Diagnose.** Pure rules in `brain/core.ts`, unit-tested, sorted into six specialists (🩺 الطبيب, 🛒 الكتالوج, 💹 الأسعار, 🔐 الأمن, 📝 المحتوى, 📈 النمو). Each specialist leads the existing agents.
+3. **Act alone (safe fixes only).** Only when global Autopilot (`owner_autopilot`) and the brain's own switch are both on.
+   - Safe fixes: cache purge, pausing a source for a few hours (it auto-resumes), re-learning a price extractor, turning off a guarded flag, running an agent.
+   - Limits: daily caps, a 6-hour cooldown per target, at most 3 actions per tick.
+   - While the D1 cap is exhausted, fixes that need writes are deferred.
+4. **Verify / roll back.** 30 minutes later each fix is either verified, marked ineffective (and handed to the owner), or undone automatically if client errors more than doubled. Every fix has a one-tap undo in the Hub.
+5. **Propose.** Everything else waits in «محتاج قرارك». Money, bans, deletions and destructive actions are outside the whitelist entirely (`FORBIDDEN`).
+6. **Code-level problems.** These become GitHub issue drafts. The Hub opens a prefilled issue page; nothing is filed unless the owner adds a `GITHUB_TOKEN` secret and turns on the switch (max 3 per day).
+7. **Plan.** A narrative from Gemini 2.0 Flash, used if `GEMINI_API_KEY` is set (free tier); otherwise Workers AI Llama 3.3 70B. It is only called when the situation changes, and never on a calm day. Otherwise the plan comes from the rules.
+
+**State.** One small blob in `kstate` (falls back to KV), written only when something changed or once an hour. Live reads come from the Cache API. Every action goes to the audit log.
+
+**Sources.** No feature evades another site's bot protection. Sources are only paused, resumed or re-learned on Safqa's side. `ingest` and `/api/v5/hunter/batch` honour `src:paused`.
+
 ## Remote config
 `GET /api/v2/config` (KV-cached 5 min) → `{ flags: { key: { on, rollout, value, platforms } } }`. The site and app bucket each install by a stable id for percentage rollouts, refresh every 5 minutes and report crashes inside `<Feature flag>` boundaries to `POST /api/v2/telemetry`. The `banner` flag carries `{ ar, level }` for a dismissible strip.
 

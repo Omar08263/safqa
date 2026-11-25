@@ -30,7 +30,7 @@ export function installBrain({ PAGES, VIEWS, api, post, esc, ago, toast }) {
         <div class="vitals" style="position:relative">
           ${vital(vt.site?.ok, 'الموقع', vt.site ? `${vt.site.status} · ${vt.site.ms}ms` : '—')}
           ${vital(vt.admin?.ok, 'الـ Hub', vt.admin?.status ?? '—')}
-          ${vital(vt.d1, 'D1', vt.budget?.exhausted ? 'قراءة بس — الحد خلص' : `${vt.budget?.pct ?? 0}% كتابة`)}
+          ${vital(vt.d1 && !vt.budget?.exhausted, 'D1', vt.budget?.exhausted ? 'قراءة بس — الحد خلص' : `${vt.budget?.pct ?? 0}% كتابة`)}
           ${vital(vt.kv, 'KV', 'تمام')}
           ${vital((vt.aiLeft ?? 0) > 20, 'AI', `${vt.aiLeft ?? '—'} نداء`)}
           ${vital((vt.clientErrors15 ?? 0) < 60, 'أخطاء المستخدمين', `${vt.clientErrors15 ?? 0} / ربع ساعة`)}
