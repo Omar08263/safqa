@@ -9,7 +9,7 @@ import { useCompare } from '../lib/compare';
 import { usePrefs } from '../lib/prefs';
 import { useTr } from '../lib/tr';
 import { ago, noteInterest, useLiveDrops, v5, type Prediction, type V5Card } from '../lib/v5';
-import { play } from '../lib/sound';
+import { haptic, play } from '../lib/sound';
 
 const imgSrc = (u?: string | null, w = 400) => {
   if (!u) return null;
@@ -52,7 +52,7 @@ export function VoteBar({ id, hot, cold, heat, size = 'sm' }: { id: string; hot:
     const next = state.mine === v ? 0 : v;
     const prev = state;
     setState({ hot: state.hot + (next === 1 ? 1 : 0) - (state.mine === 1 ? 1 : 0), cold: state.cold + (next === -1 ? 1 : 0) - (state.mine === -1 ? 1 : 0), heat: Math.max(0, state.heat + (next - state.mine) * 12), mine: next });
-    if (next === 1) { const r = (e.currentTarget as HTMLElement).getBoundingClientRect(); confetti({ x: r.left + r.width / 2, y: r.top, count: 18 }); play('success'); navigator.vibrate?.(12); }
+    if (next === 1) { const r = (e.currentTarget as HTMLElement).getBoundingClientRect(); confetti({ x: r.left + r.width / 2, y: r.top, count: 18 }); play('success'); haptic('light'); }
     try {
       const res = await v5.vote(id, next);
       setState({ hot: res.hot, cold: res.cold, heat: res.heat, mine: res.mine });

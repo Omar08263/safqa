@@ -3,25 +3,31 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { ButtonHTMLAttributes, forwardRef } from 'react';
 import { cn } from '../../lib/utils';
 
-const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold transition-colors disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary',
-  {
-    variants: {
-      variant: {
-        default: 'bg-primary text-primary-foreground hover:brightness-105',
-        outline: 'border border-border bg-card hover:bg-accent',
-        ghost: 'hover:bg-accent',
-        destructive: 'bg-destructive text-white',
-      },
-      size: {
-        default: 'h-10 px-4',
-        sm: 'h-8 px-3 text-xs',
-        lg: 'h-12 px-5',
-      },
+// Button hierarchy (styles in styles.css, colors from the section accent):
+// primary = gradient pill · secondary = tinted squircle · outline · ghost · icon · chip · fab · destructive
+const buttonVariants = cva('btn text-sm disabled:pointer-events-none disabled:opacity-50', {
+  variants: {
+    variant: {
+      default: 'btn-primary',
+      primary: 'btn-primary',
+      secondary: 'btn-secondary',
+      outline: 'rounded-full border border-border bg-card hover:bg-accent',
+      ghost: 'btn-ghost',
+      icon: 'btn-icon',
+      chip: 'btn-chip',
+      fab: 'btn-fab',
+      destructive: 'btn-danger',
     },
-    defaultVariants: { variant: 'default', size: 'default' },
+    size: {
+      default: '',
+      sm: '!h-8 !px-3 text-xs',
+      lg: '!h-12 !px-6 text-base',
+      icon: '!h-10 !w-10 !p-0',
+    },
   },
-);
+  compoundVariants: [{ variant: 'outline', size: 'default', class: 'h-10 px-4' }],
+  defaultVariants: { variant: 'default', size: 'default' },
+});
 
 export interface ButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
@@ -36,3 +42,4 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   },
 );
 Button.displayName = 'Button';
+export { buttonVariants };

@@ -1,17 +1,30 @@
 import { useColorScheme } from 'react-native';
 import { useSettings } from './store';
 
-export const palette = {
-  light: { bg: '#F3EEE4', card: '#FFFAF3', ink: '#1C1915', muted: '#6E665B', line: '#E4D8C6', chip: '#EFE4D2', primary: '#C9840A', palm: '#0E6B52', clay: '#B8432F', onPrimary: '#1C1915', tile: '#FFFFFF' },
-  dark: { bg: '#12110E', card: '#1C1915', ink: '#F6F0E6', muted: '#B7AB9C', line: '#322C25', chip: '#2A251E', primary: '#F0B429', palm: '#3DBE9A', clay: '#F07167', onPrimary: '#1C1915', tile: '#F7F5F1' },
-};
-export type Colors = typeof palette.light;
+import { brand, type SectionId } from './brand';
 
-export function useColors(): Colors {
+// Colors come from packages/brand/tokens.json (generated into ./brand.ts) — same as the site and the Hub.
+const core = (m: 'light' | 'dark') => {
+  const k = brand.core[m];
+  return { bg: k.bg, card: k.elev, ink: k.ink, muted: k.muted, line: k.line, chip: k.chip, primary: k.brand, palm: k.palm, clay: k.clay, onPrimary: '#1C1915', tile: k.tile } as const;
+};
+export const palette = { light: core('light'), dark: core('dark') };
+export type Colors = { [K in keyof ReturnType<typeof core>]: string };
+
+export function useMode(): 'light' | 'dark' {
   const system = useColorScheme();
   const { settings } = useSettings();
   const mode = settings.theme === 'system' ? (system ?? 'light') : settings.theme;
-  return mode === 'dark' ? palette.dark : palette.light;
+  return mode === 'dark' ? 'dark' : 'light';
+}
+/** Section accent (deals, radar, community, tools, plans, ai, coupons, account): gradient stops, ink on it, readable text. */
+export function useAccent(section: SectionId = 'deals') {
+  const s = brand.sections[section][useMode()];
+  return { from: s.from, to: s.to, ink: s.ink, text: s.text, soft: `${s.from}24` };
+}
+
+export function useColors(): Colors {
+  return palette[useMode()];
 }
 
 /** Type scale shared by every screen: 12 / 13 / 15 / 17 / 20 / 24 / 30. */

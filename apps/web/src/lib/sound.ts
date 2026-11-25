@@ -185,6 +185,8 @@ export function play(cue: Cue, force = false) {
 /** Short vibration on phones; respects the haptics switch and reduced motion. */
 export function haptic(kind: 'light' | 'medium' | 'success' | 'warning' = 'light') {
   if (!readLocal<boolean>(HAPTIC_KEY, true) || reduceMotion()) return;
+  // Browsers block vibration until the first tap; skip instead of logging an error.
+  if ((navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation?.hasBeenActive === false) return;
   const pattern = { light: 8, medium: 18, success: [10, 40, 18], warning: [30, 50, 30] }[kind];
   try { navigator.vibrate?.(pattern as number | number[]); } catch { /* unsupported */ }
 }

@@ -19,7 +19,7 @@ function Attachments({ items }: { items: Att[] }) {
   if (!items?.length) return null;
   return (
     <div className="mt-2 flex flex-wrap gap-2">
-      {items.map((a) => a.type.startsWith('image/') ? <img key={a.id} src={mediaUrl(a.url)} alt={a.name} loading="lazy" className="max-h-56 rounded-xl" /> : a.type.startsWith('video/') ? <video key={a.id} src={mediaUrl(a.url)} controls className="max-h-64 rounded-xl" /> : <a key={a.id} href={mediaUrl(a.url)} target="_blank" rel="noreferrer" className="underline">📎 {a.name}</a>)}
+      {items.map((a) => a.type.startsWith('image/') ? <img key={a.id} src={mediaUrl(a.url)} alt={a.name} loading="lazy" className="max-h-56 max-w-full rounded-xl object-contain" /> : a.type.startsWith('video/') ? <video key={a.id} src={mediaUrl(a.url)} controls className="max-h-64 rounded-xl" /> : <a key={a.id} href={mediaUrl(a.url)} target="_blank" rel="noreferrer" className="underline">📎 {a.name}</a>)}
     </div>
   );
 }
@@ -84,12 +84,12 @@ function Composer({ onSend, linked, placeholder }: { onSend: (text: string, att:
     <div>
       {att.length ? <div className="mb-2 flex flex-wrap gap-2">{att.map((a) => <span key={a.id} className="rounded-full border border-border px-2 py-0.5 text-xs">📎 {a.name}</span>)}</div> : null}
       <div className="flex items-center gap-2">
-        <label className={`press grid h-11 w-11 shrink-0 cursor-pointer place-items-center rounded-full border border-border ${linked ? '' : 'pointer-events-none opacity-40'}`} title="صور / فيديو / PDF">
+        <label className={`press grid h-11 w-11 shrink-0 cursor-pointer place-items-center rounded-full border border-border ${linked ? '' : 'pointer-events-none opacity-40'}`} title="صور / فيديو / PDF" aria-label="ارفع صورة أو فيديو أو PDF">
           <Paperclip className="h-4 w-4" />
           <input type="file" accept="image/*,video/mp4,video/webm,application/pdf" className="hidden" onChange={(e) => void pick(e.target.files?.[0])} />
         </label>
         <input disabled={!linked} value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) void send(); }} placeholder={placeholder} className="h-11 min-w-0 flex-1 rounded-full border border-border bg-transparent px-4" />
-        <button type="button" disabled={!linked || busy} onClick={() => void send()} className="press grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}</button>
+        <button type="button" disabled={!linked || busy} onClick={() => void send()} aria-label="ابعت" className="press grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}</button>
       </div>
       {err ? <p className="mt-2 text-sm text-red-600">⚠️ {err}</p> : null}
     </div>

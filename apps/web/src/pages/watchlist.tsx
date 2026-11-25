@@ -58,7 +58,7 @@ export function WatchlistPage() {
 
   if (!user) {
     return (
-      <SignInGate emoji="👀" ar="قايمة المتابعة" en="Watchlist" ledeAr="تابع المنتجات اللي نفسك فيها، وحط السعر اللي تستناه، وسيب الباقي علينا." ledeEn="Follow the products you want, set your target price, and leave the rest to us." />
+      <SignInGate emoji="👀" ar="قايمة المراقبة" en="Watchlist" ledeAr="تابع المنتجات اللي نفسك فيها، وحط السعر اللي تستناه، وسيب الباقي علينا." ledeEn="Follow the products you want, set your target price, and leave the rest to us." />
     );
   }
 

@@ -6,7 +6,9 @@ import Svg, { Circle, Defs, LinearGradient, Path, Rect, Stop } from 'react-nativ
 import { imageOf, type Product, type Snapshot } from '../lib/data';
 import { tap } from '../lib/feedback';
 import { egp, pct } from '../lib/format';
-import { radius, type as t, useColors } from '../lib/theme';
+import { LinearGradient as Gradient } from 'expo-linear-gradient';
+import type { SectionId } from '../lib/brand';
+import { radius, type as t, useAccent, useColors } from '../lib/theme';
 
 export function Logo({ size = 36 }: { size?: number }) {
   return (
@@ -53,20 +55,35 @@ export function Chip({ label, active, onPress, accessibilityLabel }: { label: st
   );
 }
 
-export function Button({ label, onPress, kind = 'primary', icon, disabled, accessibilityLabel }: { label: string; onPress: () => void; kind?: 'primary' | 'ghost' | 'palm'; icon?: string; disabled?: boolean; accessibilityLabel?: string }) {
+/**
+ * Button hierarchy shared with the site: primary = gradient pill in the section hue,
+ * secondary = tinted squircle, ghost = quiet. `palm` is kept as an alias of secondary (radar hue).
+ */
+export function Button({ label, onPress, kind = 'primary', icon, disabled, accessibilityLabel, section = 'deals' }: { label: string; onPress: () => void; kind?: 'primary' | 'secondary' | 'ghost' | 'palm'; icon?: string; disabled?: boolean; accessibilityLabel?: string; section?: SectionId }) {
   const c = useColors();
-  const bg = kind === 'primary' ? c.primary : kind === 'palm' ? c.palm : c.chip;
-  const fg = kind === 'palm' ? '#fff' : c.ink;
+  const a = useAccent(kind === 'palm' ? 'radar' : section);
+  const primary = kind === 'primary';
+  const secondary = kind === 'secondary' || kind === 'palm';
+  const fg = primary ? a.ink : secondary ? a.text : c.ink;
+  const inner = (
+    <>
+      {icon ? <Text style={{ fontSize: 16 }}>{icon}</Text> : null}
+      <Text style={[t.title, { color: fg }]}>{label}</Text>
+    </>
+  );
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
       disabled={disabled}
       onPress={() => { tap(); onPress(); }}
-      style={({ pressed }) => [{ minHeight: 48, borderRadius: 999, paddingHorizontal: 20, backgroundColor: bg, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8, opacity: disabled ? 0.5 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] }]}
+      style={({ pressed }) => [{ minHeight: 48, borderRadius: primary ? 999 : radius.sm, overflow: 'hidden', opacity: disabled ? 0.5 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] }, secondary ? { backgroundColor: a.soft, borderWidth: 1, borderColor: `${a.from}48` } : kind === 'ghost' ? { backgroundColor: c.chip } : null]}
     >
-      {icon ? <Text style={{ fontSize: 16 }}>{icon}</Text> : null}
-      <Text style={[t.title, { color: fg }]}>{label}</Text>
+      {primary ? (
+        <Gradient colors={[a.from, a.to]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ minHeight: 48, paddingHorizontal: 22, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8 }}>{inner}</Gradient>
+      ) : (
+        <View style={{ minHeight: 48, paddingHorizontal: 20, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8 }}>{inner}</View>
+      )}
     </Pressable>
   );
 }

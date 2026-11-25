@@ -39,7 +39,7 @@ export default function Account() {
       toast({ text: `أهلاً ${u.name.split(' ')[0]} 👋${r && (r.up || r.down) ? ` · زامنّا ${r.up + r.down} منتج` : ''}` });
     } catch (e) {
       warn();
-      setError(e instanceof ApiError ? (e.status === 401 ? 'الإيميل أو كلمة السر مش مظبوطين. راجعهم كده تاني.' : e.message) : 'مفيش اتصال بالسيرفر دلوقتي. جرّب تاني كمان شوية.');
+      setError(e instanceof ApiError ? (e.status === 401 ? 'الإيميل أو الباسورد مش مظبوطين. راجعهم كده تاني.' : e.message) : 'مفيش اتصال بالسيرفر دلوقتي. جرّب تاني كمان شوية.');
     } finally {
       setBusy(false);
     }
@@ -74,7 +74,7 @@ export default function Account() {
             </View>
             {mode === 'register' ? <TextInput value={name} onChangeText={setName} placeholder="اسمك" placeholderTextColor={c.muted} accessibilityLabel="الاسم" style={input} autoComplete="name" /> : null}
             <TextInput value={email} onChangeText={setEmail} placeholder="الإيميل" placeholderTextColor={c.muted} accessibilityLabel="الإيميل" keyboardType="email-address" autoCapitalize="none" autoComplete="email" style={input} />
-            <TextInput value={password} onChangeText={setPassword} placeholder="كلمة السر (8 حروف أو أكتر)" placeholderTextColor={c.muted} accessibilityLabel="كلمة السر" secureTextEntry autoComplete={mode === 'login' ? 'current-password' : 'new-password'} style={input} onSubmitEditing={() => void submit()} />
+            <TextInput value={password} onChangeText={setPassword} placeholder="الباسورد (8 حروف أو أكتر)" placeholderTextColor={c.muted} accessibilityLabel="الباسورد" secureTextEntry autoComplete={mode === 'login' ? 'current-password' : 'new-password'} style={input} onSubmitEditing={() => void submit()} />
             {error ? <Text style={[t.small, { color: c.clay }]} accessibilityLiveRegion="assertive">{error}</Text> : null}
             {busy ? <ActivityIndicator color={c.palm} /> : <Button label={mode === 'login' ? 'ادخل' : 'اعمل الحساب'} kind="palm" onPress={() => void submit()} />}
             <Pressable onPress={() => void WebBrowser.openBrowserAsync(`${SITE_URL}/login`)} accessibilityRole="link">

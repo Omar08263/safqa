@@ -188,7 +188,7 @@ export function SpecsTable({ media, item }: { media: ProductMedia | null | undef
         <h2 className="text-lg font-bold">{tr('المواصفات', 'Specifications')}</h2>
         <div className="flex items-center gap-2">
           <label className="flex items-center gap-1 rounded-full border border-border px-2"><Search className="h-3.5 w-3.5 text-muted" /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr('دوّر في المواصفات', 'Filter specs')} className="h-8 w-36 bg-transparent text-xs outline-none" /></label>
-          <Button size="sm" variant="outline" onClick={() => { void navigator.clipboard.writeText(specs.map((s) => `${s.key}: ${s.value}`).join('\n')); toast(tr('اتنسخت المواصفات', 'Specs copied')); }}><Copy className="h-3.5 w-3.5" /></Button>
+          <Button size="sm" variant="outline" aria-label={tr("انسخ المواصفات", "Copy specs")} onClick={() => { void navigator.clipboard.writeText(specs.map((s) => `${s.key}: ${s.value}`).join('\n')); toast(tr('اتنسخت المواصفات', 'Specs copied')); }}><Copy className="h-3.5 w-3.5" /></Button>
         </div>
       </div>
       {chips.length ? (

@@ -1,3 +1,4 @@
+import { sectionFor } from '../brand/tokens';
 import { Link, useRouterState } from '@tanstack/react-router';
 import { LayoutGrid } from 'lucide-react';
 import { useEffect } from 'react';
@@ -46,6 +47,7 @@ export function BottomNav({ onMore, moreOpen }: { onMore: () => void; moreOpen: 
             <li key={n.to}>
               <Link
                 to={n.to as '/'}
+                data-section={sectionFor(n.to)}
                 onClick={() => feedback('tap')}
                 className={`relative flex h-full flex-col items-center justify-center gap-1 text-[11px] leading-none ${active ? 'font-semibold text-primary' : 'text-muted'}`}
                 aria-current={active ? 'page' : undefined}
@@ -87,7 +89,7 @@ export function NavRail() {
       {primaryNav.map((n) => {
         const active = n.to === '/' ? path === '/' : path.startsWith(n.to);
         return (
-          <Link key={n.to} to={n.to as '/'} onClick={() => feedback('tap')} className={`flex w-[72px] flex-col items-center gap-1 rounded-2xl py-2.5 text-[11px] leading-tight transition ${active ? 'bg-primary/15 font-semibold text-primary' : 'text-muted hover:bg-accent hover:text-foreground'}`} aria-current={active ? 'page' : undefined}>
+          <Link key={n.to} to={n.to as '/'} data-section={sectionFor(n.to)} onClick={() => feedback('tap')} className={`flex w-[72px] flex-col items-center gap-1 rounded-2xl py-2.5 text-[11px] leading-tight transition ${active ? 'bg-primary/15 font-semibold text-primary' : 'text-muted hover:bg-accent hover:text-foreground'}`} aria-current={active ? 'page' : undefined}>
             <n.icon className="h-[22px] w-[22px]" strokeWidth={active ? 2.3 : 1.8} />
             <span className="text-center">{locale === 'ar' ? n.ar : n.en}</span>
           </Link>

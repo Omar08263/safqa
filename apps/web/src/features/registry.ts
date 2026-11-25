@@ -74,7 +74,7 @@ export const features: Feature[] = [
   f('money', PartyPopper, '"اشتريته" بضغطة', 'One-tap "I bought it"', 'من صفحة المنتج: يتسجّل في متتبع التوفير مع احتفال لو وفّرت.', 'From any product: logs to the tracker with a celebration if you saved.', '/product'),
   f('money', Download, 'تصدير التوفير CSV', 'Export savings (CSV)', 'كل مشترياتك وتوفيرك في ملف إكسل.', 'All purchases and savings in a spreadsheet.', '/savings'),
   // watch
-  f('watch', Eye, 'قائمة المراقبة', 'Watchlist', 'راقب أي منتج وتابع سعره من مكان واحد.', 'Watch any product and follow its price in one place.', '/watchlist'),
+  f('watch', Eye, 'قايمة المراقبة', 'Watchlist', 'راقب أي منتج وتابع سعره من مكان واحد.', 'Watch any product and follow its price in one place.', '/watchlist'),
   f('watch', BellRing, 'تنبيه السعر المستهدف', 'Target-price alerts', 'حط السعر اللي يناسبك وصفقة تنبّهك أول ما يوصله.', 'Set your price and Safqa alerts you when it gets there.', '/watchlist'),
   f('watch', Gauge, 'التقدّم نحو الهدف', 'Progress to target', 'شريط بيوريك فاضل قد إيه وكام في المية للسعر اللي حطيته.', 'A bar showing how far, in pounds and percent, from your target.', '/watchlist'),
   f('watch', Bell, 'مركز التنبيهات', 'Alert centre', 'كل التنبيهات في مكان، ومعلّم المقروء.', 'All alerts in one place with read state.', '/alerts'),
@@ -82,7 +82,7 @@ export const features: Feature[] = [
   f('watch', Radar, 'إعدادات التنبيهات', 'Alert settings', 'اختار تتنبّه إمتى وعلى إيه، وابعت تنبيه تجريبي.', 'Choose when and what to be alerted about, and send a test.', '/alerts'),
   f('watch', MonitorSmartphone, 'إشعارات الجهاز', 'Device notifications', 'فعّل إشعارات المتصفح وجرّب إشعار حقيقي على جهازك.', 'Enable browser notifications and try a real one on your device.', '/settings'),
   f('watch', Zap, '"وصلت لهدفك" في لوحة التحكم', '"Target hit" panel', 'المنتجات اللي وصلت للسعر اللي حطيته بتظهر أول ما تفتح.', 'Products at or below your target show up first.', '/dashboard'),
-  f('watch', FileSpreadsheet, 'تصدير المراقبة CSV', 'Export watchlist (CSV)', 'نزّل قائمة المراقبة بالأسعار والأهداف.', 'Download your watchlist with prices and targets.', '/watchlist'),
+  f('watch', FileSpreadsheet, 'تصدير المراقبة CSV', 'Export watchlist (CSV)', 'نزّل قايمة المراقبة بالأسعار والأهداف.', 'Download your watchlist with prices and targets.', '/watchlist'),
   // compare
   f('compare', GitCompare, 'مقارنة لحد 4 منتجات', 'Compare up to 4', 'جدول جنب بعض بالسعر والتقييم والخصم والوسيط والتوفر والتوصية.', 'Side by side: price, score, discount, median, stock and advice.', '/compare'),
   f('compare', Crown, 'تمييز الأفضل في كل صف', 'Row winners', 'الخلية الخضرا بتاج هي الأحسن في كل مقياس.', 'A green crowned cell marks the winner of each row.', '/compare'),
@@ -99,7 +99,7 @@ export const features: Feature[] = [
   f('compare', Lightbulb, 'نصايح المواسم', 'Season tips', 'نصايح عملية لكل موسم تخفيضات في مصر.', 'Practical tips for each Egyptian sale season.', '/calendar'),
   // account
   f('account', UserPlus, 'إنشاء حساب بالبريد', 'Email sign-up', 'حساب مجاني بالاسم والإيميل والباسورد.', 'A free account with name, email and password.', '/login'),
-  f('account', LogIn, 'دخول بالبريد', 'Email sign-in', 'تسجيل دخول آمن مع "افتكر إيميلي".', 'Secure sign-in with "remember my email".', '/login'),
+  f('account', LogIn, 'دخول بالبريد', 'Email sign-in', 'تسجيل الدخول آمن، والجهاز بيفتكرك 60 يوم.', 'Secure sign-in; this device remembers you for 60 days.', '/login'),
   f('account', Fingerprint, 'الدخول بحساب جوجل', 'Google sign-in', 'زرار جوجل الرسمي (Google Identity Services) — بيشتغل أول ما صاحب الموقع يضيف Client ID.', 'Official Google Identity Services button — works once the owner adds a Client ID.', '/login'),
   f('account', ShieldCheck, 'مقياس قوة الباسورد', 'Password strength meter', 'بيقيس الطول والحروف والأرقام والرموز وانت بتكتب.', 'Rates length, case, digits and symbols as you type.', '/login'),
   f('account', EyeOff, 'إظهار/إخفاء الباسورد', 'Show/hide password', 'عين جنب الباسورد تتأكد بيها إنك كاتبه صح.', 'An eye toggle to check what you typed.', '/login'),

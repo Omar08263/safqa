@@ -1,0 +1,98 @@
+{
+  "$comment": "One Egyptian-Arabic voice. Canonical term → variants that must not appear in UI strings (site, app, Hub). Checked by packages/brand/glossary.test.ts.",
+  "terms": [
+    {
+      "id": "watchlist",
+      "ar": "المراقبة",
+      "en": "Watchlist",
+      "avoid": [
+        "قائمة المراقبة",
+        "قائمة المتابعة",
+        "قايمة المتابعة"
+      ],
+      "full": "قايمة المراقبة"
+    },
+    {
+      "id": "signin",
+      "ar": "تسجيل الدخول",
+      "button": "دخول",
+      "en": "Sign in",
+      "avoid": [
+        "تسجيل دخول",
+        "تسجيل الولوج",
+        "سجل الدخول"
+      ]
+    },
+    {
+      "id": "signout",
+      "ar": "خروج",
+      "en": "Sign out",
+      "avoid": [
+        "تسجيل الخروج",
+        "تسجيل خروج"
+      ]
+    },
+    {
+      "id": "password",
+      "ar": "الباسورد",
+      "en": "Password",
+      "avoid": [
+        "كلمة السر",
+        "كلمة المرور"
+      ]
+    },
+    {
+      "id": "plans",
+      "ar": "الباقات",
+      "en": "Plans",
+      "avoid": [
+        "الاشتراكات المدفوعة",
+        "خطط الاشتراك"
+      ]
+    },
+    {
+      "id": "deal",
+      "ar": "عرض",
+      "en": "Deal",
+      "avoid": []
+    },
+    {
+      "id": "alerts",
+      "ar": "التنبيهات",
+      "en": "Alerts",
+      "avoid": [
+        "الإخطارات"
+      ]
+    },
+    {
+      "id": "currency",
+      "ar": "ج.م",
+      "en": "EGP",
+      "avoid": [
+        "جنيه مصري.",
+        "ج . م"
+      ]
+    },
+    {
+      "id": "now",
+      "ar": "دلوقتي",
+      "en": "Now",
+      "avoid": [
+        "حالياً"
+      ]
+    },
+    {
+      "id": "search",
+      "ar": "دوّر",
+      "en": "Search",
+      "avoid": []
+    }
+  ],
+  "punctuation": {
+    "ellipsis": "…",
+    "quotes": "«»",
+    "question": "؟",
+    "comma": "،"
+  },
+  "digits": "Latin digits (0-9) everywhere, prices with tabular numerals."
+}

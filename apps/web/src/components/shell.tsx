@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
 import { TelegramFollowButton } from './telegram-follow';
+import { sectionFor } from '../brand/tokens';
 import { PriceFreshness } from './price-freshness';
 import { Bell, Command, Menu, MoonStar, Search, Sun, X } from 'lucide-react';
 import { FormEvent, ReactNode, useEffect, useRef, useState } from 'react';
@@ -40,6 +41,10 @@ export function Shell({ children }: { children: ReactNode }) {
   const { user, logout, client } = useSession();
   const navigate = useNavigate();
   const path = useRouterState({ select: (state) => state.location.pathname });
+  // Each section has its own hue (packages/brand/tokens.json → data-section on <html>).
+  useEffect(() => {
+    document.documentElement.dataset.section = sectionFor(path);
+  }, [path]);
   const [palette, setPalette] = useState(false);
   const [shortcuts, setShortcuts] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -125,7 +130,7 @@ export function Shell({ children }: { children: ReactNode }) {
           </form>
           <nav className="only-desktop items-center gap-0.5 text-sm" data-tour="nav" aria-label={tr('القائمة الرئيسية', 'Main')}>
             {primaryNav.slice(1).map((n) => (
-              <Link key={n.to} to={n.to as '/'} className={`relative whitespace-nowrap rounded-full px-3 py-1.5 transition ${path.startsWith(n.to) ? 'bg-accent font-semibold text-foreground' : 'text-muted hover:text-foreground'}`} aria-current={path.startsWith(n.to) ? 'page' : undefined}>
+              <Link key={n.to} to={n.to as '/'} data-section={sectionFor(n.to)} className={`relative whitespace-nowrap rounded-full px-3 py-1.5 transition ${path.startsWith(n.to) ? 'bg-accent font-semibold text-foreground' : 'text-muted hover:text-foreground'}`} aria-current={path.startsWith(n.to) ? 'page' : undefined}>
                 {label(n)}
               </Link>
             ))}
@@ -159,7 +164,7 @@ export function Shell({ children }: { children: ReactNode }) {
                       <Link key={to} to={to as '/'} className="flex items-center gap-2 rounded-xl px-3 py-2 hover:bg-accent" role="menuitem"><n.icon className="h-4 w-4 text-primary" />{label(n)}</Link>
                     ) : null;
                   })}
-                  <button type="button" className="w-full rounded-xl px-3 py-2 text-start text-destructive hover:bg-accent" onClick={() => void logout()}>{tr('تسجيل الخروج', 'Sign out')}</button>
+                  <button type="button" className="w-full rounded-xl px-3 py-2 text-start text-destructive hover:bg-accent" onClick={() => void logout()}>{tr('الخروج', 'Sign out')}</button>
                 </div>
               ) : null}
             </div>

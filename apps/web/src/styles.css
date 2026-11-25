@@ -1,47 +1,26 @@
 @import "tailwindcss";
+@import "./brand/tokens.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
-  --font-sans: "Readex Pro", "Segoe UI", Tahoma, sans-serif;
+  --font-sans: var(--font-stack);
   --color-background: var(--bg);
   --color-foreground: var(--ink);
   --color-card: var(--elev);
   --color-muted: var(--muted);
   --color-border: var(--line);
-  --color-primary: var(--saffron);
-  --color-primary-foreground: #1c1915;
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--accent-ink);
+  --color-accent-text: var(--accent-text);
   --color-destructive: var(--clay);
   --color-accent: var(--chip);
   --color-palm: var(--palm);
   --radius-lg: 1rem;
 }
 
-:root {
-  --bg: #f3eee4;
-  --elev: #fffaf3;
-  --ink: #1c1915;
-  --muted: #6e665b;
-  --line: #e4d8c6;
-  --saffron: #c9840a;
-  --palm: #0e6b52;
-  --clay: #b8432f;
-  --chip: #efe4d2;
-  color-scheme: light;
-}
-
-.dark {
-  --bg: #12110e;
-  --elev: #1c1915;
-  --ink: #f6f0e6;
-  --muted: #b7ab9c;
-  --line: #322c25;
-  --saffron: #f0b429;
-  --palm: #3dbe9a;
-  --clay: #f07167;
-  --chip: #2a251e;
-  color-scheme: dark;
-}
+:root { color-scheme: light; }
+.dark { color-scheme: dark; }
 
 * {
   box-sizing: border-box;
@@ -340,3 +319,75 @@ body { overflow-x: clip; }
 @keyframes glow-move { to { background-position: 300% 0; } }
 .orb { position: absolute; border-radius: 9999px; filter: blur(48px); opacity: 0.35; animation: float 9s ease-in-out infinite; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .v5-card, .ticker-track, .flame, .low-badge, .v5-card.is-hot::after, .glow-text, .orb, .drop-in { animation: none !important; } }
+
+/* ===== Safqa identity v6: per-section accents, button hierarchy, heat, tiers =====
+   Tokens come from packages/brand/tokens.json (shared with the app and the Hub).
+   Each section (deals, radar, community, tools, plans, ai, coupons, account) sets
+   --accent/--accent-2/--accent-ink on <html data-section>, so the same components
+   pick up their own hue and gradient while staying one family. */
+.bg-primary { background-image: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+.text-primary { color: var(--accent-text); }
+.hc .bg-primary { background-image: none; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; font-weight: 600; white-space: nowrap; transition: transform var(--m-fast) var(--m-ease), box-shadow var(--m-base) var(--m-ease), background-color var(--m-base), filter var(--m-base); -webkit-tap-highlight-color: transparent; }
+.btn:active { transform: scale(.97); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn[disabled], .btn[aria-disabled="true"] { opacity: .5; pointer-events: none; }
+/* 1 · Primary: the one main action — gradient pill with a soft glow. */
+.btn-primary { height: 2.75rem; padding: 0 1.4rem; border-radius: var(--r-chip); color: var(--accent-ink); background: linear-gradient(135deg, var(--accent), var(--accent-2)); box-shadow: var(--sh-glow), inset 0 1px 0 rgb(255 255 255 / .25); }
+.btn-primary:hover { filter: brightness(1.06) saturate(1.05); box-shadow: 0 14px 34px -12px var(--accent-glow), inset 0 1px 0 rgb(255 255 255 / .3); }
+/* 2 · Secondary: tinted, squarer — supporting actions. */
+.btn-secondary { height: 2.75rem; padding: 0 1.15rem; border-radius: var(--r-sm); color: var(--accent-text); background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent); }
+.btn-secondary:hover { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+/* 3 · Ghost: quiet text action. */
+.btn-ghost { height: 2.5rem; padding: 0 .9rem; border-radius: var(--r-sm); color: var(--ink); background: transparent; }
+.btn-ghost:hover { background: var(--chip); color: var(--accent-text); }
+/* 4 · Icon: round, glassy. */
+.btn-icon { width: 2.5rem; height: 2.5rem; border-radius: 999px; background: var(--glass); border: 1px solid var(--line); color: var(--ink); backdrop-filter: blur(10px); }
+.btn-icon:hover { color: var(--accent-text); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+/* 5 · Chip: filters and quick picks. */
+.btn-chip { height: 2rem; padding: 0 .85rem; border-radius: 999px; font-size: 13px; background: var(--elev); border: 1px solid var(--line); color: var(--ink); }
+.btn-chip:hover, .btn-chip[aria-pressed="true"], .btn-chip[aria-selected="true"], .btn-chip.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-text); }
+/* 6 · FAB: floating, squircle, big gradient. */
+.btn-fab { width: 3.5rem; height: 3.5rem; border-radius: 1.25rem; color: var(--accent-ink); background: linear-gradient(145deg, var(--accent), var(--accent-2)); box-shadow: 0 18px 40px -14px var(--accent-glow), 0 2px 0 rgb(255 255 255 / .25) inset; }
+.btn-fab:hover { transform: translateY(-2px) rotate(-3deg); }
+/* Destructive */
+.btn-danger { height: 2.75rem; padding: 0 1.2rem; border-radius: var(--r-sm); color: #fff; background: linear-gradient(135deg, #e5484d, #b42318); }
+
+/* Cards: glass (default), elevated (hero/feature), accent (section highlight). */
+.card-elev { background: var(--elev); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--sh-md); }
+.card-accent { position: relative; border-radius: var(--r-lg); background: linear-gradient(var(--elev), var(--elev)) padding-box, linear-gradient(135deg, var(--accent), var(--accent-2)) border-box; border: 1.5px solid transparent; box-shadow: 0 20px 50px -30px var(--accent-glow); }
+.accent-wash { background: radial-gradient(120% 140% at 100% 0%, var(--accent-soft), transparent 60%), radial-gradient(90% 120% at 0% 100%, color-mix(in srgb, var(--accent-2) 10%, transparent), transparent 60%), var(--glass); }
+.accent-text-gradient { background: linear-gradient(100deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.section-kicker { color: var(--accent-text); letter-spacing: .14em; font-size: var(--t-meta); font-weight: 700; }
+
+/* Heat: deal temperature, cool slate → blue → yellow → orange → red. */
+.heat { color: var(--heat-ink); background: var(--heat); border-radius: 999px; padding: 2px 10px; font-weight: 700; font-size: 12px; }
+.heat-4.heat { background: linear-gradient(135deg, #f97316, #ef4444 60%, #be123c); box-shadow: 0 0 0 0 rgb(239 68 68 / .5); animation: heat-pulse 2.2s var(--m-ease) infinite; }
+@keyframes heat-pulse { 50% { box-shadow: 0 0 0 6px rgb(239 68 68 / 0); } }
+.calm .heat-4.heat, .reduce-motion .heat-4.heat { animation: none; }
+@media (prefers-reduced-motion: reduce) { .heat-4.heat { animation: none; } }
+
+/* Tiers: badge + ring with each tier's own metal. */
+.tier-badge { display: inline-flex; align-items: center; gap: .3rem; border-radius: 999px; padding: 2px 10px; font-weight: 700; font-size: 12px; color: var(--tier-ink); background: linear-gradient(135deg, var(--tier), var(--tier-2)); }
+.tier-ring { box-shadow: 0 0 0 2px var(--elev), 0 0 0 4px var(--tier), 0 10px 24px -10px var(--tier-2); }
+.tier-diamond.tier-badge { background: linear-gradient(120deg, #67e8f9, #a78bfa 45%, #f0abfc 70%, #67e8f9); background-size: 220% 100%; animation: tier-sheen 4s linear infinite; }
+@keyframes tier-sheen { to { background-position: -220% 0; } }
+@media (prefers-reduced-motion: reduce) { .tier-diamond.tier-badge { animation: none; } }
+
+/* Latin digits with tabular figures for prices everywhere. */
+.num, [data-price] { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+/* Section identity on shared components (no per-page edits needed). */
+.page-hero { border-color: color-mix(in srgb, var(--accent) 22%, var(--line)); }
+.page-hero::after { content: ""; position: absolute; inset-inline-start: 0; top: 0; width: 38%; height: 3px; border-radius: 0 0 3px 3px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.page-hero .text-gradient { background-image: linear-gradient(100deg, var(--ink) 15%, var(--accent-text) 60%, var(--accent-2) 100%); }
+.section-icon { color: var(--accent-ink); background: linear-gradient(145deg, var(--accent), var(--accent-2)); box-shadow: 0 10px 24px -12px var(--accent-glow); transform: rotate(-4deg); }
+a.press.border-border:hover, button.press.border-border:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); color: var(--accent-text); }
+.rounded-full[aria-pressed="true"], [role="tab"][aria-selected="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-text); }
+:focus-visible { outline-color: var(--accent); }
+.hc .page-hero::after, .hc .section-icon { background: var(--ink); box-shadow: none; transform: none; }
+
+/* Nav items carry their own section (data-section on the link): hover + current page glow in that hue. */
+nav a[data-section]:hover { color: var(--accent-text); }
+nav a[data-section][aria-current="page"] { background: var(--accent-soft); color: var(--accent-text); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent); }

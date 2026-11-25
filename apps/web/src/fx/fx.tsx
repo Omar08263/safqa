@@ -298,13 +298,13 @@ export function Logo({ size = 40, withText = true, sub }: { size?: number; withT
 
 export function PageHeader({ kicker, title, lede, icon, children }: { kicker?: string; title: string; lede?: string; icon?: ReactNode; children?: ReactNode }) {
   return (
-    <header className="page-hero relative mb-8 overflow-hidden rounded-[2rem] border border-border p-6 sm:p-8">
+    <header className="page-hero accent-wash relative mb-8 overflow-hidden rounded-[2rem] border border-border p-6 sm:p-8">
       <div className="mesh" aria-hidden="true" />
       <div className="relative flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-2xl">
           {kicker ? <p className="text-sm font-semibold text-primary">{kicker}</p> : null}
           <h1 className="mt-1 flex items-center gap-3 text-3xl font-bold leading-tight sm:text-4xl">
-            {icon ? <span className="grid h-12 w-12 place-items-center rounded-2xl bg-primary/15 text-primary">{icon}</span> : null}
+            {icon ? <span className="section-icon grid h-12 w-12 flex-none place-items-center rounded-2xl">{icon}</span> : null}
             <span className="text-gradient">{title}</span>
           </h1>
           {lede ? <p className="mt-3 leading-7 text-muted">{lede}</p> : null}
