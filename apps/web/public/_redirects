@@ -1,1 +1,6 @@
+# Honeypots: dotfile probes go to the API trap (instant ban + tarpit). Must stay above the SPA fallback.
+/.env  https://safqa-api.safqaeg.workers.dev/.env  302
+/.git/*  https://safqa-api.safqaeg.workers.dev/.git/config  302
+/.aws/*  https://safqa-api.safqaeg.workers.dev/.aws/credentials  302
+/backup.sql  https://safqa-api.safqaeg.workers.dev/backup.sql  302
 /* /index.html 200

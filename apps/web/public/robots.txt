@@ -2,4 +2,8 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /auth/
+Disallow: /admin-backup/
+Disallow: /old-admin/
+Disallow: /db-export/
+Disallow: /internal-panel/
 Sitemap: https://safqaeg.pages.dev/sitemap.xml

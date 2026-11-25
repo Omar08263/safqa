@@ -83,7 +83,8 @@ export function LoginPage() {
     toast(tr('أهلًا بيك في صفقة!', 'Welcome to Safqa!'));
     // Back to the page that asked for sign-in (?next=/alerts), else the dashboard.
     const next = new URLSearchParams(window.location.search).get('next');
-    if (next && next.startsWith('/') && !next.startsWith('//')) void import('../lib/nav').then(({ go }) => go(next, true));
+    if (next && /^\/(?![/\\])[^\s\\]*$/.test(next)) // same-site paths only: no //host, /\host or backslashes (open-redirect guard)
+      void import('../lib/nav').then(({ go }) => go(next, true));
     else void navigate({ to: '/dashboard' });
   }, [navigate, toast, tr]);
 
@@ -95,6 +96,11 @@ export function LoginPage() {
     setError(null);
     setInfo(null);
     try {
+      const hp = String(data.get('hp_url') ?? '').trim();
+      if (hp && (mode === 'login' || mode === 'register')) {
+        // Hidden honeypot field filled → a form bot. Let the API record it (it answers like a normal failure).
+        await raw(`/api/auth/${mode}`, 'POST', { email, password: String(data.get('password') ?? ''), name: String(data.get('name') ?? ''), hp_url: hp });
+      }
       if (mode === 'login') {
         await login(email, String(data.get('password')));
         if (data.get('remember')) window.localStorage.setItem('safqa.rememberEmail', email);
@@ -186,6 +192,10 @@ export function LoginPage() {
           <p className="mb-3 rounded-2xl bg-accent px-3 py-2 text-xs text-muted">{tr('حساب تجريبي', 'Demo account')}: demo@safqa.app / demo1234</p>
         ) : null}
         <form onSubmit={onSubmit} className="space-y-3" key={mode}>
+          {/* Honeypot: invisible to people and screen readers; bots that fill every field reveal themselves. */}
+          <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}>
+            <label>Website<input name="hp_url" type="text" tabIndex={-1} autoComplete="off" defaultValue="" /></label>
+          </div>
           {mode === 'register' ? (
             <label className="block text-sm">
               {tr('الاسم', 'Name')}

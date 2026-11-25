@@ -13,6 +13,7 @@ import * as Budget from '../infra/budget';
 import { edgeCacheGet, edgeCachePut, sget, sput } from '../infra/state';
 import { type Env, fail, nowIso, parseJ, rateLimit, str, uid } from '../util';
 import { type Done, diagnose, FIX_AR, type Finding, type Fix, fixKey, FORBIDDEN, planFixes, SAFE, type Signals, signature, type Spec } from './core';
+import * as SecAgents from '../security/agents';
 
 type Deps = { needAdmin: (c: Ctx) => Promise<string>; body: (c: Ctx) => Promise<Record<string, unknown>> };
 
@@ -20,7 +21,7 @@ export const TEAM: { id: Spec; ar: string; emoji: string; role: string; agents: 
   { id: 'tabib', ar: 'الطبيب', emoji: '🩺', role: 'صحة الموقع والـ API والأخطاء — بيصلّح بنفسه', agents: ['haris', 'amin'] },
   { id: 'katalog', ar: 'الكتالوج', emoji: '🛒', role: 'المصادر والسحب والمنتجات الجديدة', agents: ['kashaf', 'sayyad'] },
   { id: 'asaar', ar: 'الأسعار', emoji: '💹', role: 'قرّاء الأسعار والخصومات الغريبة', agents: ['radar'] },
-  { id: 'amn', ar: 'الأمن', emoji: '🔐', role: 'المفاتيح والصلاحيات والهجمات', agents: ['khazna'] },
+  { id: 'amn', ar: 'الأمن', emoji: '🔐', role: 'المفاتيح والصلاحيات والهجمات', agents: ['khazna', 'sec_analyst', 'sec_anomaly', 'sec_trap', 'sec_patch'] },
   { id: 'muhtawa', ar: 'المحتوى', emoji: '📝', role: 'جودة المنتجات والمجتمع والحملات', agents: ['mizan', 'monasseq', 'hamla'] },
   { id: 'numuw', ar: 'النمو', emoji: '📈', role: 'التسجيلات والدفع والمنافسين والموجز', agents: ['numuw', 'ain', 'modeer'] },
 ];
@@ -91,6 +92,7 @@ export async function sense(env: Env, st: BrainState): Promise<Signals> {
   } catch { /* */ }
   try { s.wildDrops = await q<{ store: string; n: number; wild: number }>('SELECT store, COUNT(*) AS n, SUM(CASE WHEN pct>=80 THEN 1 ELSE 0 END) AS wild FROM drops WHERE at>? GROUP BY store', new Date(Date.now() - 86400_000).toISOString()); } catch { /* */ }
   try { s.rateHot = await q<{ key: string; count: number }>('SELECT key, count FROM rate WHERE reset>? ORDER BY count DESC LIMIT 5', Math.floor(Date.now() / 1000)); } catch { /* */ }
+  try { s.security = await SecAgents.brainSignals(env); } catch { /* */ }
   s.secrets = { jwtLen: (env.JWT_SECRET ?? '').length, corsWildcard: (env.ALLOWED_ORIGINS ?? '').split(',').some((o) => o.trim() === '*'), adminEmails: (env.ADMIN_EMAILS ?? '').split(',').filter((x) => x.includes('@')).length };
   try { const c = (await q<{ n: number; ni: number }>('SELECT COUNT(*) AS n, SUM(CASE WHEN image IS NULL OR image=\'\' THEN 1 ELSE 0 END) AS ni FROM catalog'))[0]; if (c) s.content = { products: c.n, noImage: c.ni ?? 0, noArabic: 0 }; } catch { /* */ }
   try {

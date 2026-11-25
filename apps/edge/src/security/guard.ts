@@ -2,13 +2,15 @@
 // check, body size cap, per-client write limit and app request signatures.
 import { json, type Env } from '../util';
 import { bannedUntil, secEvent } from './audit';
+import { hasValidSession, strike } from './defense';
+import { scoreRequest, tarpit } from './threat';
 import { allow } from './ratelimit';
 import { verifySignature } from './signing';
 
 export const MAX_BODY = 13_000_000; // largest legit body: 12 MB video upload
 const MUTATING = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 /** Server-to-server endpoints with their own secret; no browser Origin, no app signature. */
-const MACHINE = [/^\/api\/v2\/telegram\/webhook$/, /^\/api\/v5\/hunter\//];
+const MACHINE = [/^\/api\/v2\/telegram\/webhook$/, /^\/api\/v5\/hunter\//, /^\/api\/v2\/sec\/beacon$/];
 const seenNonces = new Map<string, number>();
 
 export const clientIp = (req: Request) => req.headers.get('cf-connecting-ip') ?? req.headers.get('x-real-ip') ?? null;
@@ -45,12 +47,31 @@ const reject = (status: number, code: string, message: string, ch: Record<string
 export async function guard(env: Env, req: Request, url: URL, ch: Record<string, string>): Promise<Response | null> {
   const ip = clientIp(req);
   const path = url.pathname;
-  const until = await bannedUntil(env, ip);
-  if (until) {
-    secEvent('banned_hit', ip, { path });
-    return reject(403, 'banned', 'الوصول اتمنع مؤقتًا بسبب نشاط مريب', ch, { 'retry-after': String(Math.ceil((until - Date.now()) / 1000)) });
-  }
   const bucket = ipBucket(ip);
+  const v = scoreRequest(req, url);
+  const ua = (req.headers.get('user-agent') ?? '').slice(0, 160);
+  const until = await bannedUntil(env, ip, bucket);
+  if (until) {
+    // Carrier-grade NAT: one Egyptian mobile IP can be shared by hundreds of real users, so a clean
+    // request with a genuinely signed session passes. Anything else stays out (and attacks get the tarpit).
+    if (!(v.score === 0 && (await hasValidSession(env, req)))) {
+      secEvent('banned_hit', ip, { path });
+      if (v.score >= 25) return tarpit(v.trap, { ...ch, ...securityHeaders('/') });
+      return reject(403, 'banned', 'الوصول اتمنع مؤقتًا بسبب نشاط مريب', ch, { 'retry-after': String(Math.ceil((until - Date.now()) / 1000)) });
+    }
+  }
+  if (v.trap) {
+    // Honeypot: no real client ever asks for these. Instant ban + slow-drip decoy response.
+    secEvent('trap_hit', ip, { path, detail: `${v.reasons.join(',')} · ${ua.slice(0, 80)}` });
+    await strike(env, ip, 100, `trap:${v.trap}`, { path, ua });
+    return tarpit(v.trap, { ...ch, ...securityHeaders('/') });
+  }
+  if (v.score > 0) {
+    secEvent(v.scanner ? 'scanner' : 'attack_sig', ip, { path, detail: `${v.reasons.join(',')} · ${(url.search || '').slice(0, 120)}` });
+    const banned = await strike(env, ip, v.score, v.reasons[0] ?? 'sig', { path, ua });
+    if (banned) return tarpit(null, { ...ch, ...securityHeaders('/') });
+    if (v.score >= 25) return reject(403, 'blocked', 'Request blocked', ch);
+  }
   if (bucket && !(await allow(env, 'RL_IP', bucket))) {
     secEvent('rate_limited', ip, { path, detail: 'ip' });
     return reject(429, 'rate_limited', 'طلبات كتير — استنى دقيقة', ch, { 'retry-after': '60' });

@@ -24,6 +24,9 @@ import * as Sec from './security/audit';
 export { RateLimiterDO } from './security/limiter-do';
 import { clientIp, guard, originAllowed, securityHeaders } from './security/guard';
 import * as TwoFA from './security/owner2fa';
+import * as Def from './security/defense';
+import { API_ROBOTS, _tarpitActive } from './security/threat';
+import * as SecAgents from './security/agents';
 import { open as openField } from './security/crypto';
 import { cairoDay, type Env, fail, HttpError, json, nowIso, parseJ, rateLimit, readJson, str, timingSafeEqual, uid, b64 } from './util';
 
@@ -96,13 +99,26 @@ on('POST', '/api/v2/admin/snapshot', async (c) => {
 });
 
 // ---------------- auth (same contract as the static demo / Node API) ----------------
+/** Hidden honeypot fields on the sign-in/up forms: people never see them, form-filling bots fill them. */
+async function formTrap(c: Ctx, b: Record<string, unknown>, form: string) {
+  const hp = ['website', 'hp_url', 'fax'].map((k) => b[k]).find((x) => typeof x === 'string' && x.trim());
+  if (!hp) return;
+  const ip = clientIp(c.req);
+  Sec.secEvent('form_trap', ip, { path: `/api/auth/${form}`, detail: String(hp).slice(0, 80) });
+  await Def.strike(c.env, ip, 40, `form-trap:${form}`, { path: `/api/auth/${form}`, ua: c.req.headers.get('user-agent') ?? '' });
+  fail(form === 'login' ? 401 : 400, form === 'login' ? 'invalid_credentials' : 'invalid_body', form === 'login' ? 'الإيميل أو الباسورد غلط' : 'البيانات مش صحيحة'); // look like a normal failure
+}
 on('POST', '/api/auth/register', async (c) => {
   if (!(await rateLimit(c.env, `reg:${c.req.headers.get('cf-connecting-ip')}`, 10, 3600))) fail(429, 'rate_limited', 'محاولات كتير');
-  return auth.register(c.env, await body(c));
+  const b = await body(c);
+  await formTrap(c, b, 'register');
+  return auth.register(c.env, b);
 });
 on('POST', '/api/auth/login', async (c) => {
   if (!(await rateLimit(c.env, `login:${c.req.headers.get('cf-connecting-ip')}`, 20, 600))) fail(429, 'rate_limited', 'محاولات كتير — استنى 10 دقايق');
-  return auth.login(c.env, await body(c), clientIp(c.req));
+  const b = await body(c);
+  await formTrap(c, b, 'login');
+  return auth.login(c.env, b, clientIp(c.req));
 });
 on('POST', '/api/auth/google', async (c) => auth.google(c.env, await body(c)));
 on('POST', '/api/auth/refresh', async (c) => auth.refresh(c.env, await body(c), clientIp(c.req)));
@@ -688,12 +704,39 @@ on('POST', '/api/v2/admin/security/ban', async (c) => {
   const who = await needAdmin(c);
   const b = await body(c);
   const ip = str(b.ip, 64);
-  if (!/^[0-9a-f:.]{3,64}$/i.test(ip)) fail(400, 'invalid_ip', 'IP مش صحيح');
+  if (!/^[0-9a-f:.]{3,60}(\/64)?$/i.test(ip)) fail(400, 'invalid_ip', 'IP مش صحيح');
   const minutes = Math.min(7 * 1440, Math.max(5, Number(b.minutes) || 60));
   await Sec.ban(c.env, ip, minutes, b.unban !== true);
+  if (b.unban === true) await Def.release(c.env, ip);
   await admin.audit(c.env, who, b.unban === true ? 'security.unban' : 'security.ban', { ip, minutes }).catch(() => undefined);
   return { ok: true };
 });
+on('GET', '/api/v2/admin/security/live', async (c) => {
+  await needAdmin(c);
+  const live = await Def.liveView(c.env);
+  return { ...live, tarpitsActive: _tarpitActive(), agents: await SecAgents.agentsView(c.env), at: Date.now() };
+});
+on('POST', '/api/v2/admin/security/agents/run', async (c) => {
+  const who = await needAdmin(c);
+  const id = str((await body(c)).id, 40);
+  const r = await SecAgents.runOne(c.env, id, true);
+  await admin.audit(c.env, who, 'security.agent_run', { id }).catch(() => undefined);
+  return r;
+});
+// Site honeypots (Pages Functions on safqaeg.pages.dev) report hits here with a shared secret.
+on('POST', '/api/v2/sec/beacon', async (c) => {
+  const secret = c.req.headers.get('x-safqa-trap') ?? '';
+  if (!c.env.TRAP_SECRET || !timingSafeEqual(secret, c.env.TRAP_SECRET)) fail(401, 'bad_secret', 'no');
+  const b = await body(c, 4000);
+  const ip = str(b.ip, 64);
+  if (!/^[0-9a-f:.]{3,64}$/i.test(ip)) fail(400, 'invalid_ip', 'bad ip');
+  const path = str(b.path, 160);
+  Sec.secEvent('trap_hit', ip, { path: `site:${path}`, detail: `${str(b.kind, 30)} · ${str(b.ua, 80)}` });
+  const until = await Def.strike(c.env, ip, 100, `site-trap:${str(b.kind, 30) || 'decoy'}`, { path: `site:${path}`, ua: str(b.ua, 160) });
+  return { ok: true, banned: Boolean(until) };
+});
+on('GET', '/robots.txt', async () => new Response(API_ROBOTS, { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=86400' } }));
+on('GET', '/.well-known/security.txt', async () => new Response('Contact: https://github.com/Omar08263/safqa/security/advisories/new\nExpires: 2027-11-25T00:00:00.000Z\nPreferred-Languages: ar, en\nPolicy: https://github.com/Omar08263/safqa/blob/main/SECURITY.md\nCanonical: https://safqa-api.safqaeg.workers.dev/.well-known/security.txt\n', { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'public, max-age=86400' } }));
 on('POST', '/api/v2/csp-report', async (c) => {
   const b = await body(c, 16_000).catch(() => ({}) as Record<string, any>);
   const r = (b['csp-report'] ?? (Array.isArray(b) ? b[0]?.body : b.body) ?? b) as Record<string, unknown>;
@@ -704,10 +747,9 @@ on('POST', '/api/v2/csp-report', async (c) => {
 // ---------------- runtime ----------------
 function cors(env: Env, req: Request): Record<string, string> {
   const origin = req.headers.get('origin') ?? '';
-  const allowed = env.ALLOWED_ORIGINS.split(',').map((s) => s.trim());
   const ok = Boolean(origin) && originAllowed(env, origin);
   return {
-    'access-control-allow-origin': ok ? origin : allowed[0]!,
+    ...(ok ? { 'access-control-allow-origin': origin } : {}), // disallowed origins get no CORS grant at all
     'access-control-allow-methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
     'access-control-allow-headers': 'authorization,content-type,x-safqa-ops,x-safqa-2fa,x-safqa-ts,x-safqa-nonce,x-safqa-sig,x-safqa-client',
     'access-control-max-age': '86400',
@@ -741,6 +783,9 @@ export default {
         flush();
         return new Response(res.body, { status: res.status, headers });
       }
+      const pts = Def.note404(clientIp(req));
+      if (pts) { Sec.secEvent('path_scan', clientIp(req), { path: url.pathname }); exec.waitUntil(Def.strike(env, clientIp(req), pts, 'rapid-404', { path: url.pathname, ua: req.headers.get('user-agent') ?? '' }).catch(() => 0)); }
+      flush();
       return json({ error: { code: 'not_found', message: 'No such route' } }, 404, { ...ch, ...sh });
     } catch (e) {
       if (e instanceof HttpError) {

@@ -1,6 +1,7 @@
 import { verifyGoogleIdToken } from './google';
 import { tierById } from './tiers';
 import { secEvent } from './security/audit';
+import { noteLoginFail, strike } from './security/defense';
 import { type Env, fail, hashPassword, nowIso, parseJ, rateLimit, sha256, signJwt, str, uid, underLimit, verifyJwt, verifyPassword } from './util';
 
 export interface UserRow {
@@ -123,6 +124,9 @@ export async function login(env: Env, body: Record<string, unknown>, ip: string 
   const u = await getUserByEmail(env, email);
   if (!u?.pass_hash || !u.pass_salt || !(await verifyPassword(String(body.password ?? ''), u.pass_hash, u.pass_salt))) {
     secEvent('auth_fail', ip, { who: email, path: '/api/auth/login' });
+    const pts = noteLoginFail(ip, email); // many different emails from one client = credential stuffing
+    if (pts >= 20) secEvent('cred_stuffing', ip, { who: email, path: '/api/auth/login' });
+    if (pts) await strike(env, ip, pts, 'credential-stuffing', { path: '/api/auth/login' }).catch(() => 0);
     await rateLimit(env, `lf:${email}`, LOGIN_FAILS, 900).catch(() => true);
     fail(401, 'invalid_credentials', 'الإيميل أو الباسورد غلط');
   }

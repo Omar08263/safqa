@@ -36,6 +36,8 @@ export interface Env {
   SIGNING_MODE?: 'off' | 'monitor' | 'enforce';
   /** Extra Telegram chat id(s) for security alerts (besides the owner's linked account). */
   OWNER_TG_CHAT?: string;
+  /** Shared secret the site's Pages Function traps use to report a honeypot hit. Secret. */
+  TRAP_SECRET?: string;
 }
 interface RateLimiter { limit(o: { key: string }): Promise<{ success: boolean }> }
 

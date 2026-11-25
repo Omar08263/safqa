@@ -40,6 +40,8 @@ export interface Signals {
   hunterLast?: { at?: string; errors?: number } | null;
   rateHot?: { key: string; count: number }[];
   secrets?: { jwtLen: number; corsWildcard: boolean; adminEmails: number };
+  /** Security agents (security/agents.ts): attack-volume anomaly + patch/issue drafts. */
+  security?: { anomaly: string; perHour: number; base: number; drafts: { key: string; title: string; body: string }[] };
   content?: { products: number; noImage: number; noArabic: number };
   growth?: { new7: number; newPrev7: number; checkouts30: number; paid30: number };
   paused?: Record<string, number>;
@@ -90,6 +92,8 @@ export function diagnose(s: Signals): Finding[] {
   if (s.secrets && s.secrets.jwtLen < 32) f.push({ id: 'jwt_weak', spec: 'amn', sev: 'crit', title: 'مفتاح JWT قصير', fixes: [{ t: 'issue', target: 'jwt_weak', title: 'JWT secret is too short', body: 'Rotate JWT_SECRET to ≥32 random bytes (wrangler secret put JWT_SECRET).' }] });
   if (s.secrets?.corsWildcard) f.push({ id: 'cors_wild', spec: 'amn', sev: 'warn', title: 'CORS مفتوح لأي موقع (*)', fixes: [] });
   if (s.secrets && s.secrets.adminEmails === 0) f.push({ id: 'no_admins', spec: 'amn', sev: 'warn', title: 'مفيش إيميلات أدمن متسجلة', fixes: [] });
+  if (s.security && s.security.anomaly !== 'ok') f.push({ id: 'attack_spike', spec: 'amn', sev: s.security.anomaly === 'crit' ? 'crit' : 'warn', title: `قفزة في محاولات الهجوم (${s.security.perHour}/ساعة مقابل ${s.security.base} عادةً) — الحماية بتصدّ وبتحظر تلقائيًا`, detail: 'Hub ← 🛡️ الأمان', fixes: [] });
+  for (const d of s.security?.drafts ?? []) f.push({ id: `sec_patch:${d.key}`, spec: 'amn', sev: 'info', title: `🩹 اقتراح ترقيع: ${d.title.replace(/^\[security\]\s*/, '')}`, fixes: [{ t: 'issue', target: `sec:${d.key}`, title: d.title, body: d.body }] });
   const hot = (s.rateHot ?? []).filter((r) => r.count >= 200);
   if (hot.length) f.push({ id: 'rate_abuse', spec: 'amn', sev: 'warn', title: `${hot.length} مصدر بيضرب الـ API جامد (أعلى ${hot[0]!.count} طلب)`, detail: hot.slice(0, 3).map((r) => r.key.replace(/:[^:]*$/, ':…')).join(' · '), fixes: [] });
   // 📝 المحتوى

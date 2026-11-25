@@ -33,6 +33,20 @@ export function buildCsp(html: string): string {
   ].join('; ');
 }
 
+/** Subresource Integrity for our own hashed bundles in index.html: if a CDN edge or a
+ *  compromised cache ever served altered JS/CSS, the browser refuses to run it. */
+export function addSri(html: string, read: (path: string) => Buffer | null): string {
+  return html.replace(/<(script|link)\b([^>]*?)\s(src|href)="(\/assets\/[^"]+\.(?:js|css))"([^>]*)>/gi, (tag, el: string, pre: string, attr: string, path: string, post: string) => {
+    if (/\sintegrity=/.test(tag)) return tag;
+    if (el.toLowerCase() === 'link' && !/rel="(stylesheet|modulepreload)"/i.test(tag)) return tag;
+    const buf = read(path);
+    if (!buf) return tag;
+    const integrity = `sha384-${createHash('sha384').update(buf).digest('base64')}`;
+    const cors = /\scrossorigin\b/.test(tag) ? '' : ' crossorigin';
+    return `<${el}${pre} ${attr}="${path}"${post.replace(/\s*\/?$/, '')} integrity="${integrity}"${cors}>`;
+  });
+}
+
 export function cspHeaders(): Plugin {
   let outDir = 'dist';
   return {
@@ -43,7 +57,9 @@ export function cspHeaders(): Plugin {
       const headers = join(outDir, '_headers');
       const index = join(outDir, 'index.html');
       if (!existsSync(headers) || !existsSync(index)) return;
-      const csp = buildCsp(readFileSync(index, 'utf8'));
+      const html = addSri(readFileSync(index, 'utf8'), (p) => { const f = join(outDir, p); return existsSync(f) ? readFileSync(f) : null; });
+      writeFileSync(index, html);
+      const csp = buildCsp(html);
       writeFileSync(headers, readFileSync(headers, 'utf8').replace('__SAFQA_CSP__', csp));
     },
   };

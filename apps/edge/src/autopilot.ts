@@ -11,6 +11,7 @@ import { decidePayment } from './payments';
 import { enqueue, tgEnabled } from './telegram';
 import { cairoDay, type Env, nowIso, parseJ, uid } from './util';
 
+import { SEC_AGENTS, runOne as runSecAgent } from './security/agents';
 export interface OpsAgent { id: string; name: string; emoji: string; role: string; color: string; every: number; crew?: 'ops' | 'owner' }
 /** every = minutes between runs (cron ticks every 10 min). */
 export const OPS_AGENTS: OpsAgent[] = [
@@ -21,6 +22,8 @@ export const OPS_AGENTS: OpsAgent[] = [
   { id: 'khazna', name: 'أمين الخزنة', emoji: '🏦', role: 'مراجعة إيصالات إنستاباي واعتمادها', color: '#10b981', every: 10 },
   { id: 'monasseq', name: 'منسّق', emoji: '🎨', role: 'اختيار عروض اليوم وصياغة الإشعارات', color: '#ec4899', every: 360 },
   { id: 'rawi', name: 'راوي', emoji: '📜', role: 'التقرير اليومي للمالك', color: '#64748b', every: 1440 },
+  // Security team (apps/edge/src/security/agents.ts) — defense-only analysts on the live attack feed.
+  ...SEC_AGENTS.map((a) => ({ ...a, crew: 'ops' as const })),
 ];
 
 export const OPS_RANKS = [
@@ -322,7 +325,7 @@ export async function rawi(env: Env, force = false): Promise<Result> {
   return { ok: true, note: ai ? 'تقرير بالذكاء الاصطناعي' : 'تقرير بالقالب', xp: 2 };
 }
 
-export const RUNNERS: Record<string, (env: Env) => Promise<Result>> = { haris, mizan, kashaf, radar, khazna, monasseq, rawi: (e) => rawi(e) };
+export const RUNNERS: Record<string, (env: Env) => Promise<Result>> = { haris, mizan, kashaf, radar, khazna, monasseq, rawi: (e) => rawi(e), ...Object.fromEntries(SEC_AGENTS.map((a) => [a.id, (e: Env) => runSecAgent(e, a.id)])) };
 
 /** Lets another module (owner-tools) add agents to the crew: they get ranks, XP, the cron and the Hub controls for free. */
 export function registerAgent(a: OpsAgent, run: (env: Env) => Promise<Result>, schedule?: (cairoMinute: number) => boolean) {

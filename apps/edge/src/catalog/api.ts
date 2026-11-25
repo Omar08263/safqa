@@ -1,6 +1,7 @@
 // Safqa v5 catalog API on the Worker: instant search, product + real history + prediction,
 // hot deals (heat), live drops (SSE + polling), votes, coupons, paste-a-link, personalised feed,
 // compare, and the priority recrawl used by the cron (hot/watched first, Keepa-style).
+import { outboundOk, safeFetch } from '../security/outbound';
 import { edgeCacheGet, edgeCachePut } from '../infra/state';
 import { aePoint } from '../infra/budget';
 import type { Env } from '../util';
@@ -353,6 +354,7 @@ export async function submitLink(env: Env, rawUrl: string, userKey: string) {
   let u: URL;
   try { u = new URL(rawUrl.trim()); } catch { return fail(400, 'bad_url', 'الرابط مش مظبوط'); }
   if (!/^https?:$/.test(u.protocol)) fail(400, 'bad_url', 'الرابط لازم يبدأ بـ https');
+  if (!outboundOk(u)) fail(400, 'bad_url', 'الرابط ده مش لمتجر'); // SSRF guard (security/outbound.ts)
   const url = canonicalUrl(u.toString());
   const storeId = storeFromHost(u.hostname) ?? 'user';
   const sid = uid('sub_');
@@ -367,7 +369,7 @@ export async function submitLink(env: Env, rawUrl: string, userKey: string) {
   }
   if (!ex) {
     if (!(await robotsOk(env, u))) { await record('robots', null, 'robots.txt disallows'); return { status: 'robots', message: 'المتجر ده مانع القراءة الآلية للصفحة دي في robots.txt — مش هنقرأها. جرّب إضافة صفقة للمتصفح: بتقرا الصفحة اللي إنت فاتحها بنفسك.' }; }
-    const r = await fetch(url, { headers: { 'user-agent': UA, accept: 'text/html', 'accept-language': 'ar,en;q=0.8' }, redirect: 'follow' }).catch(() => null);
+    const r = await safeFetch(url, { headers: { 'user-agent': UA, accept: 'text/html', 'accept-language': 'ar,en;q=0.8' } });
     if (!r || r.status === 403 || r.status === 429 || r.status === 503) {
       await record('blocked', null, `status ${r?.status ?? 'network'}`);
       return { status: 'blocked', message: storeId === 'amazon-eg' || storeId === 'noon'
