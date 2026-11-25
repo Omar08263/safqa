@@ -40,7 +40,7 @@ export const SYSTEMS: SystemDef[] = [
   },
   {
     id: 'uptime', flag: 'sys_uptime', emoji: '🟢', nameAr: 'نبض صفقة', nameEn: 'Status & uptime',
-    forUsers: 'صفحة حالة علنية بتقول الموقع والتطبيق والـ API شغالين ولا لأ، وسرعتهم، كل 10 دقايق',
+    forUsers: 'صفحة حالة علنية بتقول الموقع والتطبيق والـ API شغالين ولا لأ، وسرعتهم، كل 20 دقيقة',
     oss: { name: 'Upptime', url: 'https://github.com/upptime/upptime', license: 'MIT', what: 'same probes from the Worker cron every 20 min (KV, 7-day history); GitHub Actions version staged in deploy/status/pulse.yml' },
     surfaces: ['web', 'hub', 'edge'], defaultOn: true, statusUrl: '/api/v6/status',
   },

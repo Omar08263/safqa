@@ -34,7 +34,7 @@ export const onRequestGet = async (ctx: { request: Request; env: Env; params: { 
   const title = `${card.title} بـ ${egp(card.price)} — صفقة`;
   const stores = [...new Set(card.offers.map((o) => o.storeAr))];
   const disc = card.listPrice && card.listPrice > card.price ? ` (خصم ${Math.round(((card.listPrice - card.price) / card.listPrice) * 100)}%)` : '';
-  const desc = `أقل سعر دلوقتي ${egp(card.price)}${disc} في ${stores.slice(0, 3).join('، ') || 'متاجر مصر'}${card.low && card.low < card.price ? ` · أقل سعر شفناه ${egp(card.low)}` : ''}. تاريخ السعر الحقيقي وتنبيه لما ينزل.`;
+  const desc = `${card.inStock ? 'أقل سعر دلوقتي' : 'آخر سعر (خلصان دلوقتي)'} ${egp(card.price)}${disc} في ${stores.slice(0, 3).join('، ') || 'متاجر مصر'}${card.low && card.low < card.price ? ` · أقل سعر شفناه ${egp(card.low)}` : ''}. تاريخ السعر الحقيقي وتنبيه لما ينزل.`;
   const prices = card.offers.filter((o) => o.inStock).map((o) => o.price);
   const ld = {
     '@context': 'https://schema.org', '@type': 'Product', name: card.titleEn || card.title, image: card.image ? [card.image] : undefined, url: canonical,
