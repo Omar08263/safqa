@@ -45,6 +45,8 @@ export const allNav: NavItem[] = [
   { to: '/add', ar: 'الصق رابط منتج', en: 'Paste a product link', icon: Link2 },
   { to: '/radar', ar: 'رادار العروض', en: 'Deal radar', icon: Radar },
   { to: '/sources', ar: 'مصادر الأسعار', en: 'Price sources', icon: Database },
+  { to: '/systems', ar: 'أنظمة صفقة 🧩', en: 'Safqa systems', icon: Cpu },
+  { to: '/status', ar: 'نبض صفقة 🟢', en: 'Status', icon: Radar },
   { to: '/features', ar: 'كل المميزات', en: 'All features', icon: Sparkles, key: 'f' },
   { to: '/channels', ar: 'واتساب وتيليجرام', en: 'WhatsApp & Telegram', icon: Send },
   { to: '/agents', ar: 'مقر الوكلاء', en: 'Agents HQ', icon: Cpu, key: 'j' },

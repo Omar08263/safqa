@@ -1,5 +1,6 @@
 // Safqa smart tools: fake-discount radar, price-war detector, cross-store basket optimizer,
 // smart opt-in alerts (quiet hours, digest/instant), and the Egyptian sale-season calendar.
+import { NtfyCard } from '../v6/ntfy';
 import { formatEGP } from '@safqa/shared';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
@@ -154,6 +155,7 @@ function Alerts() {
         <p className="t-meta">{tr('بنرتب النزولات الحقيقية على ذوقك (اللي شفته، دوّرت عليه، أقسامك وماركاتك)، ومن غير تكرار. وقت التوقيت بتوقيت القاهرة.', 'We rank real drops by your taste (viewed, searched, categories, brands), deduplicated; hours are Cairo time.')} {q.data?.telegram ? tr('التوصيل: جوه صفقة + تيليجرام ✓', 'Delivery: in-app + Telegram ✓') : tr('التوصيل: جوه صفقة (اربط تيليجرام من الإعدادات عشان توصلك برّه).', 'Delivery: in-app (link Telegram in settings for push).')} {tr('الإيميل لسه مش متاح على الخطة المجانية.', 'Email is not available on the free stack yet.')}</p>
         <button type="button" onClick={() => save.mutate(p)} className="press rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground">{tr('احفظ', 'Save')}</button>
       </div>
+      <NtfyCard />
     </div>
   );
 }

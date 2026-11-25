@@ -202,6 +202,8 @@ export function Shell({ children }: { children: ReactNode }) {
           <Link to="/terms" className="hover:text-foreground">{tr('قواعد المجتمع', 'Community rules')}</Link>
           <Link to="/live" className="hover:text-foreground">{tr('المجتمع المباشر', 'Live community')}</Link>
           <Link to="/pay" className="hover:text-foreground">{tr('الباقات والدفع', 'Plans & payment')}</Link>
+          <Link to="/status" className="hover:text-foreground">{tr('🟢 حالة الأنظمة', '🟢 Status')}</Link>
+          <Link to="/systems" className="hover:text-foreground">{tr('أنظمة مفتوحة المصدر', 'Open-source systems')}</Link>
           <a href="mailto:rxcc@agentmail.to" className="hover:text-foreground">rxcc@agentmail.to</a>
         </p>
         <p className="pb-6 text-center text-xs text-muted">© 2026 Safqa · {tr('صُنع في مصر', 'Made in Egypt')} 🇪🇬</p>

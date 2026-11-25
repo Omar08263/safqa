@@ -28,7 +28,11 @@ else
 fi
 # Offline-AI catalog index (deploy/ai/embed-catalog.mjs → $ASSETS_DIR/ai): semantic search in the browser.
 if [ -f "$ASSETS_DIR/ai/index.json" ]; then mkdir -p "$OUT/ai" && cp "$ASSETS_DIR/ai/index.json" "$ASSETS_DIR/ai/vecs.bin" "$OUT/ai/"; else echo "ai index: missing (run deploy/ai/embed-catalog.mjs)"; fi
+# 🧬 v6 cross-store twins (static shards from the same index; ~1s with numpy).
+if [ -f "$ASSETS_DIR/ai/index.json" ]; then python3 deploy/ai/twins.py "$ASSETS_DIR/ai" || echo "twins: skipped"; fi
+if [ -d "$ASSETS_DIR/ai/twins" ]; then mkdir -p "$OUT/ai/twins" && cp "$ASSETS_DIR/ai/twins/"*.json "$OUT/ai/twins/"; fi
 # Keep a copy for the next deploy.
 mkdir -p "$ASSETS_DIR" && cp -r "$OUT/demo" "$ASSETS_DIR/" && { [ -d "$OUT/media" ] && cp -r "$OUT/media" "$ASSETS_DIR/" || true; }
-npx -y wrangler@4 pages deploy "$OUT" --project-name "$PROJECT" --branch "$BRANCH" --commit-dirty=true
+# Run from apps/web so wrangler bundles apps/web/functions (v6 share cards on /p/:id).
+( cd apps/web && npx -y wrangler@4 pages deploy "$OUT" --project-name "$PROJECT" --branch "$BRANCH" --commit-dirty=true )
 echo "Live at $SITE"

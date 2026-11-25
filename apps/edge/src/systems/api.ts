@@ -4,6 +4,7 @@ import { fail, str } from '../util';
 import { setFlag, opsLog } from '../autopilot';
 import { SYSTEMS, systemById, systemFlags } from './registry';
 import { registerNtfy } from './ntfy';
+import { cached, storeInfo } from '../catalog/api';
 
 type On = (m: string, path: string, h: (c: any) => unknown) => void;
 
@@ -40,5 +41,15 @@ export function registerSystems(on: On, d: { needAdmin: (c: any) => Promise<stri
     await opsLog(c.env, who, 'system', `${s!.emoji} ${s!.nameAr} ${b.enabled ? 'اتشغّل' : 'اتقفل'}`, { reason: str(b.reason ?? '', 200) }, 'info');
     return { ok: true, items: await health(c.env) };
   });
+  // 🪧 Read-only share card for link previews / rich results (never triggers a recrawl or a write).
+  on('GET', '/api/v6/card/:id', (c) => cached(c.req, 1800, async () => {
+    const id = str(c.p[0], 40);
+    const r = await c.env.DB.prepare('SELECT id,title,title_ar,brand,image,price,list_price,store,url,in_stock,n_offers,offers,low,category,checked_at,updated_at FROM catalog WHERE id=?').bind(id).first<Record<string, any>>();
+    if (!r) return { found: false };
+    let offers: { s: string; p: number; k: number; u: string }[] = [];
+    try { offers = JSON.parse(r.offers || '[]'); } catch { /* */ }
+    return { found: true, id: r.id, title: r.title_ar || r.title, titleEn: r.title, brand: r.brand, image: r.image, price: r.price, listPrice: r.list_price, low: r.low, category: r.category, inStock: Boolean(r.in_stock),
+      checkedAt: r.checked_at ?? r.updated_at, offers: offers.slice(0, 8).map((o) => ({ store: storeInfo(o.s).nameEn, storeAr: storeInfo(o.s).nameAr, price: o.p, inStock: Boolean(o.k), url: o.u })) };
+  }, c.exec));
   registerNtfy(on, d.me);
 }

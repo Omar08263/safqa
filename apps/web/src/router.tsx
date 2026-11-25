@@ -28,6 +28,8 @@ const PlansPage = lz(() => import('./pages/plans'), 'PlansPage');
 const ChannelsPage = lz(() => import('./pages/channels'), 'ChannelsPage');
 const PayPage = lz(() => import('./pages/pay'), 'PayPage');
 const LivePage = lz(() => import('./pages/live'), 'LivePage');
+const StatusPage = lz(() => import('./v6/status'), 'StatusPage');
+const SystemsPage = lz(() => import('./v6/systems'), 'SystemsPage');
 const PrivacyPage = lz(() => import('./pages/legal'), 'PrivacyPage');
 const TermsPage = lz(() => import('./pages/legal'), 'TermsPage');
 const CalendarPage = lz(() => import('./pages/explore'), 'CalendarPage');
@@ -277,6 +279,8 @@ const extraRoutes = [
   simple('/pay', () => <PayPage />),
   simple('/auth/callback', () => <AuthCallback />),
   simple('/live', () => <LivePage />),
+  simple('/status', () => <StatusPage />),
+  simple('/systems', () => <SystemsPage />),
   simple('/privacy', () => <PrivacyPage />),
   simple('/terms', () => <TermsPage />),
 ];

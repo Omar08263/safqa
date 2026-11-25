@@ -22,7 +22,9 @@ node deploy/hf/record-snapshot.mjs "$OUT/demo/snapshot.json"
 python3 deploy/hf/build-media.py "$OUT" || echo "media: skipped (build-media.py failed)"
 # 1) Cloudflare Pages (the real site).
 if [ -n "${CLOUDFLARE_API_TOKEN:-}" ]; then
-  npx -y wrangler@4 pages deploy "$OUT" --project-name "${PAGES_PROJECT:-safqaeg}" --branch main --commit-dirty=true
+  A="$HOME/.safqa/pages-assets/ai"; if [ -f "$A/index.json" ]; then python3 deploy/ai/twins.py "$A" || true; mkdir -p "$OUT/ai/twins" && cp "$A/index.json" "$A/vecs.bin" "$OUT/ai/" && cp "$A/twins/"*.json "$OUT/ai/twins/" 2>/dev/null || true; fi
+  # From apps/web so the v6 Pages Functions (share cards on /p/:id) ship too.
+  ( cd apps/web && npx -y wrangler@4 pages deploy "$OUT" --project-name "${PAGES_PROJECT:-safqaeg}" --branch main --commit-dirty=true )
   mkdir -p "$HOME/.safqa/pages-assets" && cp -r "$OUT/demo" "$HOME/.safqa/pages-assets/" && { [ -d "$OUT/media" ] && cp -r "$OUT/media" "$HOME/.safqa/pages-assets/" || true; }
 else
   echo "pages: skipped (no CLOUDFLARE_API_TOKEN; run: set -a; . ~/.cloudflare_env; set +a)"

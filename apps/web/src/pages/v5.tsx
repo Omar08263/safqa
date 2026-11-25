@@ -13,6 +13,7 @@ import { useSession } from '../lib/session';
 import { useTr } from '../lib/tr';
 import { ago, noteInterest, noteView, useLiveDrops, useV5Deals, useV5Meta, useV5Product, v5, type V5Card } from '../lib/v5';
 import { waLink } from '../components/social';
+import { TwinsCard } from '../v6/twins';
 
 function GridSkeleton({ n = 8 }: { n?: number }) {
   return (
@@ -163,6 +164,7 @@ export function V5ProductPage({ id }: { id: string }) {
           ))}
         </ul>
       </section>
+      <TwinsCard id={p.id} price={offer.priceEgp} stores={p.offers.map((o) => o.store.nameAr)} />
       {p.similar.length ? <section><h2 className="mb-3 text-lg font-bold">{tr('بدائل من نفس القسم', 'Similar picks')}</h2><CardGrid items={p.similar} showVotes={false} /></section> : null}
     </div>
   );
