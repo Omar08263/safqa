@@ -30,6 +30,8 @@ async function deploys(env: Env) {
   ]);
   const checks = await Promise.all(SURFACES.map(async (s) => {
     const t0 = Date.now();
+    // A Worker can't fetch its own workers.dev hostname — check the API from the inside (D1 + KV) instead.
+    if (s.id === 'api') { try { await env.DB.prepare('SELECT 1').first(); await env.KV.get('hub:ping'); return { ...s, ok: true, status: 200, ms: Date.now() - t0 }; } catch (e) { return { ...s, ok: false, status: 500, ms: Date.now() - t0, error: String(e).slice(0, 80) }; } }
     try { const r = await fetch(s.url, { method: 'GET', redirect: 'follow' }); return { ...s, ok: r.ok, status: r.status, ms: Date.now() - t0 }; } catch (e) { return { ...s, ok: false, status: 0, ms: Date.now() - t0, error: String(e).slice(0, 80) }; }
   }));
   const out = {
