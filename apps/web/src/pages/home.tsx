@@ -156,7 +156,7 @@ export function HomePage() {
           <Reveal key={s.l} delay={i * 80}>
             <Spotlight className="glass rounded-3xl p-5">
               <s.icon className="h-6 w-6 text-primary" />
-              <p className="mt-3 text-3xl font-bold"><CountUp value={s.v} format={(n) => (s.pct ? `${n.toFixed(1)}%` : Math.round(n).toLocaleString(locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en'))} /></p>
+              {s.v > 0 ? <p className="mt-3 text-3xl font-bold"><CountUp value={s.v} format={(n) => (s.pct ? `${n.toFixed(1)}%` : Math.round(n).toLocaleString(locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en'))} /></p> : <p className="mt-3 flex h-9 items-center text-lg font-bold text-muted">{tr('لسه بنحسب ⏳', 'Calculating ⏳')}</p>}
               <p className="text-sm text-muted">{s.l}</p>
             </Spotlight>
           </Reveal>

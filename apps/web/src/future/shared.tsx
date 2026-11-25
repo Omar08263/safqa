@@ -1,3 +1,4 @@
+import { GradientText } from '../fx/fx';
 import { Link } from '@tanstack/react-router';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Hit } from '../ai/brain';
@@ -44,7 +45,7 @@ export function FutureHero({ emoji, kicker, title, lede, colors, children }: { e
       <div className="relative flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-2xl">
           <p className="text-xs font-bold tracking-[0.25em] text-white/60">{kicker}</p>
-          <h1 className="mt-2 flex items-center gap-3 text-3xl font-extrabold sm:text-4xl"><span className="float-y inline-block text-4xl">{emoji}</span><span className="shimmer-text">{title}</span></h1>
+          <h1 className="mt-2 flex items-center gap-3 text-3xl font-extrabold sm:text-4xl"><span className="float-y inline-block text-4xl">{emoji}</span><GradientText text={title} gradient="shimmer-text" /></h1>
           <p className="mt-3 leading-7 text-white/80">{lede}</p>
         </div>
         {children}

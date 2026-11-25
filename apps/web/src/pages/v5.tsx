@@ -336,7 +336,7 @@ export function SourcesPage() {
       {m ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[[m.products ?? 0, tr('منتج', 'products')], [m.offers ?? 0, tr('عرض سعر', 'offers')], [m.stores.filter((s) => s.products > 0).length, tr('متجر', 'stores')], [m.drops24, tr('نزول آخر 24 ساعة', 'drops (24h)')]].map(([n, l]) => (
-            <div key={String(l)} className="rounded-3xl border border-border bg-card p-4 text-center"><p className="num text-3xl font-black"><CountUp value={Number(n)} /></p><p className="t-meta">{l}</p></div>
+            <div key={String(l)} className="rounded-3xl border border-border bg-card p-4 text-center">{Number(n) > 0 ? <p className="num text-3xl font-black"><CountUp value={Number(n)} /></p> : <p className="py-1.5 text-lg font-bold text-muted">{tr('هادي لسه 😴', 'Quiet so far 😴')}</p>}<p className="t-meta">{l}</p></div>
           ))}
         </div>
       ) : meta.isError ? <Offline /> : <Skeleton className="h-24 w-full" />}
@@ -344,7 +344,7 @@ export function SourcesPage() {
         {(m?.stores ?? []).map((s) => (
           <li key={s.slug} className="rounded-3xl border border-border bg-card p-4">
             <p className="font-bold">{ar ? s.nameAr : s.nameEn} <span className="t-meta">· {s.domain}</span></p>
-            <p className="num mt-1 text-2xl font-black">{s.products.toLocaleString('en')}</p>
+            {s.products > 0 ? <p className="num mt-1 text-2xl font-black">{s.products.toLocaleString('en')}</p> : <p className="mt-1 text-base font-bold text-muted">{s.slug === 'elaraby' ? tr('⏸️ متوقف: الموقع رافض بوتات الأسعار', '⏸️ Paused: the store refuses price bots') : tr('⏳ بيتجهز — المنتجات بتدخل على مراحل', '⏳ Getting ready, products arrive in batches')}</p>}
             <p className="t-meta">{s.kind === 'feed' ? tr('فيد المتجر الرسمي العام (Shopify)', 'Store’s public feed (Shopify)') : tr('Sitemap + بيانات schema.org اللي المتجر بينشرها', 'Sitemap + schema.org data the store publishes')}{s.lastCrawl ? ` · ${ago(s.lastCrawl, ar)}` : ''}</p>
           </li>
         ))}

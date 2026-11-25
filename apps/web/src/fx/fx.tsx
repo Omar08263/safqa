@@ -89,6 +89,8 @@ export function CountUp({
       raf = requestAnimationFrame(tick);
     };
     const node = ref.current;
+    // Never leave a bare «0» on screen: if it isn't scrolled into view soon, just show the real number.
+    const settle = window.setTimeout(() => { if (!started) { started = true; setShown(value); } }, 1800);
     const io = new IntersectionObserver((entries) => {
       if (!started && entries.some((e) => e.isIntersecting)) {
         started = true;
@@ -99,6 +101,7 @@ export function CountUp({
     return () => {
       io.disconnect();
       cancelAnimationFrame(raf);
+      window.clearTimeout(settle);
     };
   }, [value, duration]);
   return (
@@ -288,10 +291,24 @@ export function Logo({ size = 40, withText = true, sub }: { size?: number; withT
       <img src="/brand/safqa-mark.svg" width={size} height={size} alt="" className="logo-mark drop-shadow-md" />
       {withText ? (
         <span className="leading-tight">
-          <span className="block text-lg font-bold tracking-tight">صفقة <span className="hidden text-xs font-semibold tracking-[0.3em] text-primary sm:inline">SAFQA</span></span>
+          <span className="block text-lg font-bold tracking-tight"><span lang="ar">صفقة</span> <span className="hidden text-xs font-semibold tracking-[0.3em] text-primary sm:inline">SAFQA</span></span>
           {sub ? <span className="hidden text-[11px] font-normal text-muted sm:block">{sub}</span> : null}
         </span>
       ) : null}
+    </span>
+  );
+}
+
+/**
+ * Gradient headline text. Emoji can't be painted by `background-clip: text` (they turn into solid
+ * coloured squares), so emoji runs are rendered outside the gradient in their own colours.
+ */
+const EMOJI_RUN = /(\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|[\u{1F3FB}-\u{1F3FF}])*)/u;
+export function GradientText({ text, className, gradient = 'text-gradient' }: { text: string; className?: string; gradient?: string }) {
+  const parts = text.split(EMOJI_RUN).filter(Boolean);
+  return (
+    <span className={className}>
+      {parts.map((part, i) => (EMOJI_RUN.test(part) ? <span key={i} className="emoji-plain" aria-hidden="true">{part}</span> : <span key={i} className={gradient}>{part}</span>))}
     </span>
   );
 }
@@ -305,7 +322,7 @@ export function PageHeader({ kicker, title, lede, icon, children }: { kicker?: s
           {kicker ? <p className="text-sm font-semibold text-primary">{kicker}</p> : null}
           <h1 className="mt-1 flex items-center gap-3 text-3xl font-bold leading-tight sm:text-4xl">
             {icon ? <span className="section-icon grid h-12 w-12 flex-none place-items-center rounded-2xl">{icon}</span> : null}
-            <span className="text-gradient">{title}</span>
+            <GradientText text={title} />
           </h1>
           {lede ? <p className="mt-3 leading-7 text-muted">{lede}</p> : null}
         </div>

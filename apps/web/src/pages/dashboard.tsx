@@ -44,13 +44,14 @@ export function DashboardPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          { icon: PiggyBank, l: tr('وفّرت', 'Saved'), v: saved, f: (n: number) => formatEGP(Math.round(n), locale), c: 'text-palm', to: '/savings' },
-          { icon: Eye, l: tr('بتراقب', 'Watching'), v: ctx.watchCount, c: '', to: '/watchlist' },
-          { icon: Layers, l: tr('مجموعات', 'Collections'), v: ctx.collections.length, c: '', to: '/collections' },
-          { icon: Flame, l: tr('أيام ورا بعض', 'Day streak'), v: days, c: 'text-primary', to: '/achievements' },
+          { icon: PiggyBank, l: tr('وفّرت', 'Saved'), v: saved, f: (n: number) => formatEGP(Math.round(n), locale), c: 'text-palm', to: '/savings', e: tr('سجّل أول شروة ✍️', 'Log a purchase ✍️') },
+          { icon: Eye, l: tr('بتراقب', 'Watching'), v: ctx.watchCount, c: '', to: '/watchlist', e: tr('راقب أول منتج 👀', 'Watch a product 👀') },
+          { icon: Layers, l: tr('مجموعات', 'Collections'), v: ctx.collections.length, c: '', to: '/collections', e: tr('اعمل أول مجموعة 🗂️', 'Start a collection 🗂️') },
+          { icon: Flame, l: tr('أيام ورا بعض', 'Day streak'), v: days, c: 'text-primary', to: '/achievements', e: tr('ابدأ النهارده 🔥', 'Start today 🔥') },
         ].map((s, i) => (
           <Reveal key={s.l} delay={i * 70}>
-            <Link to={s.to as '/'}><Card className="lift"><s.icon className="h-5 w-5 text-primary" /><p className={`mt-2 text-3xl font-bold ${s.c}`}><CountUp value={s.v} format={s.f} /></p><p className="text-sm text-muted">{s.l}</p></Card></Link>
+            {/* An empty stat invites the first action instead of showing a bare «0». */}
+            <Link to={s.to as '/'}><Card className="lift"><s.icon className="h-5 w-5 text-primary" />{s.v > 0 ? <p className={`mt-2 text-3xl font-bold leading-tight ${s.c}`}><CountUp value={s.v} format={s.f} /></p> : <p className="mt-2 flex min-h-[2.25rem] items-center text-base font-bold text-primary">{s.e}</p>}<p className="mt-1 text-sm text-muted">{s.l}</p></Card></Link>
           </Reveal>
         ))}
       </div>

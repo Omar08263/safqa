@@ -65,8 +65,8 @@ export function SavingsPage() {
       </PageHeader>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 [&>*]:min-w-0">
-        <Card><p className="text-sm text-muted">{tr('إجمالي التوفير', 'Total saved')}</p><p className="mt-1 text-3xl font-bold text-palm"><CountUp value={saved} format={(n) => m(n)} /></p></Card>
-        <Card><p className="text-sm text-muted">{tr('صرفت الشهر ده', 'Spent this month')}</p><p className="mt-1 text-3xl font-bold"><CountUp value={spentMonth} format={(n) => m(n)} /></p></Card>
+        <Card><p className="text-sm text-muted">{tr('إجمالي التوفير', 'Total saved')}</p>{saved > 0 ? <p className="mt-1 text-3xl font-bold text-palm"><CountUp value={saved} format={(n) => m(n)} /></p> : <p className="mt-1 text-lg font-bold text-primary">{tr('سجّل أول شروة تحت ✍️', 'Log your first purchase below ✍️')}</p>}</Card>
+        <Card><p className="text-sm text-muted">{tr('صرفت الشهر ده', 'Spent this month')}</p>{spentMonth > 0 ? <p className="mt-1 text-3xl font-bold"><CountUp value={spentMonth} format={(n) => m(n)} /></p> : <p className="mt-1 text-lg font-bold text-muted">{tr('لسه مفيش 🙂', 'Nothing yet 🙂')}</p>}</Card>
         <Card><p className="text-sm text-muted">{tr('متبقي من الميزانية', 'Budget left')}</p><p className={`mt-1 text-3xl font-bold ${left < 0 ? 'text-destructive' : ''}`}>{m(left)}</p></Card>
         <Card className="flex items-center gap-3"><ScoreRing score={goalPct} /><div><p className="text-sm text-muted">{tr('هدف التوفير', 'Savings goal')}</p><p className="num font-bold">{m(budget.goalEgp)}</p></div></Card>
       </div>

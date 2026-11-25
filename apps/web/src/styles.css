@@ -402,4 +402,6 @@ nav a[data-section][aria-current="page"] { background: var(--accent-soft); color
 @media (prefers-reduced-motion: reduce) { .price-flip, .ticker-flash, .dna-row, .since-viewed-new { animation: none !important; } }
 
 /* Cards with corner badges reserve a top band so badges never sit on the product photo (QA v6). */
-.media-tile.has-badges > img { padding: 17% 7% 6%; }
+.media-tile.has-badges > img { padding: 22% 8% 6%; }
+/* Emoji next to gradient headlines keep their own colours (never a clipped gradient block). */
+.emoji-plain { -webkit-text-fill-color: initial; color: initial; background: none; }

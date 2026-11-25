@@ -80,9 +80,9 @@ export async function installDemoApi(snapshotUrl: string): Promise<void> {
     if (url.origin !== window.location.origin || !url.pathname.startsWith('/api/')) return realFetch(input, init);
     return (await getDemo())(input, init);
   };
-  // Warm it once the page is idle (offline fallback + demo account).
-  const idle = (window as unknown as { requestIdleCallback?: (f: () => void) => void }).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 1500));
-  idle(() => void getDemo().catch(() => null));
+  // Warm it well after the page has loaded (offline fallback + demo account), never competing with LCP.
+  const warm = () => setTimeout(() => void getDemo().catch(() => null), 8000);
+  if (document.readyState === 'complete') warm(); else window.addEventListener('load', warm, { once: true });
 }
 
 function buildDemo(snap: Snapshot, realFetch: typeof window.fetch): typeof window.fetch {

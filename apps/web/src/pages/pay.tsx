@@ -7,6 +7,8 @@ import { compressImage, edge, EdgeError, edgeUp, type EdgeTier, type PayInfo, ty
 import { useSession } from '../lib/session';
 import { useTr } from '../lib/tr';
 
+const SUPPORT_EN: Record<string, string> = { free: 'Community', silver: 'Within 48 hours', gold: 'Within 24 hours', diamond: 'Same day' };
+
 const STATUS: Record<Payment['status'], [string, string]> = {
   awaiting: ['مستني التحويل', 'bg-slate-500/15 text-slate-500'],
   pending: ['بيتراجع ⏳', 'bg-amber-500/15 text-amber-600'],
@@ -94,10 +96,10 @@ export function PayPage() {
         {tiers.map((x) => (
           <button key={x.id} type="button" disabled={x.price === 0} onClick={() => { setTier(x.id); setPayment(null); setCodeMsg(null); }} className={`press glass rounded-3xl p-5 text-start transition ${tier === x.id ? 'ring-2 ring-primary' : ''} ${x.price === 0 ? 'opacity-70' : ''}`} style={{ borderTop: `4px solid ${x.color}` }}>
             <div className="text-3xl">{x.emoji}</div>
-            <p className="mt-1 text-lg font-extrabold">{x.ar}</p>
+            <p className="mt-1 text-lg font-extrabold">{tr(x.ar, x.en || x.ar)}</p>
             <p className="text-2xl font-black">{x.price ? `${x.price} ج` : tr('ببلاش', 'Free')}<span className="text-sm font-normal text-muted">{x.price ? tr(' / شهر', ' / mo') : ''}</span></p>
-            <ul className="t-meta mt-2 space-y-1">{x.perks.map((p) => <li key={p}>• {p}</li>)}</ul>
-            <p className="t-meta mt-2">🛟 {tr('الدعم:', 'Support:')} {x.support}</p>
+            <ul className="t-meta mt-2 space-y-1" lang="ar">{x.perks.map((p) => <li key={p}>• {p}</li>)}</ul>
+            <p className="t-meta mt-2">🛟 {tr('الدعم:', 'Support:')} {tr(x.support, SUPPORT_EN[x.id] ?? x.support)}</p>
           </button>
         ))}
       </div>

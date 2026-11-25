@@ -13,6 +13,7 @@ import { downloadFile } from '../lib/local';
 import { usePrefs } from '../lib/prefs';
 import { useSession } from '../lib/session';
 import { useTr } from '../lib/tr';
+import { ago, useV5Meta } from '../lib/v5';
 
 const tips: Record<string, [string, string][]> = {
   'white-friday': [
@@ -90,7 +91,7 @@ export function CategoriesPage() {
                   <div className="relative h-36" style={{ background: `linear-gradient(135deg, ${v.from}, ${v.to})` }}><v.icon className="float absolute inset-0 m-auto h-16 w-16 text-white" strokeWidth={1.3} /></div>
                   <div className="p-4">
                     <h2 className="text-lg font-bold">{localized(locale, { ar: c.nameAr, en: c.nameEn })}</h2>
-                    <p className="mt-1 text-sm text-muted">{items.length} {tr('منتج', 'products')} · {tr('من', 'from')} <span className="num">{formatEGP(low, locale)}</span> · {tr('متوسط التقييم', 'avg score')} <span className="num">{avg.toFixed(0)}</span></p>
+                    {items.length ? <p className="mt-1 text-sm text-muted">{items.length} {tr('منتج', 'products')} · {tr('من', 'from')} <span className="num">{formatEGP(low, locale)}</span> · {tr('متوسط التقييم', 'avg score')} <span className="num">{avg.toFixed(0)}</span></p> : <p className="mt-1 text-sm text-muted">⏳ {tr('لسه بنجمع منتجات القسم ده', 'Products for this category are on the way')}</p>}
                   </div>
                 </Spotlight>
               </Link>
@@ -112,45 +113,34 @@ function useAllDetails() {
 }
 
 export function StoresPage() {
+  // Live catalog only (v5 /api/v5/meta): every store Safqa really reads today, honest about the ones paused.
   const tr = useTr();
-  const { locale, t } = usePrefs();
-  const { client } = useSession();
-  const stores = useQuery({ queryKey: ['stores'], queryFn: () => client.stores() });
-  const { details } = useAllDetails();
-  const offers = details.flatMap((d) => d.offers.map((o) => ({ ...o, product: d })));
-  const rows = (stores.data?.items ?? []).map((s) => {
-    const mine = offers.filter((o) => o.store.slug === s.slug);
-    const cheapest = mine.filter((o) => o.condition === 'new' && Math.min(...o.product.offers.filter((x) => x.condition === 'new').map((x) => x.priceEgp)) === o.priceEgp).length;
-    return {
-      s,
-      count: mine.length,
-      avgScore: mine.length ? mine.reduce((a, o) => a + o.dealScore, 0) / mine.length : 0,
-      fake: mine.filter((o) => o.fakeDiscount).length,
-      stock: mine.length ? (mine.filter((o) => o.inStock).length / mine.length) * 100 : 0,
-      cheapest,
-    };
-  }).sort((a, b) => b.avgScore - a.avgScore);
+  const { locale } = usePrefs();
+  const meta = useV5Meta();
+  const ar = locale === 'ar';
+  const rows = [...(meta.data?.stores ?? [])].sort((a, b) => b.products - a.products);
+  const total = rows.reduce((n, s) => n + s.products, 0);
   return (
     <div>
-      <PageHeader icon={<Store className="h-6 w-6" />} title={tr('مقارنة المتاجر', 'Store comparison')} lede={tr('مين المتجر اللي بيدّي أحسن صفقات؟ ومين خصوماته مشبوهة أكتر؟ محسوبة من كل العروض اللي صفقة متابعاها.', 'Which store gives the best deals, and whose discounts are most suspicious? Computed from every offer Safqa tracks.')} />
-      <div className="overflow-x-auto rounded-3xl border border-border bg-card">
-        <table className="w-full min-w-[720px] text-sm">
-          <thead className="bg-accent/60 text-muted"><tr>{[tr('المتجر', 'Store'), tr('العروض', 'Offers'), tr('متوسط التقييم', 'Avg score'), tr('الأرخص في', 'Cheapest on'), tr('خصومات مشبوهة', 'Suspicious'), tr('التوفر', 'In stock'), tr('حالة الربط', 'Adapter')].map((h) => <th key={h} className="p-3 text-start font-medium">{h}</th>)}</tr></thead>
-          <tbody>
-            {rows.map((r, i) => (
-              <tr key={r.s.slug} className="border-t border-border">
-                <td className="p-3 font-semibold">{i === 0 && r.count ? <Trophy className="me-1 inline h-4 w-4 text-primary" /> : null}<Link to="/search" search={{ store: r.s.slug }} className="hover:text-primary">{localized(locale, { ar: r.s.nameAr, en: r.s.nameEn })}</Link></td>
-                <td className="num p-3">{r.count}</td>
-                <td className="p-3"><div className="flex items-center gap-2"><div className="h-2 w-20 overflow-hidden rounded-full bg-accent"><div className="h-full rounded-full bg-[var(--palm)]" style={{ width: `${r.avgScore}%` }} /></div><span className="num">{r.avgScore.toFixed(0)}</span></div></td>
-                <td className="num p-3">{r.cheapest} {tr('منتج', 'items')}</td>
-                <td className={`num p-3 ${r.fake ? 'font-bold text-destructive' : ''}`}>{r.fake}</td>
-                <td className="num p-3">{r.count ? `${r.stock.toFixed(0)}%` : '—'}</td>
-                <td className="p-3 text-xs text-muted">{t(`status.${r.s.adapterStatus}`)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <PageHeader icon={<Store className="h-6 w-6" />} title={tr('مقارنة المتاجر', 'Store comparison')} lede={tr('كل متجر صفقة بتقرا أسعاره فعلًا النهارده: عدد المنتجات، مصدر البيانات، وآخر فحص. أمازون ونون بالرابط اللي تلزقه بس.', 'Every store Safqa really reads today: products, data source and last check. Amazon and noon only via links you paste.')} />
+      {meta.isPending ? <div className="skeleton h-64 w-full rounded-3xl" /> : (
+        <div className="overflow-x-auto rounded-3xl border border-border bg-card">
+          <table className="w-full min-w-[640px] text-sm">
+            <thead className="bg-accent/60 text-muted"><tr>{[tr('المتجر', 'Store'), tr('المنتجات', 'Products'), tr('الحصة', 'Share'), tr('المصدر', 'Source'), tr('آخر فحص', 'Last check')].map((h) => <th key={h} className="p-3 text-start font-medium">{h}</th>)}</tr></thead>
+            <tbody>
+              {rows.map((s, i) => (
+                <tr key={s.slug} className="border-t border-border">
+                  <td className="p-3 font-semibold">{i === 0 && s.products ? <Trophy className="me-1 inline h-4 w-4 text-primary" /> : null}<Link to="/search" search={{ store: s.slug } as never} className="hover:text-primary">{ar ? s.nameAr : s.nameEn}</Link> <span className="t-meta">· {s.domain}</span></td>
+                  <td className="p-3">{s.products > 0 ? <span className="num font-bold">{s.products.toLocaleString('en')}</span> : <span className="text-muted">{s.slug === 'elaraby' ? tr('⏸️ متوقف (رافض البوتات)', '⏸️ Paused (refuses bots)') : tr('⏳ بيتجهز', '⏳ Getting ready')}</span>}</td>
+                  <td className="p-3">{s.products > 0 && total ? <div className="flex items-center gap-2"><div className="h-2 w-20 overflow-hidden rounded-full bg-accent"><div className="h-full rounded-full bg-[var(--palm)]" style={{ width: `${Math.max(3, Math.round((s.products / total) * 100))}%` }} /></div><span className="num">{Math.round((s.products / total) * 100)}%</span></div> : <span className="text-muted">—</span>}</td>
+                  <td className="p-3 text-xs text-muted">{s.kind === 'feed' ? tr('فيد المتجر العام', 'Public store feed') : tr('Sitemap + schema.org', 'Sitemap + schema.org')}</td>
+                  <td className="p-3 text-xs text-muted">{s.lastCrawl ? ago(s.lastCrawl, ar) : '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
@@ -184,7 +174,7 @@ export function InsightsPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card><p className="text-sm text-muted">{tr('توصية: اشتري دلوقتي', 'Advice: buy now')}</p><p className="mt-1 text-3xl font-bold text-palm"><CountUp value={buyNow} /></p></Card>
         <Card><p className="text-sm text-muted">{tr('توصية: استنى', 'Advice: wait')}</p><p className="mt-1 text-3xl font-bold text-primary"><CountUp value={wait} /></p></Card>
-        <Card><p className="text-sm text-muted">{tr('عروض مشبوهة', 'Suspicious offers')}</p><p className="mt-1 text-3xl font-bold text-destructive"><CountUp value={fake} /></p></Card>
+        <Card><p className="text-sm text-muted">{tr('عروض مشبوهة', 'Suspicious offers')}</p>{fake > 0 ? <p className="mt-1 text-3xl font-bold text-destructive"><CountUp value={fake} /></p> : <p className="mt-1 text-2xl font-bold text-palm">{tr('مفيش ✓', 'None ✓')}</p>}</Card>
         <Card><p className="text-sm text-muted">{tr('نسبة المشبوه', 'Suspicious rate')}</p><p className="mt-1 text-3xl font-bold"><CountUp value={totalOffers ? (fake / totalOffers) * 100 : 0} format={(n) => `${n.toFixed(1)}%`} /></p></Card>
       </div>
       <div className="grid gap-6 lg:grid-cols-2 [&>*]:min-w-0">

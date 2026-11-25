@@ -38,7 +38,7 @@ export function HomeV5() {
           <Reveal key={s.l} delay={i * 80}>
             <Spotlight className="glass rounded-3xl p-5">
               <s.icon className="h-6 w-6 text-primary" />
-              <p className="num mt-3 text-3xl font-bold"><CountUp value={s.v} format={fmt} /></p>
+              {!m ? <div className="skeleton mt-3 h-9 w-24 rounded-xl" /> : s.v > 0 ? <p className="num mt-3 text-3xl font-bold"><CountUp value={s.v} format={fmt} /></p> : <p className="mt-3 flex h-9 items-center text-lg font-bold text-muted">{tr('هادي لسه 😴', 'Quiet so far 😴')}</p>}
               <p className="text-sm text-muted">{s.l}</p>
             </Spotlight>
           </Reveal>

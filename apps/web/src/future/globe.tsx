@@ -1,3 +1,4 @@
+import { useTr } from '../lib/tr';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
@@ -22,6 +23,7 @@ async function loadDeals(): Promise<Deal[]> {
 }
 
 export function GlobePage() {
+  const tr = useTr();
   const deals = useQuery({ queryKey: ['globe-deals'], queryFn: loadDeals, staleTime: 5 * 60_000 });
   const canvas = useRef<HTMLCanvasElement | null>(null);
   const [sel, setSel] = useState<Deal | null>(null);
@@ -96,15 +98,15 @@ export function GlobePage() {
   return (
     <Feature flag="deal_globe">
       <div className="mx-auto max-w-6xl">
-        <FutureHero emoji="🌍" kicker="3D DEAL GLOBE" title="كرة العروض" lede="كل نقطة منوّرة = صفقة حقيقية دلوقتي في متجر مصري. الكبيرة اللي بتنبض خصمها كبير. لفّها بإيدك ودوس على أي نقطة." colors={['#10b981', '#f5b544', '#0ea5e9']} />
+        <FutureHero emoji="🌍" kicker="3D DEAL GLOBE" title={tr('كرة العروض', 'Deal globe')} lede={tr('كل نقطة منوّرة = صفقة حقيقية دلوقتي في متجر مصري. الكبيرة اللي بتنبض خصمها كبير. لفّها بإيدك ودوس على أي نقطة.', 'Every glowing dot is a real deal in an Egyptian store right now. Big pulsing dots have big discounts. Spin it and tap any dot.')} colors={['#10b981', '#f5b544', '#0ea5e9']} />
         <div className="relative overflow-hidden rounded-[2rem] bg-[#030712]">
-          <canvas ref={canvas} className="h-[62vh] min-h-[380px] w-full touch-none cursor-grab active:cursor-grabbing" aria-label="كرة العروض ثلاثية الأبعاد"
+          <canvas ref={canvas} className="h-[62vh] min-h-[380px] w-full touch-none cursor-grab active:cursor-grabbing" aria-label={tr('كرة العروض ثلاثية الأبعاد', '3D deal globe')}
             onPointerDown={(e) => { const r = rot.current; r.drag = true; r.lx = e.clientX; r.ly = e.clientY; r.moved = 0; (e.target as HTMLElement).setPointerCapture(e.pointerId); }}
             onPointerMove={(e) => { const r = rot.current; if (r.drag) { const dx = e.clientX - r.lx, dy = e.clientY - r.ly; r.y += dx * 0.006; r.x += dy * 0.006; r.vy = dx * 0.0008; r.vx = dy * 0.0008; r.lx = e.clientX; r.ly = e.clientY; r.moved += Math.abs(dx) + Math.abs(dy); } else { const h = nearest(e); if (h?.id !== hover?.id) setHover(h); } }}
             onPointerUp={(e) => { const r = rot.current; r.drag = false; if (r.moved < 6) { const h = nearest(e); if (h) { setSel(h); play('sparkle'); haptic('light'); sparkle(e.clientX, e.clientY); } } }}
           />
-          {deals.isLoading && <p className="absolute inset-0 grid place-items-center text-white/70">🌍 بنجمع عروض النهارده…</p>}
-          <div className="pointer-events-none absolute start-4 top-4 flex flex-wrap gap-2 text-[11px] text-white/80">{Object.entries({ phones: 'موبايلات', laptops: 'لابتوب', audio: 'صوتيات', tvs: 'شاشات', appliances: 'أجهزة منزلية', gaming: 'ألعاب' }).map(([k, v]) => <span key={k} className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 backdrop-blur"><i className="h-2 w-2 rounded-full" style={{ background: CAT_COLORS[k] }} />{v}</span>)}</div>
+          {deals.isLoading && <p className="absolute inset-0 grid place-items-center text-white/70">🌍 {tr('بنجمع عروض النهارده…', 'Collecting today’s deals…')}</p>}
+          <div className="pointer-events-none absolute start-4 top-4 flex flex-wrap gap-2 text-[11px] text-white/80">{Object.entries({ phones: tr('موبايلات', 'Phones'), laptops: tr('لابتوب', 'Laptops'), audio: tr('صوتيات', 'Audio'), tvs: tr('شاشات', 'TVs'), appliances: tr('أجهزة منزلية', 'Appliances'), gaming: tr('ألعاب', 'Gaming') }).map(([k, v]) => <span key={k} className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 backdrop-blur"><i className="h-2 w-2 rounded-full" style={{ background: CAT_COLORS[k] }} />{v}</span>)}</div>
           {(sel ?? hover) && (
             <Link to={(sel ?? hover)!.u as '/'} className="glass-deep spring-in absolute inset-x-4 bottom-4 flex items-center gap-3 rounded-3xl p-3 text-white sm:inset-x-auto sm:end-4 sm:w-96" key={(sel ?? hover)!.id}>
               {(sel ?? hover)!.i ? <img src={(sel ?? hover)!.i!} alt="" className="h-16 w-16 rounded-2xl bg-white object-contain p-1" referrerPolicy="no-referrer" /> : <span className="grid h-16 w-16 place-items-center rounded-2xl bg-white/10 text-2xl">🛍️</span>}
@@ -113,7 +115,7 @@ export function GlobePage() {
             </Link>
           )}
         </div>
-        <p className="mt-2 text-center text-xs text-muted">{deals.data?.length ?? 0} صفقة من كتالوج صفقة متعدد المتاجر · بتتحدّث تلقائيًا</p>
+        <p className="mt-2 text-center text-xs text-muted">{deals.data?.length ? tr(`${deals.data.length} صفقة من كتالوج صفقة متعدد المتاجر · بتتحدّث تلقائيًا`, `${deals.data.length} deals from Safqa’s multi-store catalog · updates automatically`) : tr('العروض بتتحمّل…', 'Deals are loading…')}</p>
       </div>
     </Feature>
   );

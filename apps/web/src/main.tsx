@@ -1,6 +1,7 @@
 import './lib/admin-bounce';
 import './lib/clean-url';
 import './lib/device';
+import { startEarlyProduct } from './lib/early';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from '@tanstack/react-router';
 import { StrictMode } from 'react';
@@ -17,6 +18,8 @@ import './styles-v5.css';
 import { installPremiumFx } from './fx/premium';
 import { installRemote } from './lib/remote';
 import { installTapSounds } from './lib/sound';
+
+startEarlyProduct(window.location.pathname);
 
 // Must run before the router is created: Google returns /auth/callback#id_token=...
 captureGoogleRedirectFromLocation();

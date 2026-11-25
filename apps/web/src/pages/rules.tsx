@@ -47,8 +47,8 @@ export function RulesPage() {
                         <span className="num grid h-10 w-12 flex-none place-items-center rounded-xl bg-card font-bold text-primary">{r.id}</span>
                         <div className="flex-1">
                           <p className="font-semibold">{locale === 'ar' ? r.ar : r.en}</p>
-                          <p className="mt-0.5 text-sm text-muted">{r.detail}</p>
-                          <p className="mt-1 text-[11px] text-muted">{tr('الخطورة', 'Severity')}: <span className="num font-bold">{r.severity}</span> {tr('نقطة', 'pts')} · {tr('بيطبّقها', 'Enforced by')} <Link to="/agents/$id" params={{ id: r.agent }} className="font-semibold text-primary">{a?.name}</Link></p>
+                          {locale === 'ar' ? <p className="mt-0.5 text-sm text-muted">{r.detail}</p> : null}
+                          <p className="mt-1 text-[11px] text-muted">{tr('الخطورة', 'Severity')}: <span className="num font-bold">{r.severity}</span> {tr('نقطة', 'pts')} · {tr('بيطبّقها', 'Enforced by')} <Link to="/agents/$id" params={{ id: r.agent }} className="font-semibold text-primary">{locale === 'ar' ? a?.name : a?.nameEn}</Link></p>
                         </div>
                         {a ? <AgentAvatar agent={a} size={40} /> : null}
                       </div>

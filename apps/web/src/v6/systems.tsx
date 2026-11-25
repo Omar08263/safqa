@@ -7,6 +7,13 @@ import { usePrefs } from '../lib/prefs';
 import { useTr } from '../lib/tr';
 
 interface Sys { id: string; emoji: string; nameAr: string; nameEn: string; forUsers: string; oss: { name: string; url: string; license: string }; surfaces: string[]; on: boolean }
+const FOR_EN: Record<string, string> = {
+  ntfy: 'Price-drop alerts reach your phone instantly without sharing your number or email, on a private channel just for you.',
+  twins: 'Finds the exact same product in other stores even when it is named differently, and tells you which is cheaper.',
+  seo: 'Product links shared on WhatsApp or Facebook show the real photo and price, and Google can show the price in results.',
+  uptime: 'A public status page showing whether the site, app and API are up, and how fast, every 20 minutes.',
+  quality: 'Checks daily that the site is fast and accessible for everyone (blind users, small screens, slow internet) and flags breakages.',
+};
 const LINKS: Record<string, { to: string; ar: string; en: string }> = {
   ntfy: { to: '/smart', ar: 'فعّل الجرس من «التنبيهات الذكية»', en: 'Turn on in Smart alerts' },
   uptime: { to: '/status', ar: 'شوف صفحة الحالة', en: 'Open status page' },
@@ -25,7 +32,7 @@ export function SystemsPage() {
           {(q.data?.items ?? []).map((s) => (
             <li key={s.id} className="rounded-3xl border border-border bg-card p-4">
               <p className="flex items-center justify-between gap-2 text-lg font-bold"><span>{s.emoji} {locale === 'ar' ? s.nameAr : s.nameEn}</span><span className={`rounded-full px-2 py-0.5 text-xs font-bold ${s.on ? 'bg-palm/15 text-palm' : 'bg-accent text-muted'}`}>{s.on ? tr('شغّال', 'On') : tr('متوقف', 'Off')}</span></p>
-              <p className="mt-1 text-sm">{s.forUsers}</p>
+              <p className="mt-1 text-sm">{locale === 'ar' ? s.forUsers : FOR_EN[s.id] ?? s.forUsers}</p>
               <p className="t-meta mt-2">{tr('مبني على فكرة', 'Built on')}: <a href={s.oss.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-primary">{s.oss.name}</a> · {s.oss.license}</p>
               {LINKS[s.id] ? <Link to={LINKS[s.id]!.to} className="mt-2 inline-block text-sm font-bold text-primary">{locale === 'ar' ? LINKS[s.id]!.ar : LINKS[s.id]!.en} ←</Link> : null}
             </li>

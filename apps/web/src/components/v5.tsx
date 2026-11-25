@@ -9,12 +9,8 @@ import { usePrefs } from '../lib/prefs';
 import { useTr } from '../lib/tr';
 import { ago, noteInterest, useLiveDrops, v5, type Prediction, type V5Card } from '../lib/v5';
 import { haptic, play } from '../lib/sound';
+import { imgSrc } from '../lib/early';
 
-const imgSrc = (u?: string | null, w = 400) => {
-  if (!u) return null;
-  if (/cdn\.shopify\.com/.test(u)) return u.includes('?') ? `${u}&width=${w}` : `${u}?width=${w}`;
-  return u;
-};
 export function RemoteThumb({ src, alt, slug, className = 'w-full', priority = false }: { src?: string | null; alt: string; slug?: string; className?: string; priority?: boolean }) {
   const [bad, setBad] = useState(false);
   const s = imgSrc(src, priority ? 800 : 400);
@@ -68,7 +64,7 @@ export function VoteBar({ id, hot, cold, heat, size = 'sm' }: { id: string; hot:
       <button type="button" onClick={(e) => cast(-1, e)} aria-pressed={state.mine === -1} aria-label={tr('صفقة باردة', 'Cold deal')} className={`press grid ${btn} place-items-center rounded-full transition ${state.mine === -1 ? 'bg-sky-500 text-white' : 'text-sky-600 hover:bg-sky-500/10'}`}>
         <Snowflake className="h-4 w-4" />
       </button>
-      <span className={`num min-w-9 text-center text-sm font-bold ${state.heat >= 60 ? 'text-[var(--clay)]' : ''}`} aria-live="polite">{state.heat}°</span>
+      <span className={`num min-w-9 text-center text-sm font-bold ${state.heat >= 60 ? 'text-[var(--clay)]' : ''}`} aria-live="polite" title={state.heat > 0 ? undefined : tr('لسه محدش صوّت — كن أول واحد', 'No votes yet, be the first')}>{state.heat > 0 ? `${state.heat}°` : <span className="text-muted">–</span>}</span>
       <button type="button" onClick={(e) => cast(1, e)} aria-pressed={state.mine === 1} aria-label={tr('صفقة سخنة', 'Hot deal')} className={`press grid ${btn} place-items-center rounded-full transition ${state.mine === 1 ? 'bg-[var(--clay)] text-white' : 'text-[var(--clay)] hover:bg-[var(--clay)]/10'}`}>
         <Flame className="h-4 w-4" />
       </button>

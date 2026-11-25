@@ -63,7 +63,7 @@ export function PlansPage() {
                 <Li>{tr(`${t.limits.watchlist} منتج في المراقبة`, `${t.limits.watchlist} watched products`)}</Li>
                 <Li>{tr(`${t.limits.alerts} تنبيه سعر شغّال`, `${t.limits.alerts} active alerts`)}</Li>
                 <Li>{tr(`${t.limits.collections} مجموعة`, `${t.limits.collections} collections`)}</Li>
-                <Li>{String(perks.find((p) => p.en === 'Support priority')?.values[t.id])} · {tr('دعم', 'support')}</Li>
+                <Li>{(() => { const sp = perks.find((p) => p.en === 'Support priority'); return tr(`دعم: ${String(sp?.values[t.id])}`, `Support: ${String(sp?.valuesEn?.[t.id] ?? sp?.values[t.id])}`); })()}</Li>
               </ul>
               <div className="relative mt-auto pt-5">
                 {active && until ? <p className="t-meta mb-2 text-center text-muted">{tr(`شغالة لحد ${new Date(until).toLocaleDateString('ar-EG-u-nu-latn', { timeZone: 'Africa/Cairo' })}`, `Active until ${new Date(until).toLocaleDateString('en-GB', { timeZone: 'Africa/Cairo' })}`)}</p> : null}

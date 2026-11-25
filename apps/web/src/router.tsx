@@ -1,3 +1,4 @@
+import { useTr } from './lib/tr';
 import { useEffect, useState } from 'react';
 import {
   createRootRoute,
@@ -338,18 +339,18 @@ const LOST = [
 ];
 
 function NotFound() {
+  const tr = useTr();
   const [pick] = useState(() => LOST[Math.floor(Math.random() * LOST.length)] ?? LOST[0]!);
   return (
     <div className="mx-auto max-w-lg py-16 text-center" role="alert">
       <p className="text-6xl" aria-hidden="true">{pick.emoji}</p>
       <p className="text-gradient mt-2 text-7xl font-bold">404</p>
-      <h1 className="mt-3 text-xl font-bold">{pick.ar}</h1>
-      <p className="mt-1 text-sm text-muted" lang="en" dir="ltr">{pick.en}</p>
-      <p className="mt-4 text-[15px] text-muted">يمكن اللينك قديم أو فيه حرف ناقص. جرّب واحدة من دول:</p>
+      <h1 className="mt-3 text-xl font-bold">{tr(pick.ar, pick.en)}</h1>
+      <p className="mt-4 text-[15px] text-muted">{tr('يمكن اللينك قديم أو فيه حرف ناقص. جرّب واحدة من دول:', 'The link may be old or have a typo. Try one of these:')}</p>
       <div className="mt-5 flex flex-wrap justify-center gap-2">
-        <Link to="/" className="press rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground">الرئيسية</Link>
-        <Link to="/hot" className="press rounded-full border border-border px-5 py-2.5 text-sm font-semibold">الصفقات السخنة 🔥</Link>
-        <Link to="/search" search={{ q: '' } as never} className="press rounded-full border border-border px-5 py-2.5 text-sm font-semibold">دوّر على منتج</Link>
+        <Link to="/" className="press rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground">{tr('الرئيسية', 'Home')}</Link>
+        <Link to="/hot" className="press rounded-full border border-border px-5 py-2.5 text-sm font-semibold">{tr('الصفقات السخنة 🔥', 'Hot deals 🔥')}</Link>
+        <Link to="/search" search={{ q: '' } as never} className="press rounded-full border border-border px-5 py-2.5 text-sm font-semibold">{tr('دوّر على منتج', 'Search products')}</Link>
       </div>
     </div>
   );

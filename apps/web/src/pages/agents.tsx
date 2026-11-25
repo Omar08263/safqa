@@ -25,8 +25,8 @@ export function AgentsPage() {
       <PageHeader kicker={tr('مقر الوكلاء', 'Agents HQ')} title={tr('الوكلاء الأذكياء', 'AI agent teams')} lede={tr(`${agents.length} وكيل ذكي في ${teams.length} فرق، كل واحد ليه اسم وشخصية ومزاج بيتغير مع اللي بيحصل في الموقع. شغالين بورديات علشان دايمًا في حد صاحي. كلهم بوتات أوفلاين واضحة — مش بشر.`, `${agents.length} AI agents in ${teams.length} teams, each with a name, personality and a mood that follows what happens on the site. Shifts keep someone awake 24/7. All are clearly-labelled offline bots — not humans.`)} icon={<Bot className="h-6 w-6" />}>
         <div className="grid grid-cols-3 gap-2 text-center text-sm">
           <div className="rounded-2xl bg-card p-3"><p className="num text-2xl font-bold text-palm">{online}</p><p className="text-xs text-muted">{tr('متصل', 'online')}</p></div>
-          <div className="rounded-2xl bg-card p-3"><p className="num text-2xl font-bold">{signals.dropsToday}</p><p className="text-xs text-muted">{tr('تخفيض حقيقي', 'real drops')}</p></div>
-          <div className="rounded-2xl bg-card p-3"><p className="num text-2xl font-bold">{signals.productsLive}</p><p className="text-xs text-muted">{tr('منتج متتبّع', 'tracked')}</p></div>
+          <div className="rounded-2xl bg-card p-3">{signals.dropsToday > 0 ? <p className="num text-2xl font-bold">{signals.dropsToday}</p> : <p className="flex h-8 items-center justify-center text-sm font-bold text-muted">{tr('هادي 😴', 'Quiet 😴')}</p>}<p className="text-xs text-muted">{tr('تخفيض حقيقي', 'real drops')}</p></div>
+          <div className="rounded-2xl bg-card p-3">{signals.productsLive > 0 ? <p className="num text-2xl font-bold">{signals.productsLive}</p> : <p className="flex h-8 items-center justify-center text-sm font-bold text-muted">⏳</p>}<p className="text-xs text-muted">{tr('منتج متتبّع', 'tracked')}</p></div>
         </div>
       </PageHeader>
 

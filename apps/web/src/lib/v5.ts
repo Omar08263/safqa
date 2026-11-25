@@ -4,6 +4,7 @@ import type { ProductCard } from '@safqa/shared';
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 import { EDGE_URL, edge } from './edge';
+import { takeEarly } from './early';
 import { play } from './sound';
 
 export interface V5Extra { heat: number; hot: number; cold: number; low: number | null; med30: number | null; dropPct: number | null; dropAt: string | null; firstSeen: string; checkedAt: string | null }
@@ -37,7 +38,7 @@ export const v5 = {
   suggest: (q: string) => get<{ items: { id: string; title: string; image: string | null; price: number; store: string }[]; fuzzy: boolean }>(`/api/v5/suggest?${qs({ q })}`),
   deals: (o: { cat?: string; sort?: string; page?: number; limit?: number }) => get<SearchRes>(`/api/v5/deals?${qs(o)}`),
   feed: (o: { cats?: string; brands?: string; max?: number }) => get<{ items: V5Card[]; personalised: boolean }>(`/api/v5/feed?${qs(o)}`),
-  product: (id: string) => get<V5Product>(`/api/v5/product/${id}`),
+  product: (id: string) => takeEarly<V5Product>(id) ?? get<V5Product>(`/api/v5/product/${id}`),
   compare: (ids: string[]) => get<{ items: V5Product[] }>(`/api/v5/compare?ids=${ids.join(',')}`),
   drops: (since = 0, limit = 30) => get<{ items: Drop[]; last: number }>(`/api/v5/drops?${qs({ since, limit })}`),
   coupons: (store?: string) => get<{ coupons: { id: string; store: { slug: string; nameAr: string; nameEn: string }; code: string | null; title: string; expires: string | null; worked: number; failed: number; created_at: string }[]; storeSales: V5Card[] }>(`/api/v5/coupons?${qs({ store })}`),

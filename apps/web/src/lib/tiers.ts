@@ -15,6 +15,7 @@ export interface Perk {
   ar: string;
   en: string;
   values: Record<TierId, string | boolean>;
+  valuesEn?: Record<TierId, string | boolean>;
   live: boolean;
 }
 
@@ -72,7 +73,7 @@ export const perks: Perk[] = [
   { ar: 'تاريخ السعر', en: 'Price history', values: v('90 يوم', 'كل التاريخ', 'كل التاريخ', 'كل التاريخ'), live: true },
   { ar: 'أدوات أوفلاين', en: 'Offline tools', values: v('كلها', 'كلها', 'كلها', 'كلها'), live: true },
   { ar: 'وصول مبكر لعروض الرادار', en: 'Early deal radar access', values: v(false, false, 'قبلها بساعة', 'قبلها بـ 3 ساعات'), live: false },
-  { ar: 'أولوية الدعم', en: 'Support priority', values: v('المجتمع', 'خلال 48 ساعة', 'خلال 24 ساعة', 'نفس اليوم'), live: true },
+  { ar: 'أولوية الدعم', en: 'Support priority', values: v('المجتمع', 'خلال 48 ساعة', 'خلال 24 ساعة', 'نفس اليوم'), valuesEn: v('Community', 'Within 48 hours', 'Within 24 hours', 'Same day'), live: true },
   { ar: 'من غير إعلانات', en: 'No ads', values: v(true, true, true, true), live: true },
 ];
 

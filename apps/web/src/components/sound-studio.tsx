@@ -2,19 +2,19 @@ import { useState } from 'react';
 import { type Cue, play, setSoundEnabled, setVolume, useSound, useTapSounds, useVolume } from '../lib/sound';
 import { useTr } from '../lib/tr';
 
-const PREVIEWS: { cue: Cue; ar: string; en: string; emoji: string; mood: string }[] = [
-  { cue: 'tap', ar: 'ضغطة', en: 'Tap', emoji: '👆', mood: 'خشب ناعم' },
-  { cue: 'toggle-on', ar: 'تشغيل', en: 'Toggle', emoji: '🔘', mood: 'ماريمبا' },
-  { cue: 'bubble', ar: 'فقاعة', en: 'Bubble', emoji: '🫧', mood: 'لطيف' },
-  { cue: 'success', ar: 'تمام', en: 'Success', emoji: '✅', mood: 'جرس زجاج' },
-  { cue: 'coin', ar: 'توفير', en: 'Coin', emoji: '🪙', mood: 'لمعة' },
-  { cue: 'deal', ar: 'صفقة', en: 'Deal', emoji: '🔥', mood: 'احتفال' },
-  { cue: 'magic', ar: 'ذكاء', en: 'Magic', emoji: '🪄', mood: 'سحري' },
-  { cue: 'swell', ar: 'هيبة', en: 'Prestige', emoji: '👑', mood: 'فخم' },
-  { cue: 'tier-diamond', ar: 'ماسي', en: 'Diamond', emoji: '💎', mood: 'ملكي' },
-  { cue: 'whoosh', ar: 'انتقال', en: 'Whoosh', emoji: '💨', mood: 'نسمة' },
-  { cue: 'shutter', ar: 'كاميرا', en: 'Shutter', emoji: '📸', mood: 'عدسة' },
-  { cue: 'error', ar: 'تنبيه', en: 'Error', emoji: '⚠️', mood: 'هادي' },
+const PREVIEWS: { cue: Cue; ar: string; en: string; emoji: string; mood: string; moodEn: string }[] = [
+  { cue: 'tap', ar: 'ضغطة', en: 'Tap', emoji: '👆', mood: 'خشب ناعم', moodEn: 'Soft wood' },
+  { cue: 'toggle-on', ar: 'تشغيل', en: 'Toggle', emoji: '🔘', mood: 'ماريمبا', moodEn: 'Marimba' },
+  { cue: 'bubble', ar: 'فقاعة', en: 'Bubble', emoji: '🫧', mood: 'لطيف', moodEn: 'Gentle' },
+  { cue: 'success', ar: 'تمام', en: 'Success', emoji: '✅', mood: 'جرس زجاج', moodEn: 'Glass bell' },
+  { cue: 'coin', ar: 'توفير', en: 'Coin', emoji: '🪙', mood: 'لمعة', moodEn: 'Sparkle' },
+  { cue: 'deal', ar: 'صفقة', en: 'Deal', emoji: '🔥', mood: 'احتفال', moodEn: 'Party' },
+  { cue: 'magic', ar: 'ذكاء', en: 'Magic', emoji: '🪄', mood: 'سحري', moodEn: 'Magical' },
+  { cue: 'swell', ar: 'هيبة', en: 'Prestige', emoji: '👑', mood: 'فخم', moodEn: 'Grand' },
+  { cue: 'tier-diamond', ar: 'ماسي', en: 'Diamond', emoji: '💎', mood: 'ملكي', moodEn: 'Royal' },
+  { cue: 'whoosh', ar: 'انتقال', en: 'Whoosh', emoji: '💨', mood: 'نسمة', moodEn: 'Breeze' },
+  { cue: 'shutter', ar: 'كاميرا', en: 'Shutter', emoji: '📸', mood: 'عدسة', moodEn: 'Lens' },
+  { cue: 'error', ar: 'تنبيه', en: 'Error', emoji: '⚠️', mood: 'هادي', moodEn: 'Calm' },
 ];
 
 /** Sound studio: on/off, master volume, tap sounds, and a playable palette. */
@@ -47,7 +47,7 @@ export function SoundStudio() {
             <button key={p.cue} type="button" data-sfx="none" onClick={() => { play(p.cue, true); setLast(p.cue); }} className={`press glass-tile rounded-2xl p-2 text-center ${last === p.cue ? 'ring-2 ring-primary' : ''}`}>
               <span className={`block text-2xl ${last === p.cue ? 'sfx-bounce' : ''}`} key={last === p.cue ? Date.now() : p.cue}>{p.emoji}</span>
               <span className="block text-xs font-semibold">{tr(p.ar, p.en)}</span>
-              <span className="block text-[11px] text-muted">{p.mood}</span>
+              <span className="block text-[11px] text-muted">{tr(p.mood, p.moodEn)}</span>
             </button>
           ))}
         </div>

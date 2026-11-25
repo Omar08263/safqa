@@ -1,3 +1,4 @@
+import { useTr } from '../lib/tr';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -21,6 +22,7 @@ function Odometer({ value }: { value: number }) {
 }
 
 export function TimeMachinePage() {
+  const tr = useTr();
   const { client } = useSession();
   const cat = useCatalog();
   const items = useMemo(() => (cat.data?.items ?? []).filter((p) => p.lowestPriceEgp), [cat.data]);
@@ -36,7 +38,7 @@ export function TimeMachinePage() {
   const lastSide = useRef(0);
   useEffect(() => { setCursor(0); }, [id]);
 
-  if (!pick || !f) return <div className="py-20 text-center text-muted">⏳ بنجهّز آلة الزمن…</div>;
+  if (!pick || !f) return <div className="py-20 text-center text-muted">⏳ {tr('بنجهّز آلة الزمن…', 'Preparing the time machine…')}</div>;
   const W = 760, H = 260, P = 28;
   const t0 = pastStart, t1 = now + 45 * DAY;
   const all = [...pts.map((x) => x.p), ...f.points.flatMap((x) => [x.lo, x.hi]), f.now, hist.data?.min90 ?? f.now, hist.data?.median30 ?? f.now];
@@ -56,10 +58,10 @@ export function TimeMachinePage() {
   return (
     <Feature flag="time_machine">
       <div className="mx-auto max-w-6xl">
-        <FutureHero emoji="⏳" kicker="PRICE TIME MACHINE" title="آلة زمن الأسعار" lede="اسحب المؤشر لورا تشوف السعر كان كام، ولقدّام تشوف هيبقى كام غالبًا — بناءً على تاريخ السعر الحقيقي، واتجاه القسم، ومواسم التخفيضات في مصر." colors={['#f59e0b', '#f5b544', '#0ea5e9']} />
+        <FutureHero emoji="⏳" kicker="PRICE TIME MACHINE" title={tr('آلة زمن الأسعار', 'Price time machine')} lede={tr('اسحب المؤشر لورا تشوف السعر كان كام، ولقدّام تشوف هيبقى كام غالبًا — بناءً على تاريخ السعر الحقيقي، واتجاه القسم، ومواسم التخفيضات في مصر.', 'Drag back to see past prices, forward to see the likely price, based on real price history, category trends and Egyptian sale seasons.')} colors={['#f59e0b', '#f5b544', '#0ea5e9']} />
         <div className="grid gap-5 lg:grid-cols-[280px_1fr]">
           <aside className="glass rounded-3xl p-3">
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="دوّر على منتج…" className="w-full rounded-full border border-border bg-transparent px-4 py-2 text-sm" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={tr('دوّر على منتج…', 'Search a product…')} className="w-full rounded-full border border-border bg-transparent px-4 py-2 text-sm" />
             <ul className="mt-2 max-h-[420px] space-y-1 overflow-auto">
               {filtered.map((p) => (
                 <li key={p.id}><button type="button" onClick={() => { setId(p.id); play('whoosh'); }} className={`w-full rounded-xl px-3 py-2 text-start text-sm ${p.id === pick.id ? 'bg-primary/15 font-bold' : 'hover:bg-accent'}`}>{p.titleAr}<span className="block text-xs text-muted">{egp(p.lowestPriceEgp)}</span></button></li>
@@ -71,10 +73,10 @@ export function TimeMachinePage() {
             <div className="relative">
               <Link to={`/product/${pick.id}` as '/'} className="text-sm text-white/70 underline-offset-4 hover:underline">{pick.titleAr}</Link>
               <div className="mt-1 flex flex-wrap items-end gap-3">
-                <p className="text-5xl font-extrabold"><Odometer value={atCursor} /> <span className="text-2xl text-white/60">ج</span></p>
-                <p className="pb-2 text-sm text-white/70">{cursor === 0 ? 'النهارده' : cursor < 0 ? `من ${-cursor} يوم (${fmtDay(tc)})` : `بعد ${cursor} يوم (${fmtDay(tc)}) — توقع`}{seasonAt ? ` · ${seasonAt} 🎉` : ''}</p>
+                <p className="text-5xl font-extrabold"><Odometer value={atCursor} /> <span className="text-2xl text-white/60">{tr('ج', 'EGP')}</span></p>
+                <p className="pb-2 text-sm text-white/70">{cursor === 0 ? tr('النهارده', 'Today') : cursor < 0 ? tr(`من ${-cursor} يوم (${fmtDay(tc)})`, `${-cursor} days ago (${fmtDay(tc)})`) : tr(`بعد ${cursor} يوم (${fmtDay(tc)}) — توقع`, `In ${cursor} days (${fmtDay(tc)}), forecast`)}{seasonAt ? ` · ${seasonAt} 🎉` : ''}</p>
               </div>
-              <svg viewBox={`0 0 ${W} ${H}`} className="mt-3 w-full" role="img" aria-label="تاريخ وتوقع السعر">
+              <svg viewBox={`0 0 ${W} ${H}`} className="mt-3 w-full" role="img" aria-label={tr('تاريخ وتوقع السعر', 'Price history and forecast')}>
                 <defs>
                   <linearGradient id="tm-past" x1="0" x2="1"><stop offset="0" stopColor="#f59e0b" /><stop offset="1" stopColor="#ffe29a" /></linearGradient>
                   <linearGradient id="tm-band" x1="0" x2="1"><stop offset="0" stopColor="#38bdf8" stopOpacity=".35" /><stop offset="1" stopColor="#8b5cf6" stopOpacity=".1" /></linearGradient>
@@ -82,8 +84,8 @@ export function TimeMachinePage() {
                 </defs>
                 {f.points.filter((x, i, a) => x.season && a[i - 1]?.season !== x.season).map((x) => <g key={x.t}><rect x={X(x.t)} y={P} width={Math.max(4, X(x.t + 8 * DAY) - X(x.t))} height={H - 2 * P} fill="#f5b544" opacity=".08" /><text x={X(x.t) + 4} y={P + 12} fill="#ffe29a" fontSize="11">{x.season}</text></g>)}
                 <line x1={X(now)} x2={X(now)} y1={P - 6} y2={H - P} stroke="#fff" strokeOpacity=".35" strokeDasharray="3 4" />
-                <text x={X(now)} y={P - 10} fill="#fff" fillOpacity=".6" fontSize="11" textAnchor="middle">النهارده</text>
-                {hist.data?.min90 ? <><line x1={P} x2={W - P} y1={Y(hist.data.min90)} y2={Y(hist.data.min90)} stroke="#10b981" strokeOpacity=".5" strokeDasharray="2 6" /><text x={W - P} y={Y(hist.data.min90) - 4} fill="#6ee7b7" fontSize="10" textAnchor="end">أقل سعر 90 يوم</text></> : null}
+                <text x={X(now)} y={P - 10} fill="#fff" fillOpacity=".6" fontSize="11" textAnchor="middle">{tr('النهارده', 'Today')}</text>
+                {hist.data?.min90 ? <><line x1={P} x2={W - P} y1={Y(hist.data.min90)} y2={Y(hist.data.min90)} stroke="#10b981" strokeOpacity=".5" strokeDasharray="2 6" /><text x={W - P} y={Y(hist.data.min90) - 4} fill="#6ee7b7" fontSize="10" textAnchor="end">{tr('أقل سعر 90 يوم', '90-day low')}</text></> : null}
                 <path d={band} fill="url(#tm-band)" />
                 <path d={futPath} fill="none" stroke="#7dd3fc" strokeWidth="2.5" strokeDasharray="6 6" filter="url(#tm-glow)" className="tm-dash" />
                 <path d={pastPath} fill="none" stroke="url(#tm-past)" strokeWidth="3.5" strokeLinecap="round" filter="url(#tm-glow)" />
@@ -92,14 +94,14 @@ export function TimeMachinePage() {
                 <line x1={X(tc)} x2={X(tc)} y1={P} y2={H - P} stroke="#f5b544" strokeWidth="2" />
                 <circle cx={X(tc)} cy={Y(atCursor)} r="8" fill="#f5b544" stroke="#fff" strokeWidth="3" filter="url(#tm-glow)" />
               </svg>
-              <input type="range" min={minDays} max={45} value={cursor} aria-label="سافر في الزمن" className="sfx-range mt-2 w-full" dir="ltr"
+              <input type="range" min={minDays} max={45} value={cursor} aria-label={tr('سافر في الزمن', 'Travel in time')} className="sfx-range mt-2 w-full" dir="ltr"
                 onChange={(e) => { const v = Number(e.target.value); const side = Math.sign(v); if (side !== lastSide.current) { play(side > 0 ? 'magic' : side < 0 ? 'whoosh' : 'soft'); haptic('medium'); lastSide.current = side; } setCursor(v); }} />
-              <div className="flex justify-between text-[11px] text-white/50" dir="ltr"><span>{fmtDay(pastStart)}</span><span>+45 يوم</span></div>
+              <div className="flex justify-between text-[11px] text-white/50" dir="ltr"><span>{fmtDay(pastStart)}</span><span>+45 {tr('يوم', 'days')}</span></div>
               <div className={`mt-4 rounded-3xl p-4 ${f.verdict === 'wait' ? 'bg-sky-500/15' : f.verdict === 'buy_now' ? 'bg-emerald-500/15' : 'bg-white/10'}`}>
-                <p className="text-lg font-extrabold">{f.verdict === 'wait' ? '⏳ استنى شوية' : f.verdict === 'buy_now' ? '✅ اشتري دلوقتي' : '🤝 السعر مستقر'}</p>
-                <p className="mt-1 text-sm text-white/80">{f.reasonAr} أقل سعر متوقع: <b>{egp(f.low.p)}</b>{f.low.t > now ? ` يوم ${fmtDay(f.low.t)}` : ''}.</p>
-                <p className="mt-2 text-[11px] text-white/50">ثقة التوقع {Math.round(f.confidence * 100)}% · {pts.length} نقطة سعر حقيقية · ده تقدير مش وعد.</p>
-                {f.verdict === 'wait' && <button type="button" className="press mt-3 rounded-full bg-sky-400 px-4 py-2 text-sm font-bold text-black" onClick={(e) => { void client.addWatch(pick.id, Math.round(f.low.p)).then(() => { confetti({ x: e.clientX, y: e.clientY, count: 90 }); play('success'); }).catch(() => play('error')); }}>🔔 نبّهني لما يوصل {egp(f.low.p)}</button>}
+                <p className="text-lg font-extrabold">{f.verdict === 'wait' ? tr('⏳ استنى شوية', '⏳ Wait a bit') : f.verdict === 'buy_now' ? tr('✅ اشتري دلوقتي', '✅ Buy now') : tr('🤝 السعر مستقر', '🤝 Price is stable')}</p>
+                <p className="mt-1 text-sm text-white/80">{tr(f.reasonAr, '')} {tr('أقل سعر متوقع', 'Expected low')}: <b>{egp(f.low.p)}</b>{f.low.t > now ? ` ${tr('يوم', 'on')} ${fmtDay(f.low.t)}` : ''}.</p>
+                <p className="mt-2 text-[11px] text-white/50">{tr('ثقة التوقع', 'Confidence')} {Math.round(f.confidence * 100)}% · {tr(`${pts.length} نقطة سعر حقيقية · ده تقدير مش وعد.`, `${pts.length} real price points · an estimate, not a promise.`)}</p>
+                {f.verdict === 'wait' && <button type="button" className="press mt-3 rounded-full bg-sky-400 px-4 py-2 text-sm font-bold text-black" onClick={(e) => { void client.addWatch(pick.id, Math.round(f.low.p)).then(() => { confetti({ x: e.clientX, y: e.clientY, count: 90 }); play('success'); }).catch(() => play('error')); }}>🔔 {tr('نبّهني لما يوصل', 'Alert me at')} {egp(f.low.p)}</button>}
               </div>
             </div>
           </section>

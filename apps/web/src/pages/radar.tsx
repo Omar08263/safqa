@@ -72,7 +72,7 @@ export function RadarPage() {
 
       <div className="grid gap-4 sm:grid-cols-4">
         {[[tr('إشارات دلوقتي', 'Signals now'), all.length], [tr('تخفيضات حقيقية', 'Real drops'), all.filter((x) => x.kind === 'drop').length], [tr('خصومات مشبوهة', 'Suspicious'), all.filter((x) => x.kind === 'fake_discount').length], [tr('اتبعتلك', 'Delivered to you'), feed.length]].map(([k, v]) => (
-          <Card key={String(k)}><p className="text-xs text-muted">{k}</p><p className="num text-3xl font-bold">{v}</p></Card>
+          <Card key={String(k)}><p className="text-xs text-muted">{k}</p>{Number(v) > 0 ? <p className="num text-3xl font-bold">{v}</p> : <p className="flex h-9 items-center text-base font-bold text-muted">{tr('مفيش لسه', 'None yet')}</p>}</Card>
         ))}
       </div>
 
