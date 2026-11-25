@@ -1,6 +1,6 @@
 // Admin PWA: cache the shell only. API data is never cached (it is private).
-const CACHE = 'safqa-hub-v5';
-const SHELL = ['/', '/index.html', '/app.js', '/hub.js', '/asmr.js', '/owner.js', '/brain.js', '/systems.js', '/styles.css', '/manifest.webmanifest', '/icons/admin-192.png', '/instapay-qr.jpg'];
+const CACHE = 'safqa-hub-v6';
+const SHELL = ['/', '/index.html', '/theme.js', '/tokens.css', '/app.js', '/hub.js', '/asmr.js', '/owner.js', '/brain.js', '/systems.js', '/security.js', '/styles.css', '/manifest.webmanifest', '/icons/admin-192.png', '/instapay-qr.jpg'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL))); self.skipWaiting(); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k))))); self.clients.claim(); });
 self.addEventListener('fetch', (e) => {

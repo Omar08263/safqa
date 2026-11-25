@@ -13,3 +13,11 @@
   Cache-Control: no-cache
 /app.js
   Cache-Control: no-cache
+/styles.css
+  Cache-Control: no-cache
+/theme.js
+  Cache-Control: no-cache
+/tokens.css
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
