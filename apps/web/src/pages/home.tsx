@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, BadgeCheck, Bell, Bot, CalendarDays, Calculator,
 import { FormEvent } from 'react';
 import { DealCard, StateMessage } from '../components/bits';
 import { Countdown } from '../components/countdown';
+import { HomeV5 } from '../components/home-v5';
 import { PriceFreshness } from '../components/price-freshness';
 import { Button } from '../components/ui/button';
 import { features } from '../features/registry';
@@ -138,10 +139,12 @@ export function HomePage() {
         </div>
       ) : null}
 
-      {/* STATS */}
+      <HomeV5 />
+
+      {/* STATS (curated v4 snapshot) */}
       <section className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {[
-          { v: all.length, l: tr('منتج متتبَّع', 'products tracked'), icon: BadgeCheck },
+          { v: all.length, l: tr('منتج مختار بتحليل كامل', 'curated, fully analysed'), icon: BadgeCheck },
           { v: offers, l: tr('عرض من المتاجر', 'store offers'), icon: Layers },
           { v: fakeCount, l: tr('خصم مشبوه اتكشف', 'suspicious discounts caught'), icon: ShieldAlert },
           { v: avgDiscount, l: tr('متوسط الخصم الحقيقي', 'average real discount'), icon: TrendingDown, pct: true },

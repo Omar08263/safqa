@@ -8,6 +8,9 @@ import { usePrefs } from '../lib/prefs';
 import { useTr } from '../lib/tr';
 import type { SearchFilters } from '../pages/search';
 import { Button } from './ui/button';
+import { Link } from '@tanstack/react-router';
+import { formatEGP } from '@safqa/shared';
+import { v5 } from '../lib/v5';
 
 interface Saved { id: string; name: string; filters: SearchFilters }
 // biome-ignore lint/suspicious/noExplicitAny: Web Speech API is not in lib.dom for every browser.
@@ -23,6 +26,15 @@ export function SearchTop({ search, count }: { search: SearchFilters; count?: nu
   const [q, setQ] = useState(search.q ?? '');
   const rec = useRef<Rec>(null);
   useEffect(() => setQ(search.q ?? ''), [search.q]);
+  // Instant suggestions (debounced) from the v5 catalog: typo-tolerant, Arabic or English.
+  const [sugg, setSugg] = useState<{ id: string; title: string; image: string | null; price: number; store: string }[]>([]);
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const term = q.trim();
+    if (term.length < 2 || term === (search.q ?? '')) { setSugg([]); return; }
+    const t = window.setTimeout(() => { v5.suggest(term).then((r) => { setSugg(r.items); setOpen(true); }).catch(() => setSugg([])); }, 180);
+    return () => window.clearTimeout(t);
+  }, [q, search.q]);
   const SpeechRec: Rec = typeof window !== 'undefined' ? (window as Rec).SpeechRecognition || (window as Rec).webkitSpeechRecognition : null;
 
   function go(e?: FormEvent) {
@@ -62,12 +74,27 @@ export function SearchTop({ search, count }: { search: SearchFilters; count?: nu
   }
   return (
     <div className="mb-6 space-y-3">
-      <form onSubmit={go} className="glass flex items-center gap-2 rounded-full p-1.5 ps-4">
+      <div className="relative">
+      <form onSubmit={(e) => { setOpen(false); go(e); }} className="glass flex items-center gap-2 rounded-full p-1.5 ps-4">
         <Search className="h-5 w-5 text-muted" />
-        <input value={q} onChange={(e) => setQ(e.target.value)} aria-label={tr('ابحث', 'Search')} placeholder={tr('ابحث بالاسم، الماركة، أو الموديل…', 'Search by name, brand or model…')} className="h-11 flex-1 bg-transparent outline-none" />
+        <input value={q} onChange={(e) => setQ(e.target.value)} onFocus={() => setOpen(true)} onBlur={() => window.setTimeout(() => setOpen(false), 150)} onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false); }} role="combobox" aria-expanded={open && sugg.length > 0} aria-controls="search-suggest" autoComplete="off" aria-label={tr('ابحث', 'Search')} placeholder={tr('ابحث بالاسم، الماركة، أو الموديل…', 'Search by name, brand or model…')} className="h-11 flex-1 bg-transparent outline-none" />
         <button type="button" onClick={voice} aria-pressed={listening} aria-label={tr('بحث بالصوت', 'Voice search')} title={tr('بحث بالصوت', 'Voice search')} className={`grid h-10 w-10 place-items-center rounded-full ${listening ? 'pulse-dot bg-destructive text-white' : 'hover:bg-accent'}`}>{listening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}</button>
         <Button type="submit">{tr('دوّر', 'Search')}</Button>
       </form>
+      {open && sugg.length ? (
+        <ul id="search-suggest" role="listbox" className="absolute inset-x-0 top-full z-40 mt-2 max-h-[60vh] overflow-auto rounded-3xl border border-border bg-card p-1.5 shadow-2xl">
+          {sugg.map((s) => (
+            <li key={s.id} role="option" aria-selected="false">
+              <Link to="/p/$id" params={{ id: s.id }} onClick={() => setOpen(false)} className="flex items-center gap-3 rounded-2xl p-2 hover:bg-accent">
+                <span className="media-tile h-11 w-11 flex-none rounded-xl">{s.image ? <img src={/cdn\.shopify/.test(s.image) ? `${s.image}${s.image.includes('?') ? '&' : '?'}width=120` : s.image} alt="" loading="lazy" referrerPolicy="no-referrer" /> : null}</span>
+                <span className="min-w-0 flex-1 truncate text-sm">{s.title}</span>
+                <span className="num flex-none text-sm font-bold">{formatEGP(s.price, locale)}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      </div>
       <div className="flex flex-wrap items-center gap-2 text-xs">
         {count != null ? <span className="font-semibold">{tr(`${count} نتيجة`, `${count} results`)}</span> : null}
         <span className="text-muted">·</span>

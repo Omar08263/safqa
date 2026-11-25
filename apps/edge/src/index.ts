@@ -10,6 +10,7 @@ import * as T from './telegram';
 import { registerHub } from './hub';
 import { autopilotTick } from './autopilot';
 import { tierById } from './tiers';
+import * as V5 from './catalog/api';
 import { cairoDay, type Env, fail, HttpError, json, nowIso, parseJ, rateLimit, readJson, str, timingSafeEqual, uid, b64 } from './util';
 
 type Ctx = { req: Request; env: Env; url: URL; p: string[]; exec: ExecutionContext };
@@ -115,6 +116,7 @@ on('DELETE', '/api/auth/me', async (c) => {
 
 // ---------------- watchlist / alerts / settings (synced) ----------------
 async function cardOf(env: Env, id: string) {
+  if (/^p[0-9a-f]{20}$/.test(id)) { const r = await env.DB.prepare('SELECT * FROM catalog WHERE id=?').bind(id).first<Record<string, any>>(); return r ? V5.toCard(r) : null; }
   const s = await loadSnapshot(env);
   return s?.all.find((p) => p.id === id) ?? s?.products[id]?.detail ?? null;
 }
@@ -634,6 +636,8 @@ on('POST', '/api/v2/admin/telegram/setup', async (c) => {
 });
 on('POST', '/api/v2/admin/telegram/digest', async (c) => { await needAdmin(c); const n = await T.queueDigests(c.env); c.exec.waitUntil(T.drainOutbox(c.env)); return { queued: n }; });
 
+V5.register(on, auth.authenticate);
+
 // ---------------- runtime ----------------
 function cors(env: Env, req: Request): Record<string, string> {
   const origin = req.headers.get('origin') ?? '';
@@ -686,6 +690,8 @@ export default {
       if (T.tgEnabled(env) && cairoH === 9 && d.getUTCMinutes() >= 30 && d.getUTCMinutes() < 40) await T.queueDigests(env);
       await autopilotTick(env, d).catch((e) => console.log('autopilot', String(e)));
       await T.drainOutbox(env);
+      // Last: priority recrawl of hot/watched products uses the remaining subrequest budget of this invocation.
+      await V5.priorityRecrawl(env, 4).catch((e) => console.log('recrawl', String(e)));
     })());
   },
 };

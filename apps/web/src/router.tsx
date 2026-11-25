@@ -51,6 +51,12 @@ const AgentPage = lz(() => import('./pages/agents'), 'AgentPage') as unknown as 
 const RadarPage = lz(() => import('./pages/radar'), 'RadarPage');
 const ToolboxPage = lz(() => import('./pages/toolbox'), 'ToolboxPage') as unknown as React.ComponentType<{ q?: string; tool?: string }>;
 const AppPage = lz(() => import('./pages/app'), 'AppPage');
+const HotPage = lz(() => import('./pages/v5'), 'HotPage') as unknown as React.ComponentType<{ cat?: string; sort?: string }>;
+const V5ProductPage = lz(() => import('./pages/v5'), 'V5ProductPage') as unknown as React.ComponentType<{ id: string }>;
+const DropsPage = lz(() => import('./pages/v5'), 'DropsPage');
+const CouponsPage = lz(() => import('./pages/v5'), 'CouponsPage');
+const AddLinkPage = lz(() => import('./pages/v5'), 'AddLinkPage');
+const SourcesPage = lz(() => import('./pages/v5'), 'SourcesPage');
 const ToolsPage = lz(() => import('./pages/tools'), 'ToolsPage') as unknown as React.ComponentType<{ price?: number }>;
 
 const rootRoute = createRootRoute({
@@ -108,6 +114,28 @@ const productRoute = createRoute({
     return <ProductPage id={id} />;
   },
 });
+
+const hotRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/hot',
+  validateSearch: (s: Record<string, unknown>): { cat?: string; sort?: string } => ({ cat: typeof s.cat === 'string' ? s.cat : undefined, sort: typeof s.sort === 'string' ? s.sort : undefined }),
+  component: function HotRoute() {
+    const s = hotRoute.useSearch();
+    return <HotPage cat={s.cat} sort={s.sort ?? 'heat'} />;
+  },
+});
+const v5ProductRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/p/$id',
+  component: function V5ProductRoute() {
+    const { id } = v5ProductRoute.useParams();
+    return <V5ProductPage key={id} id={id} />;
+  },
+});
+const dropsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/drops', component: DropsPage });
+const couponsRoute = createRoute({ getParentRoute: () => rootRoute, path: '/coupons', component: CouponsPage });
+const addRoute = createRoute({ getParentRoute: () => rootRoute, path: '/add', component: AddLinkPage });
+const sourcesRoute = createRoute({ getParentRoute: () => rootRoute, path: '/sources', component: SourcesPage });
 
 const watchRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -246,6 +274,12 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   searchRoute,
   productRoute,
+  hotRoute,
+  v5ProductRoute,
+  dropsRoute,
+  couponsRoute,
+  addRoute,
+  sourcesRoute,
   watchRoute,
   alertsRoute,
   assistantRoute,
@@ -280,7 +314,7 @@ function NotFound() {
       <p className="mt-4 text-[15px] text-muted">يمكن اللينك قديم أو فيه حرف ناقص. جرّب واحدة من دول:</p>
       <div className="mt-5 flex flex-wrap justify-center gap-2">
         <Link to="/" className="press rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground">الرئيسية</Link>
-        <Link to="/radar" className="press rounded-full border border-border px-5 py-2.5 text-sm font-semibold">أحسن العروض 🔥</Link>
+        <Link to="/hot" className="press rounded-full border border-border px-5 py-2.5 text-sm font-semibold">الصفقات السخنة 🔥</Link>
         <Link to="/search" search={{ q: '' } as never} className="press rounded-full border border-border px-5 py-2.5 text-sm font-semibold">دوّر على منتج</Link>
       </div>
     </div>

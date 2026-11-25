@@ -1,5 +1,6 @@
 import { formatEGP, localized } from '@safqa/shared';
 import { useQueries } from '@tanstack/react-query';
+import { isV5Id, v5AsDetail, v5AsHistory, v5AsPrediction } from '../lib/v5';
 import { Link } from '@tanstack/react-router';
 import { Crown, GitCompare, Plus, Trash2, X } from 'lucide-react';
 import { useEffect } from 'react';
@@ -31,9 +32,9 @@ export function ComparePage({ ids: fromUrl }: { ids?: string }) {
     if (compare.ids.length >= 2) track.compare();
   }, [compare.ids.length]);
 
-  const details = useQueries({ queries: compare.ids.map((id) => ({ queryKey: ['product', id], queryFn: () => client.product(id) })) });
-  const histories = useQueries({ queries: compare.ids.map((id) => ({ queryKey: ['history', id], queryFn: () => client.history(id) })) });
-  const preds = useQueries({ queries: compare.ids.map((id) => ({ queryKey: ['prediction', id], queryFn: () => client.prediction(id) })) });
+  const details = useQueries({ queries: compare.ids.map((id) => ({ queryKey: ['product', id], queryFn: () => (isV5Id(id) ? (v5AsDetail(id) as unknown as ReturnType<typeof client.product>) : client.product(id)) })) });
+  const histories = useQueries({ queries: compare.ids.map((id) => ({ queryKey: ['history', id], queryFn: () => (isV5Id(id) ? (v5AsHistory(id) as unknown as ReturnType<typeof client.history>) : client.history(id)) })) });
+  const preds = useQueries({ queries: compare.ids.map((id) => ({ queryKey: ['prediction', id], queryFn: () => (isV5Id(id) ? (v5AsPrediction(id) as unknown as ReturnType<typeof client.prediction>) : client.prediction(id)) })) });
   const items = details.map((d) => d.data).filter((d): d is NonNullable<typeof d> => Boolean(d));
 
   type Row = { label: string; values: (number | null)[]; fmt: (v: number | null, i: number) => string; best?: 'min' | 'max' };

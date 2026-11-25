@@ -17,6 +17,10 @@ export interface Env {
   ADMIN_EMAILS: string;
   TELEGRAM_BOT_TOKEN?: string;
   TELEGRAM_WEBHOOK_SECRET?: string;
+  AMAZON_CREATORS_CLIENT_ID?: string;
+  AMAZON_CREATORS_CLIENT_SECRET?: string;
+  AMAZON_PARTNER_TAG?: string;
+  NOON_FEED_URL?: string;
 }
 
 export class HttpError extends Error {
