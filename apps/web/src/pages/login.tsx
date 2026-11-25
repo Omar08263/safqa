@@ -193,7 +193,7 @@ export function LoginPage() {
         ) : null}
         <form onSubmit={onSubmit} className="space-y-3" key={mode}>
           {/* Honeypot: invisible to people and screen readers; bots that fill every field reveal themselves. */}
-          <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}>
+          <div aria-hidden="true" style={{ position: 'absolute', insetInlineStart: 0, top: 0, width: 1, height: 1, overflow: 'hidden', clipPath: 'inset(50%)', whiteSpace: 'nowrap', opacity: 0, pointerEvents: 'none' }}>
             <label>Website<input name="hp_url" type="text" tabIndex={-1} autoComplete="off" defaultValue="" /></label>
           </div>
           {mode === 'register' ? (

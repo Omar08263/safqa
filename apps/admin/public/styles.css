@@ -89,3 +89,5 @@ table{width:100%;border-collapse:collapse}th,td{text-align:start;padding:10px 8p
 .spec-m{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;font-size:12px}.spec-m span{background:rgba(255,255,255,.06);border-radius:99px;padding:2px 8px}.spec-m .off{opacity:.45}
 .finding{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06)}.finding:last-child{border-bottom:0}.finding small{display:block}
 .fixes{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+
+html{overflow-x:clip}@media (pointer:coarse),(max-width:1024px){input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{font-size:16px!important}}

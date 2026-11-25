@@ -405,3 +405,12 @@ nav a[data-section][aria-current="page"] { background: var(--accent-soft); color
 .media-tile.has-badges > img { padding: 22% 8% 6%; }
 /* Emoji next to gradient headlines keep their own colours (never a clipped gradient block). */
 .emoji-plain { -webkit-text-fill-color: initial; color: initial; background: none; }
+
+/* QA v6: never let an off-screen element widen the layout viewport (Android tablets zoomed out to 4096px
+   when a left:-10000px honeypot sat in an RTL page), and keep form text >= 16px on touch screens so mobile
+   browsers never auto-zoom on focus. Unlayered so it beats Tailwind's text-sm/text-xs utilities. */
+html { overflow-x: clip; }
+@media (pointer: coarse), (max-width: 1024px) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']), select, textarea { font-size: 16px; }
+  input::placeholder, textarea::placeholder { font-size: inherit; }
+}
