@@ -130,12 +130,16 @@ export const parseJ = <T>(s: string | null | undefined, d: T): T => {
 /** Fixed-window rate limit stored in D1 (cheap, free-tier friendly). */
 export async function rateLimit(env: Env, key: string, limit: number, windowSec: number): Promise<boolean> {
   const now = Math.floor(Date.now() / 1000);
-  const row = await env.DB.prepare('SELECT count, reset FROM rate WHERE key=?').bind(key).first<{ count: number; reset: number }>();
-  if (!row || row.reset <= now) {
-    await env.DB.prepare('INSERT OR REPLACE INTO rate (key,count,reset) VALUES (?,1,?)').bind(key, now + windowSec).run();
-    return true;
-  }
-  if (row.count >= limit) return false;
-  await env.DB.prepare('UPDATE rate SET count=count+1 WHERE key=?').bind(key).run();
+  // Fail open when D1 is read-only (e.g. the free tier's daily write limit): the site keeps working, limits resume after reset.
+  let row: { count: number; reset: number } | null = null;
+  try { row = await env.DB.prepare('SELECT count, reset FROM rate WHERE key=?').bind(key).first<{ count: number; reset: number }>(); } catch (e) { console.log('rate read failed', String(e).slice(0, 120)); return true; }
+  try {
+    if (!row || row.reset <= now) {
+      await env.DB.prepare('INSERT OR REPLACE INTO rate (key,count,reset) VALUES (?,1,?)').bind(key, now + windowSec).run();
+      return true;
+    }
+    if (row.count >= limit) return false;
+    await env.DB.prepare('UPDATE rate SET count=count+1 WHERE key=?').bind(key).run();
+  } catch (e) { console.log('rate write failed', String(e).slice(0, 120)); return !row || row.reset <= now || row.count < limit; }
   return true;
 }

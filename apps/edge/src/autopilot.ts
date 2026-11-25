@@ -44,8 +44,10 @@ export function nextRank(xp: number) {
 type Row = { id: string; xp: number; runs: number; ok: number; failed: number; overridden: number; enabled: number; rank_override: string | null; last_run: string | null; last_note: string | null; auto?: number };
 
 export async function opsLog(env: Env, actor: string, kind: string, title: string, detail?: unknown, severity: 'info' | 'warn' | 'crit' | 'ok' = 'info') {
-  await env.DB.prepare('INSERT INTO ops_audit (at,actor,kind,title,detail,severity) VALUES (?,?,?,?,?,?)')
-    .bind(nowIso(), actor, kind, title.slice(0, 300), detail === undefined ? null : JSON.stringify(detail).slice(0, 4000), severity).run();
+  try {
+    await env.DB.prepare('INSERT INTO ops_audit (at,actor,kind,title,detail,severity) VALUES (?,?,?,?,?,?)')
+      .bind(nowIso(), actor, kind, title.slice(0, 300), detail === undefined ? null : JSON.stringify(detail).slice(0, 4000), severity).run();
+  } catch (e) { console.log('ops audit write failed', actor, kind, title.slice(0, 80), String(e).slice(0, 120)); }
 }
 
 async function agentRow(env: Env, id: string): Promise<Row> {
