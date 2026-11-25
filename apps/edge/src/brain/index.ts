@@ -39,8 +39,9 @@ const KEY = 'brain:state';
 const fresh = (): BrainState => ({ v: 1, settings: { auto: true, github: false }, ticks: 0, findings: [], done: [], pending: [], issues: [], skipped: {}, paused: {} });
 
 export async function loadState(env: Env): Promise<BrainState> {
-  const live = await edgeCacheGet<BrainState>(KEY);
-  const st = live ?? parseJ<BrainState>(await sget(env, KEY), fresh());
+  // The Cache API copy is per data centre; the persisted copy is global. Take whichever is newer.
+  const [live, saved] = await Promise.all([edgeCacheGet<BrainState>(KEY), sget(env, KEY).then((x) => parseJ<BrainState | null>(x, null))]);
+  const st = [live, saved].filter((x): x is BrainState => Boolean(x)).sort((a, b) => (b.ticks ?? 0) - (a.ticks ?? 0))[0] ?? fresh();
   return { ...fresh(), ...st };
 }
 async function saveState(env: Env, st: BrainState, persist: boolean) {
