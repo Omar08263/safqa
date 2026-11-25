@@ -3,5 +3,5 @@
   "private": true,
   "type": "module",
   "description": "Builds the offline semantic index (multilingual-e5-small, int8) for the site. npm i && node embed-catalog.mjs",
-  "dependencies": { "@huggingface/transformers": "^3.8.1" }
+  "dependencies": { "@huggingface/transformers": "^4.3.2" }
 }
