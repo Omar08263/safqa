@@ -197,7 +197,13 @@ describe('intrusion log', () => {
 
 describe('mobile signer ↔ server verifier', () => {
   it('signatures made by the app (pure-JS HMAC) verify on the Worker', async () => {
-    const { signHeaders } = await import('../../../mobile/src/lib/sign');
+    // apps/mobile is outside the pnpm workspace (own tsconfig/deps): test a copy of the file.
+    const { copyFileSync, mkdtempSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const { tmpdir } = await import('node:os');
+    const dir = mkdtempSync(join(tmpdir(), 'sign-'));
+    copyFileSync(new URL('../../../mobile/src/lib/sign.ts', import.meta.url), join(dir, 'sign.ts'));
+    const { signHeaders } = await import(/* @vite-ignore */ join(dir, 'sign.ts'));
     const body = JSON.stringify({ productId: 'p1', note: 'عربي' });
     const h = signHeaders('POST', '/api/watchlist?x=1', body, 'k-app');
     const req = new Request('https://x/api/watchlist?x=1', { method: 'POST', headers: h, body });
