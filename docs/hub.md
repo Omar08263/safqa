@@ -28,6 +28,28 @@ Seven agents run on the cron and escalate only real decisions (`escalations`, un
 
 Ranks: 🌱 trainee 0 → 🔧 assistant 50 → ⭐ pro 200 → 💎 expert 600 → 👑 legend 1500 XP. +1 per successful run, +10 when the owner agrees with a suggestion, −5 when the owner overrides it. The owner can pin a rank, grant XP, pause or run any agent from either Hub. The AI budget (180 calls/day, Workers AI free tier) is shared; agents degrade to rules when it runs out.
 
+## Owner toolkit — «أدواتي الذكية» (apps/edge/src/owner-tools.ts)
+Only for the owner: the Google allowlist on the web Hub, or a paired device in the Hub app (tab 🧠). Users never see it, and every route goes through `needAdmin`.
+
+| Agent | When it runs | What it does | What it can do alone (Autopilot) |
+|---|---|---|---|
+| 🧞 أمين (command agent) | on demand, plus every 10 min | Egyptian Arabic → whitelisted actions (flag, banner, code, agent, announce, featured, run). Rules first, Workers AI fallback that must return strict JSON. Shows a preview with before/after; one tap applies and snapshots the state; ↩️ rolls back. Every 10 min it watches applied changes and rolls one back on its own when errors reach ≥10 and >3× the baseline rate +0.2 | auto-rollback |
+| 🎯 صيّاد (deal hunter) | hourly | Picks deals and verifies them: fresh <72 h, price ≤ 30-day median ×0.92, real discount 12–85%, flags inflated list prices | features up to 24/day in «صيد اليوم» (site home + app) |
+| 🕵️ عين (competitor intel) | 09:00 and 21:00 | Public pages only (Yaoota, Jumia, noon, Amazon.eg, B.TECH, 2B). Respects robots.txt, honest UA `SafqaBot`, diffs against KV, AI summary | read-only |
+| 📈 نمو (growth advisor) | 10:00 | Safqa analytics → KPIs + AI ideas (each idea can be sent to the command box) | from rank «مساعد»: up to 3 flag/banner tweaks a day |
+| 📣 حملة (campaigns) | 12:00 | Telegram/WhatsApp/social copy + flux-1-schnell image, saved as drafts | site banner (2/day); Telegram channel post only when `campaign_telegram` is on (off by default), once a day |
+| 🎙️ مدير (CEO brief) | 08:00 | Daily brief, also covers what the agents did alone; read aloud (speechSynthesis ar-EG on the web, expo-speech in the app) | — |
+
+**Guardrails**
+- Global switch: flag `owner_autopilot`. Each agent also has `enabled` + `auto`.
+- Autonomy grows with rank (XP from good runs). Daily caps are listed per agent above.
+- `owner_autopilot` and `campaign_telegram` can never be changed by an agent.
+- Money movement, user bans/deletions and destructive actions are blocked: regex in commands and in `autoAct`. Anything outside an agent's rules escalates as a decision (apply / skip).
+- Every proposal, apply, rollback and auto action goes to `ops_log` + `owner_changes` (audit page).
+- AI calls count against `AI_DAILY_CALL_BUDGET`, results are cached in KV, and endpoints are rate-limited (campaign 12/day, brief 4/day).
+
+Routes are under `/api/v2/hub/`: `owner`, `owner/autopilot`, `command`, `changes`, `changes/:id/apply|rollback`, `docs?kind=`, `growth`, `deals-hunt`, `deals-hunt/feature`, `campaign`, `brief`.
+
 ## Remote config
 `GET /api/v2/config` (KV-cached 5 min) → `{ flags: { key: { on, rollout, value, platforms } } }`. The site and app bucket each install by a stable id for percentage rollouts, refresh every 5 minutes and report crashes inside `<Feature flag>` boundaries to `POST /api/v2/telemetry`. The `banner` flag carries `{ ar, level }` for a dismissible strip.
 
