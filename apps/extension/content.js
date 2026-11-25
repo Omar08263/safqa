@@ -2,7 +2,7 @@
 // shows Safqa's cross-store prices, and — only if you press the button — shares this price
 // with Safqa as a "user-reported" offer. It never crawls, never runs in the background, and
 // does not touch store bot checks.
-const SITE = 'https://safqa-eg-safqa.static.hf.space/#';
+const SITE = 'https://safqaeg.pages.dev';
 
 function readProduct() {
   const nodes = [];

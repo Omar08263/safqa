@@ -14,7 +14,7 @@ comes from a public, sanctioned source. We never disguise the crawler, rotate pr
 | noon | noon affiliate feed (`NOON_FEED_URL`) | Dormant until the affiliate programme approves us. noon blocks bots and we never disguise the crawler. |
 | Users | Paste-a-link (`/#/add`) and the browser extension | Worker reads the public page only if robots allows; extension sends the product the **user** is viewing, only when they press the button. Labelled "user-reported". |
 
-Crawler identity: `SafqaBot/5.0 (+https://safqa-eg-safqa.static.hf.space/#/about; price comparison; contact via site)`.
+Crawler identity: `SafqaBot/5.0 (+https://safqaeg.pages.dev/about; price comparison; contact via site)`.
 On 403/429/503, a captcha/bot-check page, or 20 consecutive errors, the store run stops.
 
 ## Pipeline

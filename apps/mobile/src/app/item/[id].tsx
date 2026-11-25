@@ -55,7 +55,7 @@ export default function ItemScreen() {
           <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
             {o ? <Button label={`اشتري من ${o.store.nameAr}`} icon="🛒" onPress={() => void WebBrowser.openBrowserAsync(o.url)} /> : null}
             <Button label={watching ? 'بتراقبه ✓' : 'راقب السعر'} icon="🔔" kind={watching ? 'palm' : 'ghost'} onPress={toggleWatch} />
-            <Button label="شارك" kind="ghost" onPress={() => void Share.share({ message: `${p.titleAr || p.titleEn} بـ ${egp(o?.priceEgp)} على صفقة\n${SITE_URL}/#/p/${p.id}` })} />
+            <Button label="شارك" kind="ghost" onPress={() => void Share.share({ message: `${p.titleAr || p.titleEn} بـ ${egp(o?.priceEgp)} على صفقة\n${SITE_URL}/p/${p.id}` })} />
           </View>
         </View>
       </View>
