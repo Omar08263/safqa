@@ -1,5 +1,6 @@
 import { useBottomBarMode } from '../components/bottom-nav';
-import { feedback, setSoundEnabled, useHaptics, useSound } from '../lib/sound';
+import { feedback, useHaptics } from '../lib/sound';
+import { SoundStudio } from '../components/sound-studio';
 import { useTier } from '../lib/tiers';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Bell, Camera, Database, Download, Gift, KeyRound, LogOut, Palette, Settings, Smartphone, Trash2, Upload, UserCircle } from 'lucide-react';
@@ -154,7 +155,6 @@ export function SettingsPage() {
   const { locale, setLocale, theme, setTheme } = usePrefs();
   const [a, setA] = useAppearance();
   const [, setTour] = useLocal<boolean>('safqa.welcome.v4', false);
-  const [sound] = useSound();
   const [haptics, setHaptics] = useHaptics();
   const [bar, setBar] = useBottomBarMode();
   const { tier } = useTier();
@@ -237,7 +237,7 @@ export function SettingsPage() {
         </Card>
         <Card className="space-y-3">
           <h2 className="flex items-center gap-2 text-lg font-bold">🎚️ {tr('الصوت والاهتزاز والتنقل', 'Sound, haptics & navigation')}</h2>
-          <Switch on={sound} onClick={() => setSoundEnabled(!sound)} label={tr('أصوات خفيفة', 'Subtle sounds')} hint={tr('صوت صغير لما تضيف للمقارنة أو تفعّل باقة. مقفول افتراضيًا.', 'A tiny sound on key actions. Off by default.')} />
+          <SoundStudio />
           <Switch on={haptics} onClick={() => { setHaptics(!haptics); feedback('tap', 'medium'); }} label={tr('اهتزاز خفيف (موبايل)', 'Haptics (phones)')} hint={tr('اهتزاز صغير مع الأزرار المهمة', 'A short buzz on important taps')} />
           <div>
             <p className="text-sm font-semibold">{tr('شريط التنقل اللي تحت (موبايل)', 'Bottom bar (phones)')}</p>

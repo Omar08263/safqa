@@ -1,0 +1,68 @@
+/* Safqa v5 premium motion + glass layer. Loaded after styles.css. */
+:root {
+  /* Spring curves approximated with linear() — bouncy release, soft settle. */
+  --spring: linear(0, 0.009, 0.035 2.1%, 0.141, 0.281 6.7%, 0.723 12.9%, 0.938 16.7%, 1.017, 1.077, 1.121, 1.149 24.3%, 1.159, 1.163, 1.161, 1.154 29.9%, 1.129 32.8%, 1.051 39.6%, 1.017 43.1%, 0.991, 0.977 51%, 0.974 53.8%, 0.975 57.1%, 0.997 69.8%, 1.003 76.9%, 1);
+  --spring-soft: linear(0, 0.06 3%, 0.22 7%, 0.6 16%, 0.86 25%, 1.02 35%, 1.05 42%, 1.02 55%, 1);
+  --gold: #f5b544;
+}
+@supports not (transition-timing-function: linear(0, 1)) { :root { --spring: cubic-bezier(.34,1.56,.64,1); --spring-soft: cubic-bezier(.22,1.2,.36,1); } }
+
+:where(button:not(:disabled), a.press, [role='button']) { transition: transform 0.45s var(--spring), box-shadow 0.3s ease, background-color 0.2s ease, filter 0.2s ease; }
+:where(button:not(:disabled):active, a.press:active, [role='button']:active) { transform: scale(0.955); transition-duration: 0.08s; }
+
+.fx-touch { position: fixed; z-index: 9998; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, color-mix(in srgb, var(--gold) 55%, transparent) 0%, transparent 70%);
+  animation: fx-touch 0.6s cubic-bezier(.2,.8,.2,1) forwards; }
+@keyframes fx-touch { from { transform: scale(1); opacity: .9; } to { transform: scale(9); opacity: 0; } }
+.fx-spark { position: fixed; z-index: 9999; width: var(--s); height: var(--s); margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2); border-radius: 50%; pointer-events: none;
+  background: var(--c); box-shadow: 0 0 8px var(--c); animation: fx-spark 0.8s cubic-bezier(.15,.8,.25,1) forwards; }
+@keyframes fx-spark { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; } }
+
+.glass-tile { background: color-mix(in srgb, var(--elev, #fff) 70%, transparent); border: 1px solid color-mix(in srgb, currentColor 10%, transparent); backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4); }
+.glass-deep { background: linear-gradient(160deg, rgba(255,255,255,.14), rgba(255,255,255,.04)); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(22px) saturate(1.6); -webkit-backdrop-filter: blur(22px) saturate(1.6); box-shadow: 0 30px 80px -30px rgba(0,0,0,.65), inset 0 1px 0 rgba(255,255,255,.2); }
+.sfx-bounce { animation: sfx-bounce 0.6s var(--spring); }
+@keyframes sfx-bounce { 0% { transform: scale(.6) rotate(-8deg); } 100% { transform: scale(1) rotate(0); } }
+.sfx-range { accent-color: var(--gold); height: 6px; }
+
+.magnetic { transition: transform 0.5s var(--spring-soft); transform-style: preserve-3d; will-change: transform; }
+
+/* Spring entrance utilities */
+.spring-in { animation: spring-in 0.7s var(--spring) both; animation-delay: var(--d, 0ms); }
+@keyframes spring-in { from { opacity: 0; transform: translateY(18px) scale(.96); } to { opacity: 1; transform: none; } }
+.float-y { animation: float-y 6s ease-in-out infinite; }
+@keyframes float-y { 50% { transform: translateY(-8px); } }
+.shimmer-text { background: linear-gradient(100deg, var(--gold) 0%, #fff6d8 45%, var(--gold) 55%, #e08e0b 100%); background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 4s linear infinite; }
+@keyframes shimmer { to { background-position: -220% 0; } }
+.aurora { position: absolute; inset: -20%; filter: blur(60px); opacity: .55; pointer-events: none;
+  background: radial-gradient(40% 40% at 20% 30%, var(--a1, #8b5cf6), transparent 70%), radial-gradient(35% 35% at 80% 20%, var(--a2, #f5b544), transparent 70%), radial-gradient(45% 45% at 60% 85%, var(--a3, #10b981), transparent 70%);
+  animation: aurora 14s ease-in-out infinite alternate; }
+@keyframes aurora { to { transform: rotate(18deg) scale(1.15); } }
+
+/* What's New */
+.wn-root { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); background: rgba(5, 8, 20, .72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: wn-fade .35s ease both; color: #fff; overflow: hidden; }
+@keyframes wn-fade { from { opacity: 0; } }
+.wn-card { position: relative; width: min(560px, 100%); max-height: 100%; overflow: hidden auto; border-radius: 28px; animation: wn-pop .7s var(--spring) both; }
+@keyframes wn-pop { from { opacity: 0; transform: translateY(40px) scale(.9); } }
+.wn-img { position: relative; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 22px; margin: 10px; }
+.wn-img img { width: 100%; height: 100%; object-fit: cover; animation: kenburns 9s ease-out both; }
+@keyframes kenburns { from { transform: scale(1.18) translate(2%, 2%); } to { transform: scale(1.02); } }
+.wn-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(5,8,20,.85)); }
+.wn-bars { display: flex; gap: 4px; padding: 12px 16px 0; }
+.wn-bars i { flex: 1; height: 3px; border-radius: 3px; background: rgba(255,255,255,.22); overflow: hidden; }
+.wn-bars i b { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #fff, var(--gold)); }
+.wn-bars i.done b { width: 100%; }
+.wn-bars i.now b { animation: wn-bar var(--dur, 7s) linear forwards; }
+.wn-root.paused .wn-bars i.now b { animation-play-state: paused; }
+@keyframes wn-bar { to { width: 100%; } }
+.wn-emoji { font-size: 44px; filter: drop-shadow(0 8px 20px rgba(0,0,0,.5)); animation: wn-emoji .8s var(--spring) both .1s; display: inline-block; }
+@keyframes wn-emoji { from { transform: scale(0) rotate(-30deg); } }
+.wn-stagger > * { animation: spring-in .7s var(--spring) both; }
+.wn-stagger > *:nth-child(2) { animation-delay: 80ms; } .wn-stagger > *:nth-child(3) { animation-delay: 160ms; } .wn-stagger > *:nth-child(4) { animation-delay: 240ms; }
+.wn-particles { position: absolute; inset: 0; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-touch, .fx-spark, .aurora, .float-y, .shimmer-text, .wn-img img { animation: none !important; }
+  .spring-in, .wn-card, .wn-stagger > *, .wn-emoji, .sfx-bounce { animation-duration: .01ms !important; }
+}
+.calm .fx-touch, .calm .fx-spark, .no-premium-motion .fx-touch, .no-premium-motion .fx-spark { display: none; }
+.calm .aurora, .no-premium-motion .aurora { animation: none; }
