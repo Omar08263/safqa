@@ -136,7 +136,7 @@ export function V5ProductPage({ id }: { id: string }) {
               <dl data-qa="price-stats" className="mt-3 grid grid-cols-3 gap-2 text-center">
                 {[
                   { k: 'low', label: tr('أقل سعر شفناه', 'Lowest seen'), value: p.v5?.low ? formatEGP(p.v5.low, locale) : '—', cls: '' },
-                  { k: 'save', label: tr('بتوفّر عن أغلى متجر', 'Save vs priciest'), value: saving > 0 ? formatEGP(saving, locale) : '—', cls: saving > 0 ? 'text-palm' : '' },
+                  { k: 'save', label: tr('توفير', 'You save'), value: saving > 0 ? formatEGP(saving, locale) : '—', cls: saving > 0 ? 'text-palm' : '' },
                   { k: 'ago', label: tr('آخر تحديث', 'Last checked'), value: p.v5?.checkedAt ? ago(p.v5.checkedAt, ar) : '—', cls: '' },
                 ].map((x) => (
                   <div key={x.k} className="min-w-0 rounded-2xl bg-accent/60 px-2 py-2">

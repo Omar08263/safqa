@@ -14,7 +14,7 @@ const GOOGLE_REDIRECT = 'https://safqa-eg-safqa.static.hf.space';
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-const fmt = (n) => (n == null ? '—' : Math.round(Number(n)).toLocaleString('en-US'));
+const fmt = (n) => (n == null ? '—' : `\u2068${Math.round(Number(n)).toLocaleString('en-US')}\u2069`); // bidi-isolated so numbers never jumble with Arabic
 const ago = (iso) => { if (!iso) return '—'; const s = (Date.now() - Date.parse(iso)) / 1000; if (s < 60) return 'دلوقتي'; if (s < 3600) return `من ${Math.round(s / 60)} دقيقة`; if (s < 86400) return `من ${Math.round(s / 3600)} ساعة`; return new Date(iso).toLocaleString('ar-EG', { timeZone: 'Africa/Cairo', dateStyle: 'medium', timeStyle: 'short' }); };
 const toast = (t) => { const d = document.createElement('div'); d.textContent = t; $('#toast').append(d); setTimeout(() => d.remove(), 3500); };
 const TIERS = { free: ['مجاني', '🌱'], silver: ['فضّي', '🥈'], gold: ['ذهبي', '👑'], diamond: ['ماسي', '💎'] };

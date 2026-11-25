@@ -91,3 +91,4 @@ table{width:100%;border-collapse:collapse}th,td{text-align:start;padding:10px 8p
 .fixes{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
 
 html{overflow-x:clip}@media (pointer:coarse),(max-width:1024px){input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{font-size:16px!important}}
+.kpi .v,td,th,.pill,.mono,.gauge b{font-variant-numeric:tabular-nums}bdi,.num{unicode-bidi:isolate;font-variant-numeric:tabular-nums}
