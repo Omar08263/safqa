@@ -2,6 +2,8 @@
 export interface Env {
   DB: D1Database;
   KV: KVNamespace;
+  OBS?: AnalyticsEngineDataset;
+  HUNTER_TOKEN?: string;
   AI: Ai;
   ALLOWED_ORIGINS: string;
   GOOGLE_CLIENT_ID: string;

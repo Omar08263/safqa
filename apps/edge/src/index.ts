@@ -13,6 +13,9 @@ import { autopilotTick } from './autopilot';
 import { tierById } from './tiers';
 import * as V5 from './catalog/api';
 import * as Ingest from './catalog/ingest';
+import * as Hunter from './catalog/hunter';
+import * as Budget from './infra/budget';
+import { ensureState } from './infra/state';
 import * as Smart from './catalog/smart';
 import { cairoDay, type Env, fail, HttpError, json, nowIso, parseJ, rateLimit, readJson, str, timingSafeEqual, uid, b64 } from './util';
 
@@ -642,6 +645,7 @@ on('POST', '/api/v2/admin/telegram/digest', async (c) => { await needAdmin(c); c
 
 V5.register(on, auth.authenticate);
 Smart.registerSmart(on, auth.authenticate);
+Hunter.registerHunter(on);
 
 // ---------------- runtime ----------------
 function cors(env: Env, req: Request): Record<string, string> {
@@ -658,7 +662,9 @@ function cors(env: Env, req: Request): Record<string, string> {
 }
 
 export default {
-  async fetch(req: Request, env: Env, exec: ExecutionContext): Promise<Response> {
+  async fetch(req: Request, rawEnv: Env, exec: ExecutionContext): Promise<Response> {
+    const env: Env = { ...rawEnv, DB: Budget.metered(rawEnv.DB) }; // every write is metered against the daily budget
+    Budget.setJob('api');
     const ch = cors(env, req);
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: ch });
     const url = new URL(req.url);
@@ -669,6 +675,7 @@ export default {
         const match = url.pathname.match(re);
         if (!match) continue;
         const out = await h({ req, env, url, p: match.slice(1), exec });
+        if (Budget.pending()) exec.waitUntil(Budget.flush(env).catch(() => undefined));
         const res = out instanceof Response ? out : json(out);
         const headers = new Headers(res.headers);
         for (const [k, v] of Object.entries(ch)) headers.set(k, v);
@@ -681,19 +688,23 @@ export default {
       return json({ error: { code: 'internal', message: 'حصلت مشكلة — جرّب تاني' } }, 500, ch);
     }
   },
-  async scheduled(ev: ScheduledController, env: Env, exec: ExecutionContext) {
+  async scheduled(ev: ScheduledController, rawEnv: Env, exec: ExecutionContext) {
+    const env: Env = { ...rawEnv, DB: Budget.metered(rawEnv.DB) };
     const d = new Date(ev.scheduledTime);
     const cairoH = (d.getUTCHours() + 2) % 24;
     if (ev.cron === '5-55/10 * * * *') {
       // v5 ingestion agents: new arrivals + rotating price sweep, then adaptive recrawl, then smart notifications.
       exec.waitUntil((async () => {
-        await Ingest.ingestTick(env).catch((e) => console.log('ingest', String(e)));
-        await Ingest.adaptiveRecrawl(env, 3).catch((e) => console.log('recrawl', String(e)));
-        await Smart.smartTick(env, d).catch((e) => console.log('smart', String(e)));
+        await ensureState(env);
+        Budget.setJob('ingest'); await Ingest.ingestTick(env).catch((e) => console.log('ingest', String(e)));
+        Budget.setJob('recrawl'); await Ingest.adaptiveRecrawl(env, 3).catch((e) => console.log('recrawl', String(e)));
+        Budget.setJob('smart'); await Smart.smartTick(env, d).catch((e) => console.log('smart', String(e)));
+        await Budget.flush(env, true);
       })());
       return;
     }
     exec.waitUntil((async () => {
+      Budget.setJob('cron');
       await C.judgeAppeals(env).catch(() => 0);
       if (d.getUTCMinutes() < 10) {
         await env.DB.prepare("UPDATE users SET tier='free', tier_until=NULL WHERE tier<>'free' AND tier_until < ?").bind(nowIso()).run();
@@ -706,6 +717,7 @@ export default {
       await T.drainOutbox(env);
       // Last: priority recrawl of hot/watched products uses the remaining subrequest budget of this invocation.
       await Ingest.adaptiveRecrawl(env, 3).catch((e) => console.log('recrawl', String(e)));
+      await Budget.flush(env, true);
     })());
   },
 };

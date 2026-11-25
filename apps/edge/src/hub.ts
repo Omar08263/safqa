@@ -1,5 +1,6 @@
 // Safqa Hub API: remote config, client telemetry, autopilot control, escalations,
 // audit, reports, deploy status, owner notifications and device pairing.
+import { edgeCacheGet, edgeCachePut } from './infra/state';
 import changelog from '../../web/src/features/changelog.json';
 import * as auth from './auth';
 import type { Authed } from './auth';
@@ -20,7 +21,7 @@ const SURFACES = [
 ];
 
 async function deploys(env: Env) {
-  const cached = await env.KV.get('hub:deploys', 'json');
+  const cached = await edgeCacheGet<any>('hub:deploys');
   if (cached) return cached;
   const gh = (p: string) => fetch(`https://api.github.com/repos/${REPO}${p}`, { headers: { 'user-agent': 'safqa-hub', accept: 'application/vnd.github+json' } }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
   const [commits, releases, space] = await Promise.all([
@@ -41,7 +42,7 @@ async function deploys(env: Env) {
     releases: (releases ?? []).map((r) => ({ tag: r.tag_name, name: r.name, at: r.published_at, url: r.html_url, assets: (r.assets ?? []).map((a: any) => ({ name: a.name, url: a.browser_download_url, size: a.size, downloads: a.download_count })) })),
     changelog: changelog.latest,
   };
-  await env.KV.put('hub:deploys', JSON.stringify(out), { expirationTtl: 300 });
+  await edgeCachePut('hub:deploys', out, 300);
   return out;
 }
 

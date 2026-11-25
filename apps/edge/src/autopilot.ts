@@ -4,6 +4,7 @@
 // the owner answers in Safqa Hub. Every action lands in ops_audit.
 // AI use is tiny (≈2–4 calls/day): curation headline + daily report, cached,
 // with template fallbacks when the free Workers AI quota is gone.
+import { edgeCacheGet, edgeCachePut } from './infra/state';
 import { aiBudgetLeft, llm } from './ai';
 import { analyze } from '../../web/src/lib/moderation';
 import { decidePayment } from './payments';
@@ -92,7 +93,7 @@ export async function notifyOwner(env: Env, html: string) {
 // ---------------------------------------------------------------- flags / remote config
 export interface FlagRow { key: string; enabled: number; rollout: number; value: string | null; description: string | null; platforms: string; guard: number; rolled_back_at: string | null; updated_at: string | null; updated_by: string | null }
 export async function publicConfig(env: Env) {
-  const cached = await env.KV.get('config:public', 'json');
+  const cached = await edgeCacheGet<any>('config:public');
   if (cached) return cached;
   const flags = (await env.DB.prepare('SELECT * FROM flags').all<FlagRow>()).results;
   const curated = parseJ((await env.DB.prepare("SELECT value FROM settings WHERE key='curated'").first<{ value: string }>())?.value, null);
@@ -102,10 +103,10 @@ export async function publicConfig(env: Env) {
     flags: Object.fromEntries(flags.map((f) => [f.key, { on: Boolean(f.enabled), rollout: f.rollout, value: parseJ(f.value, f.value), platforms: parseJ<string[]>(f.platforms, ['web', 'app']) }])),
     curated, suspectPrices: suspect.slice(0, 200),
   };
-  await env.KV.put('config:public', JSON.stringify(out), { expirationTtl: 300 });
+  await edgeCachePut('config:public', out, 300);
   return out;
 }
-export const bustConfig = (env: Env) => env.KV.delete('config:public');
+export const bustConfig = (_env: Env) => caches.default.delete(`https://cache.safqa.internal/${encodeURIComponent('config:public')}`).catch(() => false);
 
 export async function setFlag(env: Env, actor: string, key: string, patch: Partial<{ enabled: boolean; rollout: number; value: unknown; description: string; guard: boolean; platforms: string[] }>) {
   if (!/^[a-z0-9_]{2,40}$/.test(key)) throw new Error('bad key');

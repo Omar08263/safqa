@@ -37,3 +37,10 @@ AI_DAILY_CALL_BUDGET = "180"
 # Shared web modules (rules, agents, moderation) read Vite env at import time.
 [define]
 "import.meta.env" = "{\"VITE_DEMO_MODE\":\"edge\"}"
+
+# Workers Analytics Engine (free: 100k data points/day, 3-month retention): raw price observations
+# (every check, changed or not) + write-budget telemetry. Separate quota from D1 writes.
+# One-time: enable Analytics Engine at dash.cloudflare.com → Workers → Analytics Engine (free), then uncomment.
+# [[analytics_engine_datasets]]
+# binding = "OBS"
+# dataset = "safqa_obs"

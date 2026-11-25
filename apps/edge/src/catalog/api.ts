@@ -1,6 +1,8 @@
 // Safqa v5 catalog API on the Worker: instant search, product + real history + prediction,
 // hot deals (heat), live drops (SSE + polling), votes, coupons, paste-a-link, personalised feed,
 // compare, and the priority recrawl used by the cron (hot/watched first, Keepa-style).
+import { edgeCacheGet, edgeCachePut } from '../infra/state';
+import { aePoint } from '../infra/budget';
 import type { Env } from '../util';
 import { fail, nowIso, parseJ, rateLimit, str, uid } from '../util';
 import { CATEGORIES, canonicalUrl, categorize, categoryBySlug, condition, extractProduct, guessBrand, matchKey, normAr, normQuery, plausibleEgp, predict, productId, rowHeat, searchText, type Extracted } from './core';
@@ -214,11 +216,11 @@ async function extractFromResponse(r: Response, env?: Env): Promise<Extracted | 
 }
 export async function robotsOk(env: Env, u: URL): Promise<boolean> {
   const key = `robots:${u.host}`;
-  let txt = await env.KV.get(key);
+  let txt = await edgeCacheGet<string>(key);
   if (txt === null) {
     const r = await fetch(`${u.origin}/robots.txt`, { headers: { 'user-agent': UA } }).catch(() => null);
     txt = r?.ok ? (await r.text()).slice(0, 20000) : '';
-    await env.KV.put(key, txt, { expirationTtl: 86400 });
+    await edgeCachePut(key, txt, 86400);
   }
   let active = false; let best: { allow: boolean; len: number } | null = null;
   const path = u.pathname + u.search;
@@ -260,6 +262,15 @@ export async function saveOffers(env: Env, r: Row, offers: Offer[]): Promise<{ c
   const recent = offers.flatMap((o) => o.h.filter(([t]) => t >= since).map(([, v]) => v)).sort((a, b) => a - b);
   const med30 = recent.length ? recent[Math.floor(recent.length / 2)]! : best.p;
   const now = nowIso();
+  // Write budget: if nothing a user can see changed, only stamp checked_at (1 row, unindexed column)
+  // instead of rewriting the row and both heat indexes (3+ rows).
+  const strip = (os: Offer[]) => JSON.stringify(os.map(({ t: _t, ...o }) => o));
+  if (best.p === Number(r.price) && (best.l ?? null) === (r.list_price ?? null) && (live.length ? 1 : 0) === Number(r.in_stock) && offers.length === Number(r.n_offers) && best.s === r.store && strip(offers) === strip(parseJ<Offer[]>(r.offers, []))) {
+    await env.DB.prepare('UPDATE catalog SET checked_at=? WHERE id=?').bind(now, r.id).run();
+    aePoint(env, 'obs', [r.id, best.s, 'same'], [best.p]);
+    return { changed: false };
+  }
+  aePoint(env, 'obs', [r.id, best.s, 'changed'], [best.p, Number(r.price) || 0]);
   let dropPct = r.drop_pct, dropAt = r.drop_at, drop: number | undefined;
   if (r.price && best.p < r.price * 0.995 && live.length) {
     dropPct = Math.round(((r.price - best.p) / r.price) * 1000) / 10; dropAt = now; drop = dropPct;

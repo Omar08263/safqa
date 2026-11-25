@@ -4,6 +4,8 @@
 // it, respects quiet hours (Cairo), a daily cap and dedupe, writes one catchy-but-honest AI headline per drop
 // (Workers AI, shared daily budget), and delivers in-app (alerts) + Telegram when linked.
 // Email: needs a mail provider/domain we don't have on the free stack, so it is not offered (no fake toggle).
+import { sget, sput } from '../infra/state';
+import * as Budget from '../infra/budget';
 import { llm } from '../ai';
 import { enqueue, tgEnabled } from '../telegram';
 import type { Env } from '../util';
@@ -35,7 +37,7 @@ export function scoreForUser(i: Interests, r: { id: string; category?: string | 
 async function headlines(env: Env, drops: Row[]): Promise<Record<number, string>> {
   const out: Record<number, string> = {};
   const need: Row[] = [];
-  for (const d of drops) { const h = await env.KV.get(`head:${d.dropId}`); if (h) out[d.dropId] = h; else need.push(d); }
+  for (const d of drops) { const h = await sget(env, `head:${d.dropId}`); if (h) out[d.dropId] = h; else need.push(d); }
   if (need.length) {
     const r = await llm(env, 'headline', [
       { role: 'system', content: 'اكتب لكل منتج عنوان تنبيه واحد قصير جدًا بالعامية المصرية، جذاب بس صادق 100% (ممنوع "آخر قطعة" أو أي مبالغة)، بإيموجي واحد. رد JSON بس: {"h":["..."]} بنفس الترتيب.' },
@@ -45,7 +47,7 @@ async function headlines(env: Env, drops: Row[]): Promise<Record<number, string>
     for (const [i, d] of need.slice(0, 8).entries()) {
       const line = (h[i] || `📉 ${String(d.title).slice(0, 50)} نزل ${Math.round(d.pct)}%`).slice(0, 120);
       out[d.dropId] = line;
-      await env.KV.put(`head:${d.dropId}`, line, { expirationTtl: 7 * 86400 });
+      await sput(env, `head:${d.dropId}`, line, 7 * 86400);
     }
   }
   return out;
@@ -53,11 +55,12 @@ async function headlines(env: Env, drops: Row[]): Promise<Record<number, string>
 
 /** One smart-notification tick (runs on the ingestion cron). */
 export async function smartTick(env: Env, d: Date) {
-  const since = (await env.KV.get('smart:since')) ?? new Date(Date.now() - 20 * 60_000).toISOString();
+  if (!(await Budget.allow(env, 40, Budget.SOFT_CAP))) return { skipped: 'write budget' };
+  const since = (await sget(env, 'smart:since')) ?? new Date(Date.now() - 20 * 60_000).toISOString();
   const now = nowIso();
   const hour = cairoHour(d);
   const users = (await env.DB.prepare(`SELECT p.*, t.chat_id FROM notif_prefs p LEFT JOIN tg_links t ON t.user_id=p.user_id AND t.subscribed=1 WHERE p.opted_in=1 AND p.mode<>'off' LIMIT 200`).all<Row>()).results;
-  if (!users.length) { await env.KV.put('smart:since', now); return { users: 0 }; }
+  if (!users.length) { await sput(env, 'smart:since', now); return { users: 0 }; }
   let sent = 0;
   // Instant: fresh real drops.
   const drops = (await env.DB.prepare(`SELECT d.id dropId, d.product_id id, d.old, d.new, d.pct, d.store, d.at, c.title, c.title_ar, c.category, c.brand, c.heat, c.price
@@ -98,7 +101,7 @@ export async function smartTick(env: Env, d: Date) {
       sent++;
     }
   }
-  await env.KV.put('smart:since', now);
+  await sput(env, 'smart:since', now);
   return { users: users.length, drops: drops.length, sent };
 }
 

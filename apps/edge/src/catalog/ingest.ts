@@ -5,6 +5,8 @@
 //  • Self-healing extractor: when a page has no JSON-LD, Workers AI reads a small text excerpt once, and the CSS
 //    class that held the price is remembered per host so later reads need no AI.
 // Honest bot identity, robots.txt respected, stops on 403/429. No evasion, ever.
+import { sget, sput } from '../infra/state';
+import * as Budget from '../infra/budget';
 import type { Env } from '../util';
 import { nowIso, parseJ } from '../util';
 import { guessBrand, matchKey, normAr, plausibleEgp, productId, type Extracted } from './core';
@@ -91,7 +93,8 @@ async function applyPage(env: Env, store: string, items: (Extracted & { url: str
 
 /** One ingestion tick: new arrivals of one store + one deep page of the next store. */
 export async function ingestTick(env: Env): Promise<RunLog[]> {
-  const st = parseJ<State>(await env.KV.get('ingest:state'), { rot: 0, deep: {}, blocked: {} });
+  if (!(await Budget.allow(env, 60))) return [];
+  const st = parseJ<State>(await sget(env, 'ingest:state'), { rot: 0, deep: {}, blocked: {} });
   st.blocked ??= {};
   const logs: RunLog[] = [];
   const jobs = [{ feed: FEEDS[st.rot % FEEDS.length]!, page: 1, limit: 100, create: true }];
@@ -109,9 +112,9 @@ export async function ingestTick(env: Env): Promise<RunLog[]> {
     logs.push({ at: nowIso(), store: j.feed.id, page: j.page, items: items.length, ...res, ms: Date.now() - t0 });
   }
   st.rot++;
-  const prev = parseJ<RunLog[]>(await env.KV.get('ingest:log'), []);
-  await env.KV.put('ingest:log', JSON.stringify([...logs, ...prev].slice(0, 120)));
-  await env.KV.put('ingest:state', JSON.stringify(st));
+  const prev = parseJ<RunLog[]>(await sget(env, 'ingest:log'), []);
+  await sput(env, 'ingest:log', JSON.stringify([...logs, ...prev].slice(0, 120)));
+  await sput(env, 'ingest:state', JSON.stringify(st));
   return logs;
 }
 
@@ -120,6 +123,7 @@ export async function ingestTick(env: Env): Promise<RunLog[]> {
  * recently dropped / multi-store 6 h), shortened for volatile prices; the most overdue go first.
  */
 export async function adaptiveRecrawl(env: Env, n = 4) {
+  if (!(await Budget.allow(env, n * 6))) return { skipped: 'write budget' };
   const rows = (await env.DB.prepare(`SELECT c.id, c.heat, c.checked_at, c.drop_at, c.n_offers, length(c.offers) AS olen, (SELECT COUNT(*) FROM watchlist w WHERE w.product_id=c.id) AS watchers
     FROM catalog c WHERE c.id IN (SELECT product_id FROM watchlist) OR c.id IN (SELECT id FROM catalog ORDER BY heat DESC LIMIT 200) OR c.drop_at > ?`).bind(new Date(Date.now() - 3 * 86400_000).toISOString()).all<Row>()).results;
   const now = Date.now();
@@ -138,7 +142,7 @@ export async function adaptiveRecrawl(env: Env, n = 4) {
     if (res?.changed) changed++; if (res?.drop) drops++;
   }
   const out = { at: nowIso(), candidates: rows.length, due: scored.length, checked: scored.map((s) => ({ id: s.id, everyMin: s.interval })), changed, drops };
-  await env.KV.put('recrawl:last', JSON.stringify(out));
+  await sput(env, 'recrawl:last', JSON.stringify(out));
   return out;
 }
 
@@ -147,21 +151,22 @@ export async function health(env: Env) {
   const per = (await env.DB.prepare(`SELECT store, COUNT(*) n, MAX(checked_at) newest, MIN(checked_at) oldest,
       SUM(CASE WHEN checked_at > ? THEN 1 ELSE 0 END) fresh24, SUM(CASE WHEN first_seen > ? THEN 1 ELSE 0 END) new24
       FROM catalog GROUP BY store ORDER BY n DESC`).bind(new Date(Date.now() - 86400_000).toISOString(), new Date(Date.now() - 86400_000).toISOString()).all<Row>()).results;
-  const log = parseJ<RunLog[]>(await env.KV.get('ingest:log'), []);
-  const recrawl = parseJ(await env.KV.get('recrawl:last'), null);
-  const st = parseJ<State>(await env.KV.get('ingest:state'), { rot: 0, deep: {}, blocked: {} });
+  const log = parseJ<RunLog[]>(await sget(env, 'ingest:log'), []);
+  const recrawl = parseJ(await sget(env, 'recrawl:last'), null);
+  const st = parseJ<State>(await sget(env, 'ingest:state'), { rot: 0, deep: {}, blocked: {} });
   const drops24 = await env.DB.prepare('SELECT COUNT(*) n FROM drops WHERE at > ?').bind(new Date(Date.now() - 86400_000).toISOString()).first<{ n: number }>();
-  const heal = parseJ<Record<string, string>>(await env.KV.get('heal:index'), {});
+  const heal = parseJ<Record<string, string>>(await sget(env, 'heal:index'), {});
   return {
     at: nowIso(),
     stores: per.map((s) => ({ store: s.store, products: s.n, newestCheck: s.newest, oldestCheck: s.oldest, checked24h: s.fresh24, new24h: s.new24, feed: FEEDS.some((f) => f.id === s.store), pausedUntil: st.blocked?.[s.store] ? new Date(st.blocked[s.store]!).toISOString() : null, deepPage: st.deep?.[s.store] ?? null })),
     ingest: log.slice(0, 30), recrawl, drops24h: drops24?.n ?? 0, selfHealedHosts: heal,
+    hunter: parseJ(await sget(env, 'hunter:runs'), []).slice(0, 10), budget: await Budget.report(env),
     freshness: {
       feedNewArrivals: 'new products from Shopify feeds: within ~30 min (one store polled every 10 min, 3 stores rotating)',
       feedPrices: 'every Shopify product price: about every 12 h (rotating 250-item deep page per run)',
       hotWatched: 'watched: ~1 h · very hot: ~90 min · hot: ~3 h (adaptive recrawl, 4 products per run)',
       onView: 'any product older than 6 h is re-read when someone opens it',
-      sitemapStores: 'sitemap/JSON-LD stores: box crawler, a few hundred pages per store per run (daily target)',
+      sitemapStores: 'sitemap/JSON-LD stores (B.TECH, 2B, Raya, Sigma, El Badr, Jumia): safqa-hunter on GitHub Actions, daily after the 02:00 Cairo budget reset, within a per-day write budget',
       amazonNoon: 'only via official partner APIs/feeds (dormant until keys), pasted links, or the browser extension',
     },
   };
@@ -169,7 +174,7 @@ export async function health(env: Env) {
 
 // ---------------- self-healing extractor ----------------
 /** Remembered CSS class (per host) that held the price when JSON-LD was missing. */
-export async function healedSelector(env: Env, host: string) { return env.KV.get(`heal:${host}`); }
+export async function healedSelector(env: Env, host: string) { return sget(env, `heal:${host}`); }
 /**
  * Last-resort extraction: given a short visible-text excerpt and the price-like candidates found on the page,
  * ask Workers AI for {title, price}. When the answer matches one candidate, remember that candidate's CSS class
@@ -178,9 +183,9 @@ export async function healedSelector(env: Env, host: string) { return env.KV.get
 export async function aiExtract(env: Env, host: string, title: string, candidates: { cls: string; text: string }[]): Promise<{ title: string; price: number } | null> {
   if (!candidates.length || !env.AI) return null;
   const dayKey = `heal:calls:${new Date().toISOString().slice(0, 10)}`;
-  const used = Number((await env.KV.get(dayKey)) ?? 0);
+  const used = Number((await sget(env, dayKey)) ?? 0);
   if (used >= 60) return null;
-  await env.KV.put(dayKey, String(used + 1), { expirationTtl: 2 * 86400 });
+  await sput(env, dayKey, String(used + 1), 2 * 86400);
   const prompt = `Page title: ${title.slice(0, 160)}\nPrice-like texts on the page (index: text):\n${candidates.slice(0, 12).map((c, i) => `${i}: ${c.text.slice(0, 60)}`).join('\n')}\nWhich index is the product's current selling price in EGP (not old price, not installment)? Reply JSON only: {"i":<index>,"price":<number>,"title":"<short product name>"}`;
   try {
     // biome-ignore lint/suspicious/noExplicitAny: Workers AI binding.
@@ -189,10 +194,10 @@ export async function aiExtract(env: Env, host: string, title: string, candidate
     const c = j.i != null ? candidates[j.i] : undefined;
     if (!c || !j.price || !plausibleEgp(j.price, null)) return null;
     if (c.cls) {
-      await env.KV.put(`heal:${host}`, c.cls, { expirationTtl: 30 * 86400 });
-      const idx = parseJ<Record<string, string>>(await env.KV.get('heal:index'), {});
+      await sput(env, `heal:${host}`, c.cls, 30 * 86400);
+      const idx = parseJ<Record<string, string>>(await sget(env, 'heal:index'), {});
       idx[host] = `${c.cls} @ ${nowIso().slice(0, 10)}`;
-      await env.KV.put('heal:index', JSON.stringify(idx));
+      await sput(env, 'heal:index', JSON.stringify(idx));
     }
     return { title: j.title || title, price: j.price };
   } catch { return null; }
