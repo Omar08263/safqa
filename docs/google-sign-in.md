@@ -26,18 +26,22 @@ to `#/dashboard`.
 3. **APIs & Services → Credentials → Create credentials → OAuth client ID**:
    - Application type: **Web application**
    - Authorized JavaScript origins:
-     - `https://safqa-eg-safqa.static.hf.space`
+     - `https://safqaeg.pages.dev` (the site)
+     - `https://preview.safqaeg.pages.dev` (preview deploys, optional)
+     - `https://safqa-eg-safqa.static.hf.space` (keep: the admin Hub signs in through it)
      - `http://localhost:47321` (local dev, optional)
-   - Authorized redirect URIs (exact, no trailing slash or path):
-     - `https://safqa-eg-safqa.static.hf.space`
-     - `http://localhost:47321` (local dev, optional)
+   - Authorized redirect URIs (exact):
+     - `https://safqaeg.pages.dev/auth/callback`
+     - `https://preview.safqaeg.pages.dev/auth/callback` (optional)
+     - `https://safqa-eg-safqa.static.hf.space` (keep: the admin Hub + old links)
+     - `http://localhost:47321/auth/callback` (local dev, optional)
      - `http://localhost:8787/api/auth/google/callback` (real API mode only)
 4. Copy the Client ID (it ends with `.apps.googleusercontent.com`). It is a
    public identifier, not a secret.
 5. Rebuild and redeploy with it:
 
    ```bash
-   VITE_GOOGLE_CLIENT_ID=1234-abc.apps.googleusercontent.com deploy/hf/deploy-static.sh
+   VITE_GOOGLE_CLIENT_ID=1234-abc.apps.googleusercontent.com deploy/pages/deploy.sh   # or deploy/hf/deploy-static.sh (Pages + HF redirect)
    ```
 
 The live static Space already ships with the production Client ID
