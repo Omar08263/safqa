@@ -20,7 +20,7 @@ export function buildCsp(html: string): string {
     "font-src 'self' data: https://fonts.gstatic.com",
     "img-src 'self' data: blob: https:",
     "media-src 'self' data: blob: https:",
-    `connect-src 'self' ${API} https://safqa-eg-safqa.static.hf.space https://huggingface.co https://*.huggingface.co https://*.hf.co https://cdn.jsdelivr.net https://fastly.jsdelivr.net https://raw.githubusercontent.com https://api.github.com https://open.er-api.com https://*.openfoodfacts.org https://api.upcitemdb.com https://accounts.google.com https://oauth2.googleapis.com https://fonts.googleapis.com https://fonts.gstatic.com`,
+    `connect-src 'self' ${API} https://safqa-eg-safqa.static.hf.space https://huggingface.co https://*.huggingface.co https://*.hf.co https://cdn.jsdelivr.net https://fastly.jsdelivr.net https://raw.githubusercontent.com https://api.github.com https://open.er-api.com https://*.openfoodfacts.org https://api.upcitemdb.com https://ntfy.sh https://accounts.google.com https://oauth2.googleapis.com https://fonts.googleapis.com https://fonts.gstatic.com`,
     "worker-src 'self' blob:",
     'frame-src https://accounts.google.com',
     "frame-ancestors 'none'",

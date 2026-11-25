@@ -22,7 +22,13 @@
     "sync:check": "pnpm --filter @safqa/web exec tsx scripts/sync-check.ts"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "msgpackr-extract"]
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "msgpackr-extract"
+    ],
+    "overrides": {
+      "sharp": "^0.35.5"
+    }
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.6",
