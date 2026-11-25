@@ -109,15 +109,15 @@ export function V5DealCard({ product, index = 0, showVotes = true }: { product: 
       <div className="mt-2.5 flex flex-1 flex-col px-1">
         <p className="t-meta flex items-center gap-1.5 truncate"><span className="truncate font-semibold">{store}</span>{product.offerCount > 1 ? <span className="num flex-none">· {tr(`${product.offerCount} متاجر`, `${product.offerCount} stores`)}</span> : null}</p>
         <h3 className="t-title mt-1" title={title}>{title}</h3>
-        <div className="mt-auto flex items-end justify-between gap-2 pt-2">
-          <div className="min-w-0">
+        <div className="mt-auto flex flex-wrap items-end justify-between gap-x-2 gap-y-1.5 pt-2">
+          <div className="min-w-0 flex-1 basis-[7.5rem]">
             <p className="t-price">{formatEGP(offer.priceEgp, locale)}</p>
             <p className="t-meta num mt-0.5 flex h-4 items-center gap-1.5 truncate">
               {offer.listPriceEgp && offer.listPriceEgp > offer.priceEgp ? <span className="line-through">{formatEGP(offer.listPriceEgp, locale)}</span> : x?.checkedAt ? <span>{ago(x.checkedAt, ar)}</span> : null}
               {!offer.inStock ? <span className="text-destructive">{tr('خلصان', 'Out of stock')}</span> : null}
             </p>
           </div>
-          {showVotes && x ? <VoteBar id={product.id} hot={x.hot} cold={x.cold} heat={x.heat} /> : x ? <HeatBadge heat={x.heat} /> : null}
+          {showVotes && x ? <div className="ms-auto flex-none"><VoteBar id={product.id} hot={x.hot} cold={x.cold} heat={x.heat} /></div> : x ? <HeatBadge heat={x.heat} /> : null}
         </div>
       </div>
     </article>

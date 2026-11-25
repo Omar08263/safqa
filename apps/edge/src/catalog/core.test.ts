@@ -59,3 +59,13 @@ describe('v5 catalog core', () => {
     expect(predict(pts, 950).verdict).toBe('buy');
   });
 });
+
+import { rowHeat } from './core';
+describe('rowHeat', () => {
+  it('weights price signals by money at stake, votes stay absolute', () => {
+    const base = { hot: 0, cold: 0, dropPct: 10, vsMedian: 5 };
+    expect(rowHeat({ ...base, price: 40000 })).toBeGreaterThan(rowHeat({ ...base, price: 300 }));
+    expect(rowHeat({ hot: 5, cold: 0, price: 300 }) - rowHeat({ hot: 0, cold: 0, price: 300 })).toBe(60);
+    expect(rowHeat({ hot: 0, cold: 9, price: 300 })).toBe(0);
+  });
+});

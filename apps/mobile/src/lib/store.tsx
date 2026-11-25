@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSyncExternalStore } from 'react';
 import { ApiError, getAuth, type ServerWatch, serverAddWatch, serverRemoveWatch, serverSetTarget, serverWatchlist, tierOf, useAuth } from './api';
 
-export interface WatchItem { id: string; target: number | null; addedAt: string; lastPrice: number | null; notifiedAt?: string; serverId?: string }
+export interface WatchItem { id: string; target: number | null; addedAt: string; lastPrice: number | null; notifiedAt?: string; serverId?: string; /** v5 catalog items are not in the snapshot: keep title/image for the list. */ title?: string; image?: string }
 export interface Settings { theme: 'system' | 'light' | 'dark'; haptics: boolean; notifications: boolean; onboarded: boolean; minDropPct: number }
 interface State { watch: WatchItem[]; settings: Settings; ready: boolean }
 
@@ -55,10 +55,10 @@ export function useWatch() {
     limit: watchLimit(),
     items: s.watch,
     has: (id: string) => s.watch.some((w) => w.id === id),
-    add: (id: string, price: number | null, target: number | null = null): 'added' | 'full' | 'exists' => {
+    add: (id: string, price: number | null, target: number | null = null, info?: { title?: string; image?: string }): 'added' | 'full' | 'exists' => {
       if (state.watch.some((w) => w.id === id)) return 'exists';
       if (state.watch.length >= watchLimit()) return 'full';
-      set({ watch: [{ id, target, addedAt: new Date().toISOString(), lastPrice: price }, ...state.watch] });
+      set({ watch: [{ id, target, addedAt: new Date().toISOString(), lastPrice: price, ...info }, ...state.watch] });
       void pushAdd(id, target);
       return 'added';
     },

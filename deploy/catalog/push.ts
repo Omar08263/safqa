@@ -3,7 +3,7 @@
 // and write only products that changed. FTS rows are added for new products.
 import type { DatabaseSync } from 'node:sqlite';
 import { createHash } from 'node:crypto';
-import { heat } from '../../apps/edge/src/catalog/core.ts';
+import { plausibleEgp, rowHeat } from '../../apps/edge/src/catalog/core.ts';
 import { d1, sqlStr } from './cf.ts';
 import type { StoreSrc } from './stores.ts';
 
@@ -45,7 +45,7 @@ export async function pushCatalog(products: BuiltProduct[], stores: StoreSrc[], 
     const prevBy = new Map(prevOffers.map((x) => [x.u, x]));
     const merged: OfferRow[] = p.offers.map((x) => {
       const prev = prevBy.get(x.u);
-      const h: [number, number][] = prev?.h ? [...prev.h] : [];
+      const h: [number, number][] = prev?.h ? prev.h.filter(([, v]) => plausibleEgp(v, p.category)) : [];
       if (x.k && (!h.length || h[h.length - 1]![1] !== x.p)) h.push([minutes(x.t), x.p]);
       return { ...x, h: h.slice(-240) };
     });
@@ -65,8 +65,7 @@ export async function pushCatalog(products: BuiltProduct[], stores: StoreSrc[], 
     }
     const claimed = best.l && best.l > best.p ? ((best.l - best.p) / best.l) * 100 : 0;
     const ageH = dropAt ? (Date.now() - Date.parse(dropAt)) / 3600_000 : 999;
-    const h = heat({ hot: ex?.hot ?? 0, cold: ex?.cold ?? 0, dropPct: ageH < 24 * 7 ? dropPct : 0, vsMedian: med30 > best.p ? ((med30 - best.p) / med30) * 100 : 0, atLow: pts.length > 1 && best.p <= low, ageHours: Math.min(ageH, 72) })
-      + Math.round(Math.min(15, claimed * 0.4)) + Math.min(10, (live.length - 1) * 4);
+    const h = rowHeat({ hot: ex?.hot ?? 0, cold: ex?.cold ?? 0, dropPct: ageH < 24 * 7 ? dropPct : 0, vsMedian: med30 > best.p ? ((med30 - best.p) / med30) * 100 : 0, atLow: pts.length > 1 && best.p <= low, ageHours: Math.min(ageH, 72), claimed, liveStores: live.length, price: best.p });
     const row = {
       id: p.id, mkey: p.mkey, title: p.title, title_ar: p.titleAr, brand: p.brand, category: p.category, image: p.image, gtin: p.gtin, cond: p.cond,
       price: best.p, list_price: best.l, store: best.s, url: best.u, n_offers: merged.length, in_stock: live.length ? 1 : 0, offers: JSON.stringify(merged),

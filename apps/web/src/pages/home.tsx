@@ -6,6 +6,7 @@ import { FormEvent } from 'react';
 import { DealCard, StateMessage } from '../components/bits';
 import { Countdown } from '../components/countdown';
 import { HomeV5 } from '../components/home-v5';
+import { useV5Meta } from '../lib/v5';
 import { PriceFreshness } from '../components/price-freshness';
 import { Button } from '../components/ui/button';
 import { features } from '../features/registry';
@@ -28,6 +29,7 @@ export function HomePage() {
   const stores = useQuery({ queryKey: ['stores'], queryFn: () => client.stores() });
   const calendar = useQuery({ queryKey: ['calendar'], queryFn: () => client.calendar() });
   const catalog = useCatalog();
+  const v5meta = useV5Meta().data;
   const all = catalog.data?.items ?? [];
   const offers = all.reduce((n, p) => n + p.offerCount, 0);
   const fakeCount = (deals.data?.suspicious ?? []).length;
@@ -66,7 +68,7 @@ export function HomePage() {
             <Reveal>
               <span className="glass inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold">
                 <span className="pulse-dot h-2 w-2 rounded-full bg-[var(--palm)] text-[var(--palm)]" />
-                {tr(`بنتابع ${all.length} منتج و${offers} عرض في ${stores.data?.items.length ?? 0} ${(stores.data?.items.length ?? 0) >= 3 && (stores.data?.items.length ?? 0) <= 10 ? 'متاجر' : 'متجر'}`, `Tracking ${all.length} products and ${offers} offers across ${stores.data?.items.length ?? 0} stores`)}
+                {v5meta?.products ? tr(`بنتابع ${v5meta.products.toLocaleString('en')} منتج و${(v5meta.offers ?? 0).toLocaleString('en')} عرض في ${v5meta.stores.filter((s) => s.products).length} متاجر مصرية`, `Tracking ${v5meta.products.toLocaleString('en')} products and ${(v5meta.offers ?? 0).toLocaleString('en')} offers across ${v5meta.stores.filter((s) => s.products).length} Egyptian stores`) : tr(`بنتابع ${all.length} منتج و${offers} عرض في ${stores.data?.items.length ?? 0} ${(stores.data?.items.length ?? 0) >= 3 && (stores.data?.items.length ?? 0) <= 10 ? 'متاجر' : 'متجر'}`, `Tracking ${all.length} products and ${offers} offers across ${stores.data?.items.length ?? 0} stores`)}
               </span>
               <PriceFreshness className="ms-2 mt-2 sm:mt-0" />
             </Reveal>

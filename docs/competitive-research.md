@@ -28,7 +28,7 @@ solving, no disguised browsers, demo data always labelled._
 |---|---|---|
 | Crawl framework | **Crawlee** (JS/Python: request queue, autoscaled pool, per-domain concurrency, but also fingerprint/stealth features), **Scrapy** (AutoThrottle, `ROBOTSTXT_OBEY`, HTTP cache, item pipelines), Playwright pipelines | A small Node crawler built on the same ideas: a persistent request queue (frontier), per-host token bucket honouring `Crawl-delay`, conditional GET (ETag/Last-Modified), HTTP cache, retries with backoff. **No headless browser or stealth**: every source we use serves JSON feeds or server-rendered JSON-LD, so a browser would only add load and temptation to disguise. |
 | Structured data | **extruct** (Python: JSON-LD, microdata, OpenGraph), `metascraper`, schema.org `Product`/`Offer`/`AggregateOffer` | Our own JSON-LD + OpenGraph + microdata-price extractor (`packages/adapters/src/jsonld.ts` extended), mirrored in the Worker for on-demand refresh. |
-| Feeds | Shopify storefront `/products.json` (public, paginated, 250/page), WooCommerce Store API `/wp-json/wc/store/products`, Google Merchant/idealo-style CSV, affiliate networks (Admitad/ArabClicks/Impact XML/CSV) | Shopify + WooCommerce Store API adapters, a generic affiliate-feed importer, and the **Amazon PA-API 5** client (dormant until keys exist). |
+| Feeds | Shopify storefront `/products.json` (public, paginated, 250/page), WooCommerce Store API `/wp-json/wc/store/products`, Google Merchant/idealo-style CSV, affiliate networks (Admitad/ArabClicks/Impact XML/CSV) | Shopify + WooCommerce Store API adapters, a generic affiliate-feed importer, and the **Amazon Creators API** client (PA-API 5's replacement; dormant until keys exist). |
 | Matching / entity resolution | **dedupe** (active learning), **Splink** (Fellegi–Sunter), **recordlinkage**, RapidFuzz token-set ratio | A deterministic cascade suited to electronics: GTIN → brand+MPN → brand+model key (with storage/RAM/colour guards) → token-set similarity within a brand+category block. Cheap enough to run on every ingest. |
 | Search | **Meilisearch**, **Typesense** (typo tolerance, Arabic works), Algolia | Both need an always-on server; there is no free host for one that we can rely on. We get the same UX with **D1 FTS5 `trigram`** (substring + typo-ish matching) on Arabic-normalised text, plus a **client-side index** (MiniSearch-style, fuzzy=1, prefix) shipped with the static Space for instant, offline search. |
 | Real-time updates | WebSockets, SSE, polling with ETag | **SSE** endpoint on the Worker (`/api/v5/live`) with an ETag'd polling fallback (`/api/v5/drops?since=`). |
@@ -39,7 +39,7 @@ solving, no disguised browsers, demo data always labelled._
  ┌──────────────────────────────────────┐        ┌─────────────────────────────────────────┐
  │ deploy/catalog/crawl.mjs             │ ingest │ Worker safqa-api  /api/v5/*             │
  │  sources: Shopify feeds, sitemaps +  │──────▶│  D1: catalog, offers, price_points,      │
- │  JSON-LD, PA-API (if keys), CSV feeds│ batches│      catalog_fts (trigram), votes,       │
+ │  JSON-LD, Creators API, CSV feeds    │ batches│      catalog_fts (trigram), votes,       │
  │  frontier in node:sqlite (lastmod,   │        │      coupons, submissions, drop events   │
  │  etag, next_due, priority)           │        │  Cron */10: priority recrawl of hot +    │
  │  match + normalise + categorise      │        │      watched offers (JSON-LD), drops →   │
@@ -65,8 +65,8 @@ decay, like Pepper's temperature but seeded by real price data so the feed is us
 **Prediction** ("buy now / wait") is a transparent statistical estimate from the product's own history (position in
 its 90-day range, trend, recent volatility, typical drop interval). It is labelled as an estimate, never a promise.
 
-**Amazon and Noon**: Amazon via the official **PA-API 5** once an Associates account qualifies (keys in Worker
-secrets); Noon via its affiliate programme feed once approved. Until then, a user can paste a link: the Worker reads
+**Amazon and Noon**: Amazon via the official **Creators API** (Amazon retired PA-API 5 in its favour) once an Associates account
+qualifies (OAuth client credentials in Worker secrets); Noon via its affiliate programme feed once approved. Until then, a user can paste a link: the Worker reads
 the public page if it answers normally and robots allows; if it is blocked we say so honestly and suggest the browser
 extension, which reads the product from the page the **user** is already viewing. We never retry with a disguised
 client.

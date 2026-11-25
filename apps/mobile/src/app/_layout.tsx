@@ -59,6 +59,9 @@ export default function RootLayout() {
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="onboarding" options={{ headerShown: false, animation: 'fade' }} />
             <Stack.Screen name="product/[id]" options={{ title: 'تفاصيل المنتج' }} />
+            <Stack.Screen name="item/[id]" options={{ title: 'المنتج' }} />
+            <Stack.Screen name="drops" options={{ title: 'نزول الأسعار مباشر' }} />
+            <Stack.Screen name="add" options={{ title: 'الصق رابط منتج' }} />
             <Stack.Screen name="tools" options={{ title: 'أدوات الشراء الذكي' }} />
             <Stack.Screen name="settings" options={{ title: 'الإعدادات' }} />
             <Stack.Screen name="account" options={{ title: 'حسابي وباقتي' }} />

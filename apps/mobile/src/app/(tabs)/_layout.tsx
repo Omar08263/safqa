@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import { useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BellIcon, HomeIcon, MenuIcon, RadarIcon, SearchIcon } from '../../components/icons';
+import { BellIcon, FlameIcon, HomeIcon, MenuIcon, SearchIcon } from '../../components/icons';
 import { tap } from '../../lib/feedback';
 import { useColors } from '../../lib/theme';
 
@@ -25,7 +25,8 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="index" options={{ title: 'الرئيسية', tabBarAccessibilityLabel: 'الرئيسية: أحسن العروض', tabBarIcon: ({ color }) => <HomeIcon color={String(color)} /> }} />
       <Tabs.Screen name="search" options={{ title: 'بحث', tabBarAccessibilityLabel: 'دوّر على منتج', tabBarIcon: ({ color }) => <SearchIcon color={String(color)} /> }} />
-      <Tabs.Screen name="radar" options={{ title: 'الرادار', tabBarAccessibilityLabel: 'رادار الخصومات الحقيقية والوهمية', tabBarIcon: ({ color }) => <RadarIcon color={String(color)} /> }} />
+      <Tabs.Screen name="hot" options={{ title: 'السخن', tabBarAccessibilityLabel: 'الصفقات السخنة من كل المتاجر', tabBarIcon: ({ color }) => <FlameIcon color={String(color)} /> }} />
+      <Tabs.Screen name="radar" options={{ href: null }} />
       <Tabs.Screen name="watchlist" options={{ title: 'المراقبة', tabBarAccessibilityLabel: 'المنتجات اللي بتراقبها', tabBarIcon: ({ color }) => <BellIcon color={String(color)} /> }} />
       <Tabs.Screen name="more" options={{ title: 'المزيد', tabBarAccessibilityLabel: 'أدوات وإعدادات', tabBarIcon: ({ color }) => <MenuIcon color={String(color)} /> }} />
     </Tabs>

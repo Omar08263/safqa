@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import { Header } from '../../components/screen';
 import { Chip, DealCard, StateMessage } from '../../components/ui';
+import { V5Card } from '../../components/v5';
+import { usePaged, v5, type V5Card as V5Item } from '../../lib/v5';
 import { useGrid } from '../../lib/layout';
 import { searchProducts } from '../../lib/search';
 import { useSnapshot } from '../../lib/snapshot';
@@ -29,6 +31,13 @@ export default function Search() {
     setRecent(next);
     void AsyncStorage.setItem(RECENT_KEY, JSON.stringify(next));
   };
+  // Server search over the full v5 catalog (thousands of products, typo-tolerant, Arabic ⇄ English),
+  // debounced; the bundled snapshot search is the offline fallback.
+  const [dq, setDq] = useState('');
+  useEffect(() => { const h = setTimeout(() => setDq(q.trim()), 250); return () => clearTimeout(h); }, [q]);
+  const serverSort = sort === 'cheap' ? 'price' : sort === 'deal' ? 'heat' : 'relevance';
+  const server = usePaged((page) => (dq.length >= 2 ? v5.search(dq, page, serverSort) : Promise.resolve({ items: [], page: 0, more: false, total: 0, fuzzy: false })), [dq, serverSort]);
+  const online = dq.length >= 2 && !server.error;
   const results = useMemo(() => {
     const r = data ? searchProducts(data.snap.all, q) : [];
     if (sort === 'cheap') return [...r].sort((a, b) => (a.bestOffer?.priceEgp ?? 1e12) - (b.bestOffer?.priceEgp ?? 1e12));
@@ -42,9 +51,11 @@ export default function Search() {
       style={{ backgroundColor: c.bg }}
       keyboardShouldPersistTaps="handled"
       contentContainerStyle={{ padding: gutter, paddingBottom: 32 }}
-      data={results}
+      data={(online ? server.items : results) as (V5Item | (typeof results)[number])[]}
       numColumns={columns}
       keyExtractor={(p) => p.id}
+      onEndReached={online ? server.next : undefined}
+      onEndReachedThreshold={0.6}
       columnWrapperStyle={{ gap: 12 }}
       ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
       ListHeaderComponent={
@@ -69,7 +80,7 @@ export default function Search() {
           </View>
           {q ? (
             <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-              <Text style={[t.small, { color: c.muted }]}>{results.length} نتيجة · رتّب:</Text>
+              <Text style={[t.small, { color: c.muted }]}>{online ? `${server.total ?? server.items.length} نتيجة من كل المتاجر` : `${results.length} نتيجة`} · رتّب:</Text>
               <Chip label="الأقرب" active={sort === 'match'} onPress={() => setSort('match')} />
               <Chip label="الأرخص" active={sort === 'cheap'} onPress={() => setSort('cheap')} />
               <Chip label="أحسن صفقة" active={sort === 'deal'} onPress={() => setSort('deal')} />
@@ -92,9 +103,10 @@ export default function Search() {
           )}
         </View>
       }
-      renderItem={({ item }) => (data ? <View style={{ flex: 1 / columns }}><DealCard p={item} snap={data.snap} /></View> : null)}
+      renderItem={({ item }) => (online ? <View style={{ flex: 1 / columns }}><V5Card p={item as V5Item} /></View> : data ? <View style={{ flex: 1 / columns }}><DealCard p={item as (typeof results)[number]} snap={data.snap} /></View> : null)}
+      ListFooterComponent={online && server.fuzzy && server.items.length ? <Text style={[t.meta, { color: c.muted, textAlign: 'center', marginTop: 12 }]}>ملقيناش تطابق حرفي، دي أقرب نتايج (بنستحمل الأخطاء الإملائية)</Text> : undefined}
       ListEmptyComponent={
-        q ? <StateMessage emoji="🔍" title={`مفيش نتايج لـ «${q}»`} body="جرّب كلمة أقصر أو اسم الماركة بس. لو المنتج مش عندنا لسه، هنضيفه قريب." /> : undefined
+        online && server.loading ? <StateMessage emoji="⏳" title="بندوّر في كل المتاجر…" /> : q ? <StateMessage emoji="🔍" title={`مفيش نتايج لـ «${q}»`} body="جرّب كلمة أقصر أو اسم الماركة بس. لو المنتج مش عندنا لسه، هنضيفه قريب." /> : undefined
       }
     />
   );

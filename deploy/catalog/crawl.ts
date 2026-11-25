@@ -252,7 +252,17 @@ export async function build(): Promise<BuiltProduct[]> {
     unknown.forEach((u, i) => { const slug = got[i] ?? null; if (slug) ins.run(u.key, slug); /* never cache a miss: retry next run when quota allows */ const p = out.find((x) => x.mkey === u.key); if (p) p.category = slug; });
   }
   // Price sanity per category (drops installment figures and placeholders).
-  return out.filter((p) => p.offers.some((o) => plausibleEgp(o.p, p.category)));
+  // Placeholder prices ("1 EGP" = call for price) and installment figures never become an offer.
+  for (const p of out) {
+    p.offers = p.offers.filter((o) => plausibleEgp(o.p, p.category));
+    // A cross-store offer far below the others is almost always a mismatch (accessory, part, deposit): drop it.
+    if (p.offers.length >= 2) {
+      const ps = p.offers.map((o) => o.p).sort((a, b) => a - b);
+      const med = ps[Math.floor(ps.length / 2)]!;
+      p.offers = p.offers.filter((o) => o.p >= med * 0.35);
+    }
+  }
+  return out.filter((p) => p.offers.length > 0);
 }
 
 // ---------------- main ----------------

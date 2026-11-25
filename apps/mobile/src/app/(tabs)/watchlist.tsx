@@ -68,6 +68,22 @@ export default function Watchlist() {
       }
       renderItem={({ item }) => {
         const p = data?.snap.all.find((x) => x.id === item.id);
+        if ((!p || !data) && item.title) {
+          // v5 catalog item (not in the bundled snapshot): compact row that opens the live product screen.
+          return (
+            <Pressable accessibilityRole="button" accessibilityLabel={item.title} onPress={() => { tap(); router.push(`/item/${item.id}`); }}
+              onLongPress={() => { const prev = watch.remove(item.id); toast({ text: 'شلناه من المراقبة', action: prev ? { label: 'رجّعه', onPress: () => watch.restore(prev) } : undefined }); }}>
+              <Card style={{ flexDirection: 'row', gap: 12, alignItems: 'center', padding: 12 }}>
+                <Tile uri={item.image} size={76} label={item.title} />
+                <View style={{ flex: 1, gap: 4 }}>
+                  <Text style={[t.title, { color: c.ink }]} numberOfLines={2}>{item.title}</Text>
+                  <Text style={[t.price, { color: c.ink }]}>{egp(item.lastPrice)}</Text>
+                  <Text style={[t.meta, { color: c.muted }]}>اضغط عشان تشوف السعر الحالي في كل المتاجر</Text>
+                </View>
+              </Card>
+            </Pressable>
+          );
+        }
         if (!p || !data) return null;
         const price = p.bestOffer?.priceEgp ?? null;
         const change = price != null && item.lastPrice ? ((price - item.lastPrice) / item.lastPrice) * 100 : 0;

@@ -16,6 +16,9 @@ export default function More() {
   const tier = tierOf(auth);
   const rows: { emoji: string; title: string; hint: string; go: () => void }[] = [
     { emoji: '👤', title: auth.user ? `حسابي · ${tier.emoji} ${tier.ar}` : 'سجّل دخول أو اعمل حساب', hint: auth.user ? 'الباقة والمزامنة' : 'زامن المراقبة مع الموقع وتيليجرام', go: () => router.push('/account') },
+    { emoji: '📉', title: 'نزول الأسعار مباشر', hint: 'كل سعر بينزل في المتاجر لحظة بلحظة', go: () => router.push('/drops') },
+    { emoji: '🔗', title: 'الصق رابط منتج', hint: 'تابع سعر أي منتج من متجر مصري', go: () => router.push('/add') },
+    { emoji: '📡', title: 'رادار الخصومات', hint: 'الحقيقي من الوهمي في المختارات', go: () => router.push('/radar') },
     { emoji: '✈️', title: 'تابعنا على تيليجرام', hint: '@SafqaDealsBot · عروض اليوم وتنبيهاتك', go: () => void Linking.openURL(TELEGRAM_URL) },
     { emoji: '🧮', title: 'أدوات الشراء الذكي', hint: 'التقسيط، الخصم الحقيقي، تحويل العملات', go: () => router.push('/tools') },
     { emoji: '⚙️', title: 'الإعدادات', hint: 'المظهر، الاهتزاز، التنبيهات', go: () => router.push('/settings') },
@@ -26,7 +29,7 @@ export default function More() {
   ];
   return (
     <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={{ padding: gutter, gap: 10, paddingBottom: 32 }}>
-      <Header title="المزيد" subtitle="صفقة 4.0 · تطبيق أصلي، مش صفحة ويب" />
+      <Header title="المزيد" subtitle="صفقة 5.0 · آلاف المنتجات من المتاجر المصرية" />
       {rows.map((r) => (
         <Pressable key={r.title} accessibilityRole="button" accessibilityLabel={`${r.title}: ${r.hint}`} onPress={() => { tap(); r.go(); }}>
           {({ pressed }) => (

@@ -1,6 +1,9 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { FlatList, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { FlatList, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { V5Card } from '../../components/v5';
+import { tap } from '../../lib/feedback';
+import { useLoad, v5 } from '../../lib/v5';
 import { FreshnessBar, Header } from '../../components/screen';
 import { Card, Chip, DealCard, SectionTitle, SkeletonGrid, StateMessage } from '../../components/ui';
 import { greeting, num } from '../../lib/format';
@@ -36,6 +39,8 @@ export default function Home() {
   const fakes = snap?.all.filter((p) => p.bestOffer?.fakeDiscount).length ?? 0;
   const stores = new Set(snap?.all.flatMap((p) => (p.bestOffer ? [p.bestOffer.store.slug] : []))).size;
 
+  const meta = useLoad(() => v5.meta(), []);
+  const hot = useLoad(() => v5.deals({ sort: 'heat' }), []);
   const head = (
     <View>
       <Header title={greeting()} subtitle="صفقة بتدوّرلك على السعر الحقيقي" />
@@ -53,6 +58,22 @@ export default function Home() {
             </Card>
           ))}
         </View>
+      ) : null}
+      {meta.data?.products ? (
+        <Pressable accessibilityRole="button" accessibilityLabel="افتح الصفقات السخنة" onPress={() => { tap(); router.push('/hot'); }}>
+          <Card style={{ marginTop: 12, padding: 14, backgroundColor: '#1C1915', borderColor: '#E8590C88' }}>
+            <Text style={[t.h3, { color: '#FFC233' }]}>🔥 {num(meta.data.products)} منتج من {meta.data.stores.filter((x) => x.products).length} متاجر</Text>
+            <Text style={[t.small, { color: '#F6F0E6' }]}>كتالوج صفقة 5: أسعار بتتحدّث تلقائي، تصويت المجتمع، ونزول الأسعار مباشر ‹</Text>
+          </Card>
+        </Pressable>
+      ) : null}
+      {hot.data?.items.length ? (
+        <>
+          <SectionTitle title="الأسخن دلوقتي في كل المتاجر" hint="بتصويت المجتمع ونزول السعر الحقيقي" />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12, paddingBottom: 4 }}>
+            {hot.data.items.slice(0, 10).map((p) => <View key={p.id} style={{ width: 180 }}><V5Card p={p} /></View>)}
+          </ScrollView>
+        </>
       ) : null}
       <SectionTitle title="أحسن صفقات النهارده 🔥" hint="مرتبة بتقييم الصفقة: السعر مقارنة بتاريخه وباقي المتاجر" />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingBottom: 12 }}>

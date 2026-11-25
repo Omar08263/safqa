@@ -295,6 +295,17 @@ export function heat(o: { hot: number; cold: number; dropPct?: number | null; vs
   const decay = Math.pow(0.5, (o.ageHours ?? 0) / 36);
   return Math.round((votes + price) * decay);
 }
+/**
+ * Full heat used for ranking: community votes + real price signals, plus small bonuses for the store's own sale and
+ * for being cheapest across several stores. Price signals are weighted by how much money is at stake, so a 5% drop
+ * on a laptop outranks the same % on a cable when nobody has voted yet.
+ */
+export function rowHeat(o: { hot: number; cold: number; dropPct?: number | null; vsMedian?: number | null; atLow?: boolean; ageHours?: number; claimed?: number; liveStores?: number; price?: number | null }): number {
+  const w = Math.min(1.2, Math.max(0.5, Math.log10(Math.max(10, o.price ?? 10000)) / 4.3));
+  const signals = heat({ hot: 0, cold: 0, dropPct: o.dropPct, vsMedian: o.vsMedian, atLow: o.atLow, ageHours: o.ageHours });
+  const bonus = Math.min(15, (o.claimed ?? 0) * 0.4) + Math.min(10, Math.max(0, (o.liveStores ?? 1) - 1) * 4);
+  return Math.max(0, Math.round((o.hot - o.cold) * 12 + (signals + bonus) * w));
+}
 
 export interface Prediction { verdict: 'buy' | 'wait' | 'fair' | 'unknown'; confidence: number; reasonAr: string; reasonEn: string; low90?: number; median?: number; trend?: number }
 /** Transparent, history-only estimate. Never presented as a guarantee. */

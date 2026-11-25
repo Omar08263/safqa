@@ -1,11 +1,18 @@
 {
   "manifest_version": 3,
   "name": "صفقة Safqa",
-  "version": "0.1.0",
-  "description": "Shows Safqa price history for a store page when the URL is tracked. Does not bypass store bot checks.",
-  "action": { "default_popup": "popup.html", "default_title": "صفقة" },
-  "permissions": ["activeTab", "storage"],
-  "host_permissions": ["http://localhost:8787/*", "https://*/*"],
+  "version": "5.0.0",
+  "description": "Safqa: see cross-store Egyptian prices for the product page you are viewing, and optionally share its price. Reads only the public schema.org data of your current tab; never bypasses store bot checks.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "صفقة"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://safqa-api.safqaeg.workers.dev/*"
+  ],
   "content_scripts": [
     {
       "matches": [
@@ -14,13 +21,26 @@
         "https://www.jumia.com.eg/*",
         "https://btech.com/*",
         "https://2b.com.eg/*",
-        "https://raya.com/*",
         "https://www.carrefour.com.eg/*",
-        "https://shop.elarabygroup.com/*",
+        "https://www.elarabygroup.com/*",
         "https://www.hyperone.com.eg/*",
-        "https://www.dubizzle.com.eg/*"
+        "https://www.compumarts.com/*",
+        "https://www.sigma-computer.com/*",
+        "https://elbadrgroupeg.store/*",
+        "https://tradelinestores.com/*",
+        "https://kimostore.net/*",
+        "https://www.kimostore.net/*",
+        "https://www.rayashop.com/*",
+        "https://rayashop.com/*",
+        "https://www.2b.com.eg/*"
       ],
-      "js": ["content.js"]
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
     }
-  ]
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
 }

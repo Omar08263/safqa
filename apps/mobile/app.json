@@ -2,7 +2,7 @@
   "expo": {
     "name": "صفقة",
     "slug": "safqa",
-    "version": "4.0.0",
+    "version": "5.0.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "scheme": "safqa",
@@ -20,7 +20,7 @@
     },
     "android": {
       "package": "app.safqa.mobile",
-      "versionCode": 40,
+      "versionCode": 50,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-foreground.png",
         "monochromeImage": "./assets/adaptive-monochrome.png",

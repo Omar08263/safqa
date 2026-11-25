@@ -3,7 +3,7 @@
 // compare, and the priority recrawl used by the cron (hot/watched first, Keepa-style).
 import type { Env } from '../util';
 import { fail, nowIso, parseJ, rateLimit, str, uid } from '../util';
-import { CATEGORIES, canonicalUrl, categorize, categoryBySlug, condition, extractProduct, guessBrand, heat, matchKey, normAr, normQuery, plausibleEgp, predict, productId, searchText, type Extracted } from './core';
+import { CATEGORIES, canonicalUrl, categorize, categoryBySlug, condition, extractProduct, guessBrand, matchKey, normAr, normQuery, plausibleEgp, predict, productId, rowHeat, searchText, type Extracted } from './core';
 import * as amazon from './amazon';
 
 // biome-ignore lint/suspicious/noExplicitAny: D1 rows.
@@ -238,8 +238,7 @@ export async function saveOffers(env: Env, r: Row, offers: Offer[]): Promise<{ c
   }
   const ageH = dropAt ? (Date.now() - Date.parse(dropAt)) / 3600_000 : 999;
   const claimed = best.l && best.l > best.p ? ((best.l - best.p) / best.l) * 100 : 0;
-  const h = heat({ hot: r.hot, cold: r.cold, dropPct: ageH < 168 ? dropPct : 0, vsMedian: med30 > best.p ? ((med30 - best.p) / med30) * 100 : 0, atLow: pts.length > 1 && best.p <= low, ageHours: Math.min(ageH, 72) })
-    + Math.round(Math.min(15, claimed * 0.4)) + Math.min(10, (live.length - 1) * 4);
+  const h = rowHeat({ hot: Number(r.hot), cold: Number(r.cold), dropPct: ageH < 168 ? dropPct : 0, vsMedian: med30 > best.p ? ((med30 - best.p) / med30) * 100 : 0, atLow: pts.length > 1 && best.p <= low, ageHours: Math.min(ageH, 72), claimed, liveStores: live.length, price: best.p });
   await env.DB.prepare('UPDATE catalog SET offers=?, price=?, list_price=?, store=?, url=?, n_offers=?, in_stock=?, low=?, med30=?, drop_pct=?, drop_at=?, heat=?, checked_at=?, updated_at=? WHERE id=?')
     .bind(JSON.stringify(offers), best.p, best.l, best.s, best.u, offers.length, live.length ? 1 : 0, low, med30, dropPct, dropAt, Math.max(0, h), now, now, r.id).run();
   return { changed: best.p !== r.price, drop };

@@ -104,7 +104,7 @@ export function V5ProductPage({ id }: { id: string }) {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
         <div className="relative lg:sticky lg:top-24 lg:self-start">
           <RemoteThumb src={p.image} alt={title} slug={cat.slug} className="w-full rounded-3xl" />
-          <div className="absolute start-3 top-3 flex flex-col gap-1.5">{p.v5 ? <HeatBadge heat={p.v5.heat} /> : null}<LivePill /></div>
+          <div className="absolute start-3 top-3 flex flex-col items-start gap-1.5 rounded-2xl bg-card/90 p-1.5 shadow-sm backdrop-blur">{p.v5 ? <HeatBadge heat={p.v5.heat} /> : null}<LivePill /></div>
         </div>
         <div className="min-w-0 space-y-4">
           <div>
