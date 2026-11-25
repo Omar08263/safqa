@@ -14,21 +14,25 @@ export async function aiBudgetLeft(env: Env): Promise<number> {
   return Number(env.AI_DAILY_CALL_BUDGET || 600) - Number(row?.n ?? 0);
 }
 async function track(env: Env, kind: string, ok: boolean) {
-  await env.DB.prepare('INSERT INTO ai_usage (day,kind,calls,fails) VALUES (?,?,1,?) ON CONFLICT(day,kind) DO UPDATE SET calls=calls+1, fails=fails+?')
-    .bind(cairoDay(), kind, ok ? 0 : 1, ok ? 0 : 1)
-    .run();
+  // Best effort: a read-only D1 (free daily write cap) must not throw away an AI answer we already paid for.
+  // Workers AI's own free daily neuron allowance still caps usage while this counter can't be written.
+  try {
+    await env.DB.prepare('INSERT INTO ai_usage (day,kind,calls,fails) VALUES (?,?,1,?) ON CONFLICT(day,kind) DO UPDATE SET calls=calls+1, fails=fails+?')
+      .bind(cairoDay(), kind, ok ? 0 : 1, ok ? 0 : 1)
+      .run();
+  } catch (e) { console.log('ai usage not tracked', String(e).slice(0, 120)); }
 }
 async function cacheGet(env: Env, key: string): Promise<string | null> {
   const r = await env.DB.prepare('SELECT value, exp FROM ai_cache WHERE key=?').bind(key).first<{ value: string; exp: number }>();
   return r && r.exp > Date.now() ? r.value : null;
 }
 async function cachePut(env: Env, key: string, value: string, ttlSec: number) {
-  await env.DB.prepare('INSERT OR REPLACE INTO ai_cache (key,value,exp) VALUES (?,?,?)').bind(key, value, Date.now() + ttlSec * 1000).run();
+  await env.DB.prepare('INSERT OR REPLACE INTO ai_cache (key,value,exp) VALUES (?,?,?)').bind(key, value, Date.now() + ttlSec * 1000).run().catch(() => undefined); // best effort when D1 is read-only
 }
 export async function logAgent(env: Env, agentId: string, kind: string, input: string, output: string, model: string, ms: number, fallback: boolean) {
   await env.DB.prepare('INSERT INTO agent_logs (agent_id,kind,input,output,model,ms,fallback,at) VALUES (?,?,?,?,?,?,?,?)')
     .bind(agentId, kind, input.slice(0, 500), output.slice(0, 1500), model, ms, fallback ? 1 : 0, nowIso())
-    .run();
+    .run().catch(() => undefined); // best effort when D1 is read-only
 }
 
 type Msg = { role: 'system' | 'user' | 'assistant'; content: string };
