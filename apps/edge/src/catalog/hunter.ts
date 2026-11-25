@@ -31,6 +31,8 @@ export function registerHunter(on: On) {
     const room = Math.floor((Budget.BG_CAP - used) / ROWS_PER_ITEM);
     if (room <= 0 || Budget.exhausted()) return { ok: false, budget: true, used, bgCap: Budget.BG_CAP, accepted: 0, results: [] };
     const results: { url: string; status: string; id?: string }[] = [];
+    const paused = parseJ<Record<string, number>>(await sget(c.env, 'src:paused'), {}); // paused by العقل الرئيسي (bad extractor)
+    if (b.store && (paused[b.store] ?? 0) > Date.now()) return { ok: false, paused: true, until: new Date(paused[b.store]!).toISOString(), accepted: 0, results };
     for (const it of items.slice(0, room)) {
       const url = canonicalUrl(str(it.url, 600));
       let host = ''; try { host = new URL(url).hostname; } catch { results.push({ url, status: 'bad_url' }); continue; }

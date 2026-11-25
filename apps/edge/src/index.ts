@@ -9,6 +9,7 @@ import { loadSnapshot, searchSnapshot, storeSnapshot } from './snapshot';
 import * as T from './telegram';
 import { registerHub } from './hub';
 import { registerOwnerTools } from './owner-tools';
+import { brainTick, registerBrain } from './brain';
 import { autopilotTick } from './autopilot';
 import { tierById } from './tiers';
 import * as V5 from './catalog/api';
@@ -43,6 +44,7 @@ async function needAdmin(c: Ctx): Promise<string> {
 const body = (c: Ctx, max?: number) => readJson<Record<string, any>>(c.req, max);
 registerHub(on, { need, needAdmin, body });
 registerOwnerTools(on, { needAdmin, body });
+registerBrain(on, { needAdmin, body });
 
 // ---------------- meta ----------------
 on('GET', '/api/health', async (c) => ({ ok: true, db: 'd1', edge: true, at: nowIso(), ai: (await aiBudgetLeft(c.env)) > 0 }));
@@ -692,6 +694,11 @@ export default {
     const env: Env = { ...rawEnv, DB: Budget.metered(rawEnv.DB) };
     const d = new Date(ev.scheduledTime);
     const cairoH = (d.getUTCHours() + 2) % 24;
+    if (ev.cron === '2,17,32,47 * * * *') {
+      // العقل الرئيسي: sense → diagnose → safe fixes → verify → proposals/issue drafts (own invocation budget).
+      exec.waitUntil((async () => { Budget.setJob('brain'); await brainTick(env).catch((e) => console.log('brain', String(e))); await Budget.flush(env, true); })());
+      return;
+    }
     if (ev.cron === '5-55/10 * * * *') {
       // v5 ingestion agents: new arrivals + rotating price sweep, then adaptive recrawl, then smart notifications.
       exec.waitUntil((async () => {

@@ -97,12 +97,13 @@ export async function ingestTick(env: Env): Promise<RunLog[]> {
   const st = parseJ<State>(await sget(env, 'ingest:state'), { rot: 0, deep: {}, blocked: {} });
   st.blocked ??= {};
   const logs: RunLog[] = [];
+  const brainPaused = parseJ<Record<string, number>>(await sget(env, 'src:paused'), {}); // العقل الرئيسي can pause a misbehaving source
   const jobs = [{ feed: FEEDS[st.rot % FEEDS.length]!, page: 1, limit: 100, create: true }];
   const deepFeed = FEEDS[(st.rot + 1) % FEEDS.length]!;
   jobs.push({ feed: deepFeed, page: (st.deep[deepFeed.id] ?? 1) + 1, limit: 250, create: false });
   for (const j of jobs) {
     const t0 = Date.now();
-    if ((st.blocked[j.feed.id] ?? 0) > Date.now()) { logs.push({ at: nowIso(), store: j.feed.id, page: j.page, items: 0, updated: 0, created: 0, drops: 0, skipped: 0, ms: 0, note: 'paused after a block' }); continue; }
+    if ((st.blocked[j.feed.id] ?? 0) > Date.now() || (brainPaused[j.feed.id] ?? 0) > Date.now()) { logs.push({ at: nowIso(), store: j.feed.id, page: j.page, items: 0, updated: 0, created: 0, drops: 0, skipped: 0, ms: 0, note: 'paused after a block' }); continue; }
     if (!(await robotsOk(env, new URL(`${j.feed.base}/products.json`)))) { logs.push({ at: nowIso(), store: j.feed.id, page: j.page, items: 0, updated: 0, created: 0, drops: 0, skipped: 0, ms: 0, note: 'robots disallow' }); continue; }
     const items = await readFeed(j.feed.base, j.page, j.limit).catch(() => null);
     if (items === 'blocked') { st.blocked[j.feed.id] = Date.now() + 6 * 3600_000; logs.push({ at: nowIso(), store: j.feed.id, page: j.page, items: 0, updated: 0, created: 0, drops: 0, skipped: 0, ms: Date.now() - t0, note: 'store answered 403/429: paused 6 h' }); continue; }

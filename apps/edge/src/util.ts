@@ -23,6 +23,9 @@ export interface Env {
   AMAZON_CREATORS_CLIENT_SECRET?: string;
   AMAZON_PARTNER_TAG?: string;
   NOON_FEED_URL?: string;
+  GEMINI_API_KEY?: string;
+  GITHUB_TOKEN?: string;
+  GITHUB_REPO?: string;
 }
 
 export class HttpError extends Error {

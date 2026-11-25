@@ -20,7 +20,8 @@ id = "d7e02776ec5045bfbc176385cac1a876"
 [triggers]
 # Every 10 min: appeals, Telegram outbox, hourly cleanup, daily 9:30 Cairo digest.
 # Minutes 5,15,25…: v5 ingestion agents only (feed poller + adaptive recrawl + smart notifications), own query budget.
-crons = ["*/10 * * * *", "5-55/10 * * * *"]
+# Minutes 2,17,32,47: العقل الرئيسي (master AI orchestrator, src/brain), own query budget.
+crons = ["*/10 * * * *", "5-55/10 * * * *", "2,17,32,47 * * * *"]
 
 [vars]
 ALLOWED_ORIGINS = "https://safqaeg.pages.dev,https://preview.safqaeg.pages.dev,https://safqa-eg-safqa.static.hf.space,https://safqa-admin.pages.dev,http://localhost:47321,http://localhost:5173,capacitor://localhost,https://localhost"
