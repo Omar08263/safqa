@@ -59,6 +59,33 @@ export function registerHub(on: On, d: Deps) {
     return { ok: true, n: stmts.length };
   });
 
+  // ---------- barcode → product name (Open Food Facts, UPCitemdb trial), cached 30 days ----------
+  on('GET', '/api/v2/barcode/:code', async (c) => {
+    const code = c.p[0]!.replace(/\D/g, '').slice(0, 14);
+    if (code.length < 8) fail(400, 'bad_code', 'الباركود قصير');
+    const key = `bc:${code}`;
+    const hit = await c.env.KV.get(key, 'json');
+    if (hit) return hit;
+    const ip = c.req.headers.get('cf-connecting-ip') ?? 'x';
+    if (!(await rateLimit(c.env, `bc:${ip}`, 40, 3600))) fail(429, 'rate', 'استنى شوية');
+    let out: { code: string; name: string | null; brand: string | null; image: string | null; source: string | null } = { code, name: null, brand: null, image: null, source: null };
+    try {
+      const r = await fetch(`https://world.openfoodfacts.org/api/v2/product/${code}.json?fields=product_name,product_name_ar,brands,image_front_small_url`, { headers: { 'user-agent': 'SafqaEG/1.0 (price comparison; https://safqaeg.pages.dev)' } });
+      const j: any = r.ok ? await r.json() : null;
+      if (j?.status === 1 && (j.product?.product_name || j.product?.product_name_ar)) out = { code, name: j.product.product_name_ar || j.product.product_name, brand: j.product.brands ?? null, image: j.product.image_front_small_url ?? null, source: 'Open Food Facts' };
+    } catch { /* next */ }
+    if (!out.name) {
+      try {
+        const r = await fetch(`https://api.upcitemdb.com/prod/trial/lookup?upc=${code}`, { headers: { accept: 'application/json', 'user-agent': 'SafqaEG/1.0' } });
+        const j: any = r.ok ? await r.json() : null;
+        const it = j?.items?.[0];
+        if (it?.title) out = { code, name: it.title, brand: it.brand ?? null, image: it.images?.[0] ?? null, source: 'UPCitemdb' };
+      } catch { /* none */ }
+    }
+    await c.env.KV.put(key, JSON.stringify(out), { expirationTtl: out.name ? 30 * 86400 : 86400 });
+    return out;
+  });
+
   // ---------- device pairing (native Hub app; issued only to a Google-authed owner) ----------
   on('POST', '/api/v2/hub/pair', async (c) => {
     const who = await d.needAdmin(c);

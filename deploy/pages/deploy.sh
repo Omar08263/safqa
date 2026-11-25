@@ -26,6 +26,8 @@ elif [ -f "$ASSETS_DIR/demo/snapshot.json" ]; then
 else
   curl -sf "$SITE/demo/snapshot.json" -o "$OUT/demo/snapshot.json"
 fi
+# Offline-AI catalog index (deploy/ai/embed-catalog.mjs → $ASSETS_DIR/ai): semantic search in the browser.
+if [ -f "$ASSETS_DIR/ai/index.json" ]; then mkdir -p "$OUT/ai" && cp "$ASSETS_DIR/ai/index.json" "$ASSETS_DIR/ai/vecs.bin" "$OUT/ai/"; else echo "ai index: missing (run deploy/ai/embed-catalog.mjs)"; fi
 # Keep a copy for the next deploy.
 mkdir -p "$ASSETS_DIR" && cp -r "$OUT/demo" "$ASSETS_DIR/" && { [ -d "$OUT/media" ] && cp -r "$OUT/media" "$ASSETS_DIR/" || true; }
 npx -y wrangler@4 pages deploy "$OUT" --project-name "$PROJECT" --branch "$BRANCH" --commit-dirty=true

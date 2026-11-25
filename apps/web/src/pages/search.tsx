@@ -1,4 +1,5 @@
 import { localized } from '@safqa/shared';
+import { SemanticBoost } from '../future/ai-lab';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { CardGrid } from '../components/v5';
@@ -40,6 +41,7 @@ export function SearchPage({ search }: { search: SearchFilters }) {
   return (
     <div>
       <SearchTop search={search} count={d?.total ?? d?.items.length} />
+      {search.q ? <SemanticBoost query={search.q} /> : null}
       {d?.fuzzy ? <p className="mb-3 rounded-2xl bg-primary/10 px-4 py-2 text-sm">{tr(`ملقيناش «${search.q}» بالظبط — دي أقرب نتايج (بنستحمل الأخطاء الإملائية 😉)`, `No exact match for “${search.q}” — closest results`)}</p> : null}
       <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
         <aside className="glass h-fit space-y-4 rounded-3xl p-4 lg:sticky lg:top-24">

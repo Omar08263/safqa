@@ -66,3 +66,9 @@
 }
 .calm .fx-touch, .calm .fx-spark, .no-premium-motion .fx-touch, .no-premium-motion .fx-spark { display: none; }
 .calm .aurora, .no-premium-motion .aurora { animation: none; }
+.lens-laser { position: absolute; inset-inline: 6%; height: 2px; top: 10%; background: linear-gradient(90deg, transparent, #67e8f9, #fff, #67e8f9, transparent); box-shadow: 0 0 18px 4px rgba(103,232,249,.7); animation: lens-laser 2.2s ease-in-out infinite alternate; }
+@keyframes lens-laser { to { top: 88%; } }
+@media (prefers-reduced-motion: reduce) { .lens-laser { animation: none; top: 50%; } }
+.tm-dash { animation: tm-dash 1.2s linear infinite; }
+@keyframes tm-dash { to { stroke-dashoffset: -24; } }
+@media (prefers-reduced-motion: reduce) { .tm-dash { animation: none; } }

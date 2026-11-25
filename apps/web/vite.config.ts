@@ -8,7 +8,10 @@ function precacheManifest(): Plugin {
     name: 'safqa-precache-manifest',
     apply: 'build',
     generateBundle(_opts, bundle) {
-      const files = Object.keys(bundle).filter((f) => /\.(js|css|woff2?)$/.test(f)).map((f) => `/${f}`);
+      // Opt-in AI runtimes (WebLLM, transformers.js worker) are huge — cached on first use, not precached for everyone.
+      const files = Object.entries(bundle)
+        .filter(([f, o]) => /\.(js|css|woff2?)$/.test(f) && !/brain\.worker/.test(f) && ((o.type === 'chunk' ? o.code.length : 0) < 1_500_000))
+        .map(([f]) => `/${f}`);
       this.emitFile({ type: 'asset', fileName: 'precache.json', source: JSON.stringify({ builtAt: new Date().toISOString(), files }) });
     },
   };

@@ -1,6 +1,7 @@
 // Product page building blocks (Safqa v3): gallery, AI summary, specs,
 // store ratings, reviews with uploads, Q&A with spec-grounded agent answers,
 // related rows, spec diff, sticky buy bar and section tabs.
+import { ReviewInsight } from '../future/ai-lab';
 import { formatEGP, localized, type PriceHistory, type ProductCard, type ProductDetail } from '@safqa/shared';
 import { Link } from '@tanstack/react-router';
 import { BadgeCheck, Bot, Camera, ChevronLeft, ChevronRight, Copy, ExternalLink, Expand, FlaskConical, MessageCircleQuestion, Move3d, Search, Sparkles, Star, ThumbsUp, X, ZoomIn } from 'lucide-react';
@@ -257,6 +258,7 @@ export function ReviewsSection({ item, media }: { item: ProductDetail; media: Pr
     <section id="reviews" className="space-y-4">
       {guard.dialog}
       <h2 className="text-xl font-bold">{tr('التقييمات', 'Ratings & reviews')}</h2>
+      {reviews.length >= 2 ? <ReviewInsight texts={reviews.map((r) => `${r.title}. ${r.text}`)} /> : null}
       <div className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr] [&>*]:min-w-0">
         <div className="space-y-3">
           {(media?.ratings ?? []).length ? (

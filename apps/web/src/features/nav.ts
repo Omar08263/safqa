@@ -1,6 +1,6 @@
 import {
   Award, BarChart3, Bell, Bot, CalendarDays, Calculator, Gift, GitCompare, HeartHandshake, HelpCircle, Home, LayoutDashboard,
-  LayoutGrid, Layers, Crown, Flame, Tag, TrendingDown, Link2, Database, Send, MessagesSquare, Users, Radar, Wrench, Smartphone, ShieldCheck, Cpu, PiggyBank, Search, Settings, Sparkles, Store, UserCircle, Eye,
+  LayoutGrid, Layers, Brain, ScanLine, Mic, Hourglass, Globe2, PartyPopper, Crown, Flame, Tag, TrendingDown, Link2, Database, Send, MessagesSquare, Users, Radar, Wrench, Smartphone, ShieldCheck, Cpu, PiggyBank, Search, Settings, Sparkles, Store, UserCircle, Eye,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -33,6 +33,12 @@ export const bottomNav: NavItem[] = [
 
 export const allNav: NavItem[] = [
   ...primaryNav,
+  { to: '/whats-new', ar: 'الجديد في صفقة ✨', en: "What's new", icon: PartyPopper },
+  { to: '/ai', ar: 'عقل صفقة الأوفلاين 🧠', en: 'Offline AI', icon: Brain },
+  { to: '/lens', ar: 'عدسة الأسعار 📸', en: 'Price lens', icon: ScanLine },
+  { to: '/voice', ar: 'كلّم صفقة 🎙️', en: 'Voice shopping', icon: Mic },
+  { to: '/time-machine', ar: 'آلة زمن الأسعار ⏳', en: 'Price time machine', icon: Hourglass },
+  { to: '/globe', ar: 'كرة العروض 🌍', en: 'Deal globe', icon: Globe2 },
   { to: '/toolbox', ar: 'أدوات', en: 'Tools', icon: Wrench, key: 't' },
   { to: '/drops', ar: 'نزول الأسعار مباشر', en: 'Live price drops', icon: TrendingDown, key: 'z' },
   { to: '/add', ar: 'الصق رابط منتج', en: 'Paste a product link', icon: Link2 },

@@ -16,6 +16,8 @@ import { CompareTray, InstallButton, OfflineBanner } from './chrome';
 import { BottomNav, NavRail } from './bottom-nav';
 import { MenuSheet } from './menu-sheet';
 import { WelcomeTour } from './welcome';
+import { WhatsNew } from './whats-new';
+import { RemoteBanner } from './remote-banner';
 import { AgentsRuntime } from './agents-runtime';
 import { SmartInstallBanner } from './install-banner';
 import { CommandPalette, ShortcutsDialog } from './palette';
@@ -106,6 +108,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <AppearanceEffect />
       <ScrollProgress />
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:start-3 focus:top-3 focus:z-[100] focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground">{tr('تخطّى للمحتوى', 'Skip to content')}</a>
+      <RemoteBanner />
       <OfflineBanner />
       <header className="no-print sticky top-0 z-30 border-b border-border/70 bg-background/75 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3">
@@ -206,6 +209,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <CommandPalette open={palette} onOpenChange={setPalette} />
       <ShortcutsDialog open={shortcuts} onOpenChange={setShortcuts} />
       <WelcomeTour />
+      <WhatsNew />
       <AgentsRuntime />
       <SmartInstallBanner />
     </div>

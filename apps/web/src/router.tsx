@@ -56,6 +56,12 @@ const DropsPage = lz(() => import('./pages/v5'), 'DropsPage');
 const CouponsPage = lz(() => import('./pages/v5'), 'CouponsPage');
 const AddLinkPage = lz(() => import('./pages/v5'), 'AddLinkPage');
 const SourcesPage = lz(() => import('./pages/v5'), 'SourcesPage');
+const AiLabPage = lz(() => import('./future/ai-lab'), 'AiLabPage');
+const LensPage = lz(() => import('./future/lens'), 'LensPage');
+const VoicePage = lz(() => import('./future/voice'), 'VoicePage');
+const TimeMachinePage = lz(() => import('./future/time-machine'), 'TimeMachinePage');
+const GlobePage = lz(() => import('./future/globe'), 'GlobePage');
+const WhatsNewPage = lz(() => import('./components/whats-new'), 'WhatsNewPage');
 const ToolsPage = lz(() => import('./pages/tools'), 'ToolsPage') as unknown as React.ComponentType<{ price?: number }>;
 
 const rootRoute = createRootRoute({
@@ -226,6 +232,12 @@ const agentRoute = createRoute({
   },
 });
 const extraRoutes = [
+  simple('/ai', () => <AiLabPage />),
+  simple('/lens', () => <LensPage />),
+  simple('/voice', () => <VoicePage />),
+  simple('/time-machine', () => <TimeMachinePage />),
+  simple('/globe', () => <GlobePage />),
+  simple('/whats-new', () => <WhatsNewPage />),
   toolboxRoute,
   chatRoute,
   memberRoute,

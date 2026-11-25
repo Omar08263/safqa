@@ -2,10 +2,10 @@ import { Component, type ReactNode, useEffect } from 'react';
 import { report, setActiveFeature, useFlag } from '../lib/remote';
 
 class Catch extends Component<{ flag: string; children: ReactNode }, { err: Error | null }> {
-  state = { err: null as Error | null };
+  override state = { err: null as Error | null };
   static getDerivedStateFromError(err: Error) { return { err }; }
-  componentDidCatch(err: Error) { report('crash', `${err.message}`.slice(0, 280), this.props.flag); }
-  render() {
+  override componentDidCatch(err: Error) { report('crash', `${err.message}`.slice(0, 280), this.props.flag); }
+  override render() {
     if (this.state.err) {
       return (
         <div className="mx-auto max-w-md py-16 text-center" role="alert">

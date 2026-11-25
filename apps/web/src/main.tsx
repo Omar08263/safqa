@@ -13,6 +13,10 @@ import {
 import { PrefsProvider } from './lib/prefs';
 import { SessionProvider } from './lib/session';
 import './styles.css';
+import './styles-v5.css';
+import { installPremiumFx } from './fx/premium';
+import { installRemote } from './lib/remote';
+import { installTapSounds } from './lib/sound';
 
 // Must run before the router is created: Google returns /auth/callback#id_token=...
 captureGoogleRedirectFromLocation();
@@ -36,6 +40,10 @@ if (import.meta.env.VITE_DEMO_MODE === 'static') {
   else if (google && !google.ok) window.history.replaceState(null, '', '/login');
   else if (window.location.pathname === '/auth/callback') window.history.replaceState(null, '', '/login');
 }
+// v5: remote config + telemetry (Safqa Hub), a voice for every tap, premium motion.
+installRemote();
+installTapSounds();
+installPremiumFx();
 const { router } = await import('./router');
 
 // Invite links: remember who invited this browser (local only).
