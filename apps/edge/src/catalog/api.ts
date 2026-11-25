@@ -22,6 +22,15 @@ export const STORE_NAMES: Record<string, [string, string, string]> = {
 };
 const SHOPIFY = new Set(['kimo', 'compumarts', 'tradeline']);
 export const storeInfo = (id: string) => { const s = STORE_NAMES[id]; return { slug: id, nameAr: s?.[0] ?? id, nameEn: s?.[1] ?? id, domain: s?.[2] ?? '' }; };
+/** Official affiliate tagging (Amazon Associates, amazon.eg). Free; referred sales are what unlock the Creators API
+ * (Amazon requires 10 qualified sales in the trailing 30 days). Untouched when no tag is configured. */
+export function affiliateUrl(env: Env, u: string): string {
+  try {
+    const url = new URL(u);
+    if (env.AMAZON_PARTNER_TAG && /(^|\.)amazon\.eg$/.test(url.hostname)) { url.searchParams.set('tag', env.AMAZON_PARTNER_TAG); return url.toString(); }
+  } catch { /* leave as is */ }
+  return u;
+}
 export function storeFromHost(host: string): string | null {
   const h = host.replace(/^www\./, '');
   for (const [id, v] of Object.entries(STORE_NAMES)) if (v[2] && (h === v[2] || h.endsWith(`.${v[2]}`))) return id;
@@ -131,7 +140,7 @@ export async function product(env: Env, id: string, exec?: ExecutionContext) {
   // Refresh on view (Keepa-style): a stale Shopify offer is re-read right away in the background.
   if (exec && r.checked_at && Date.now() - Date.parse(r.checked_at) > 6 * 3600_000) exec.waitUntil(refreshProduct(env, r).catch(() => null));
   return {
-    ...toCard(r), specs: parseJ(r.specs, {}), offers: offers.sort((a, b) => b.k - a.k || a.p - b.p).map((o) => ({ store: storeInfo(o.s), url: o.u, priceEgp: o.p, listPriceEgp: o.l, inStock: Boolean(o.k), checkedAt: o.t, source: o.src ?? 'crawl', userReported: o.src === 'user', points: o.h.length })),
+    ...toCard(r), specs: parseJ(r.specs, {}), offers: offers.sort((a, b) => b.k - a.k || a.p - b.p).map((o) => ({ store: storeInfo(o.s), url: affiliateUrl(env, o.u), priceEgp: o.p, listPriceEgp: o.l, inStock: Boolean(o.k), checkedAt: o.t, source: o.src ?? 'crawl', userReported: o.src === 'user', points: o.h.length })),
     history: points, series, prediction: pred, similar: similar.map(toCard), votes: { hot: r.hot, cold: r.cold },
     dna: dealDna({ price: r.price, offers, hot: Number(r.hot), cold: Number(r.cold), checkedAt: r.checked_at }),
     fake: fakeDiscount(offers.find((o) => o.p === r.price && o.src !== 'user') ?? null),

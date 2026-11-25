@@ -82,7 +82,13 @@ async function probe(input: string) {
 }
 
 const [cmd, ...rest] = process.argv.slice(2);
-if (cmd === 'status') {
+if (cmd === 'budget') {
+  const { accountWrites } = await import('./account-budget.ts');
+  const real = await accountWrites();
+  const worker = await (await fetch(`${API}/api/v5/budget`)).json() as { used: number; jobs: { job: string; rows: number }[]; resetsAt: string };
+  console.log(`account (Cloudflare analytics): ${real ? `${real.rowsWritten.toLocaleString()} rows written / 100,000 today (UTC), ${real.rowsRead.toLocaleString()} read / 5,000,000` : 'set CLOUDFLARE_ACCOUNT_ID + CLOUDFLARE_API_TOKEN to see it'}`);
+  console.log(`worker-metered: ${worker.used} rows · ${worker.jobs.map((j) => `${j.job}=${j.rows}`).join(' ')} · resets ${worker.resetsAt}`);
+} else if (cmd === 'status') {
   const r = await fetch(`${API}/api/v5/health`); const h = await r.json() as { stores: { store: string; products: number; newestCheck: string | null; oldestCheck: string | null; feed: boolean; pausedUntil: string | null }[]; ingest: { at: string; store: string; kind: string; added: number; updated: number }[]; drops24h: number; recrawl: unknown };
   const age = (s: string | null) => (s ? `${Math.round((Date.now() - Date.parse(s)) / 60000)}m` : '—');
   console.table(h.stores.map((s) => ({ store: s.store, products: s.products, newest: age(s.newestCheck), oldest: age(s.oldestCheck), method: s.feed ? 'feed' : 'sitemap', paused: s.pausedUntil ?? '' })));
@@ -92,5 +98,5 @@ if (cmd === 'status') {
 } else if (cmd === 'crawl') {
   const r = spawnSync(process.execPath, [new URL('./crawl.ts', import.meta.url).pathname, ...rest], { stdio: 'inherit' }); process.exit(r.status ?? 1);
 } else {
-  console.log('usage: node deploy/catalog/cli.ts status | probe <url> | crawl [--stores a,b] [--no-crawl]');
+  console.log('usage: node deploy/catalog/cli.ts budget | status | probe <url> | crawl [--stores a,b] [--no-crawl]');
 }

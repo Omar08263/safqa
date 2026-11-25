@@ -121,6 +121,17 @@ function Home({ o, reload, go }: { o: any; reload: () => Promise<void>; go: (t: 
         ))}
       </View>
       <View style={{ height: 12 }} />
+      {o.budget ? (
+        <Card i={4} accent={o.budget.state === 'red' ? '#dc2626' : o.budget.state === 'amber' ? '#d97706' : '#16a34a'}>
+          <T b>💾 ميزانية الكتابة في D1 (مجاني: 100 ألف صف/يوم للحساب)</T>
+          <View style={{ height: 10, borderRadius: 5, backgroundColor: '#0002', marginTop: 8, overflow: 'hidden' }}>
+            <View style={{ width: `${Math.min(100, o.budget.pct)}%`, height: 10, backgroundColor: o.budget.state === 'red' ? '#dc2626' : o.budget.state === 'amber' ? '#d97706' : '#16a34a' }} />
+          </View>
+          <T size={13} style={{ marginTop: 6 }}>{o.budget.used.toLocaleString()} صف النهارده · الوكلاء بيقفوا عند {o.budget.bgCap.toLocaleString()}{o.budget.exhausted ? ' · ⛔ الحد خلص — بيرجع 2:00 بتوقيت القاهرة' : ''}</T>
+          {o.budget.jobs.length ? <T muted size={12}>{o.budget.jobs.slice(0, 5).map((j: any) => `${j.job} ${j.rows}`).join(' · ')}</T> : null}
+          {o.hunter?.[0] ? <T muted size={12}>🕷️ آخر تشغيل للصياد: {String((o.hunter[0] as any).at ?? '').slice(0, 16).replace('T', ' ')} · {String((o.hunter[0] as any).status ?? '')}</T> : null}
+        </Card>
+      ) : null}
       <Card i={4}><View style={[s.row, { justifyContent: 'space-between' }]}><T b>🤝 فريق الإدارة الآلي</T><Btn small title="الكل" onPress={() => go('agents')} cue="nav" /></View>
         <View style={[s.row, { justifyContent: 'space-between', marginTop: 10 }]}>
           {o.agents.map((a: any) => (<View key={a.id} style={{ alignItems: 'center', width: '24%', marginBottom: 10, opacity: a.enabled ? 1 : 0.4 }}><Ring pct={pct(a)} color={a.color} size={54}><Text style={{ fontSize: 22 }}>{a.emoji}</Text></Ring><T b size={12}>{a.name}</T><T muted size={10}>{a.rank.emoji} {a.rank.ar}</T></View>))}

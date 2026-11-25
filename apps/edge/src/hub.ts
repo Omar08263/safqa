@@ -1,6 +1,7 @@
 // Safqa Hub API: remote config, client telemetry, autopilot control, escalations,
 // audit, reports, deploy status, owner notifications and device pairing.
-import { edgeCacheGet, edgeCachePut } from './infra/state';
+import { edgeCacheGet, edgeCachePut, sget } from './infra/state';
+import * as Budget from './infra/budget';
 import changelog from '../../web/src/features/changelog.json';
 import * as auth from './auth';
 import type { Authed } from './auth';
@@ -125,7 +126,9 @@ export function registerHub(on: On, d: Deps) {
     ]);
     const errors24 = Number((await c.env.DB.prepare('SELECT COUNT(*) AS n FROM client_events WHERE at>?').bind(Date.now() - 86400_000).first<{ n: number }>())?.n ?? 0);
     const hourly = (await c.env.DB.prepare("SELECT substr(at,1,13) AS h, COUNT(*) AS n FROM ops_audit WHERE at>? GROUP BY h ORDER BY h").bind(new Date(Date.now() - 86400_000).toISOString()).all()).results;
-    return { stats, agents, flags: flags.results, escalations: esc.results.map((e: any) => ({ ...e, options: parseJ(e.options, []) })), report, audit: audit.results, errors24, hourly, ranks: AP.OPS_RANKS, changelog: changelog.latest };
+    const budget = await Budget.report(c.env);
+    const hunter = parseJ<unknown[]>(await sget(c.env, 'hunter:runs'), []).slice(0, 3);
+    return { budget, hunter, stats, agents, flags: flags.results, escalations: esc.results.map((e: any) => ({ ...e, options: parseJ(e.options, []) })), report, audit: audit.results, errors24, hourly, ranks: AP.OPS_RANKS, changelog: changelog.latest };
   });
   on('GET', '/api/v2/hub/flags', async (c) => { await d.needAdmin(c); return { items: (await c.env.DB.prepare('SELECT * FROM flags ORDER BY key').all()).results }; });
   on('POST', '/api/v2/hub/flags/:key', async (c) => { const who = await d.needAdmin(c); await AP.setFlag(c.env, who, c.p[0]!, await d.body(c)); return { ok: true }; });

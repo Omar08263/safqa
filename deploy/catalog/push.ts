@@ -1,4 +1,5 @@
 // Push the built catalog into D1: merge per-offer price history with what is already there
+import { accountWrites, BOX_PUSH_CEILING } from './account-budget.ts';
 // (the Worker cron and user submissions also add points), detect real drops, compute heat,
 // and write only products that changed. FTS rows are added for new products.
 import type { DatabaseSync } from 'node:sqlite';
@@ -18,6 +19,12 @@ const minutes = (iso?: string) => Math.floor((iso ? Date.parse(iso) : Date.now()
 const median = (a: number[]) => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); return s[Math.floor(s.length / 2)]!; };
 
 export async function pushCatalog(products: BuiltProduct[], stores: StoreSrc[], o: { db: DatabaseSync; log: (...a: unknown[]) => void }) {
+  // Write budget (account-wide, verified via Cloudflare analytics): refuse bulk pushes that would crowd out the app.
+  const acct = await accountWrites();
+  if (acct && acct.rowsWritten >= BOX_PUSH_CEILING && !process.env.SAFQA_FORCE_PUSH) {
+    o.log(`write budget: account already wrote ${acct.rowsWritten} rows today (ceiling ${BOX_PUSH_CEILING} of 100k); push postponed to after the 00:00 UTC reset`);
+    return;
+  }
   const { db, log } = o;
   db.exec('CREATE TABLE IF NOT EXISTS pushed (id TEXT PRIMARY KEY, hash TEXT NOT NULL)');
   // Existing rows (reads are cheap on the free tier; writes are the scarce resource).

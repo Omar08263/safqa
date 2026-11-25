@@ -46,8 +46,13 @@ export function registerHunter(on: On) {
         crumbs: Array.isArray(it.crumbs) ? (it.crumbs as unknown[]).map((x) => str(x, 60)).slice(0, 6) : [], source: 'jsonld',
       } as Extracted;
       if (!ex.title || !ex.price || !/EGP|LE|جنيه/i.test(ex.currency ?? '') || !plausibleEgp(ex.price)) { results.push({ url, status: 'rejected' }); continue; }
-      const saved = await upsertOffer(c.env, ex, url, store, 'hunter');
-      results.push({ url, status: saved.created ? 'created' : 'merged', id: saved.id });
+      try {
+        const saved = await upsertOffer(c.env, ex, url, store, 'hunter');
+        results.push({ url, status: saved.created ? 'created' : 'merged', id: saved.id });
+      } catch (e) {
+        if (Budget.exhausted()) return { ok: false, budget: true, exhausted: true, accepted: results.length, results };
+        throw e;
+      }
     }
     return { ok: true, accepted: results.length, skippedForBudget: Math.max(0, items.length - room), used: await Budget.usedToday(c.env), bgCap: Budget.BG_CAP, results };
   });
