@@ -20,6 +20,10 @@ import { ensureState } from './infra/state';
 import * as Smart from './catalog/smart';
 import { registerSystems } from './systems/api';
 import { uptimeTick } from './systems/uptime';
+import * as Sec from './security/audit';
+import { clientIp, guard, originAllowed, securityHeaders } from './security/guard';
+import * as TwoFA from './security/owner2fa';
+import { open as openField } from './security/crypto';
 import { cairoDay, type Env, fail, HttpError, json, nowIso, parseJ, rateLimit, readJson, str, timingSafeEqual, uid, b64 } from './util';
 
 type Ctx = { req: Request; env: Env; url: URL; p: string[]; exec: ExecutionContext };
@@ -41,7 +45,14 @@ async function needAdmin(c: Ctx): Promise<string> {
   const a = await need(c);
   if (!a.admin) fail(403, 'forbidden', 'للإدارة بس');
   if (!a.user.google_sub) fail(403, 'google_only', 'دخول الإدارة بجوجل بس');
+  if (!/^\/api\/v2\/admin\/2fa(\/|$)/.test(c.url.pathname)) await TwoFA.requireSecondFactor(c.env, c.req, a);
   return a.user.email;
+}
+/** Owner identity without the 2FA pass (used only by the 2FA endpoints themselves). */
+async function needOwner(c: Ctx): Promise<Authed> {
+  const a = await need(c);
+  if (!a.admin || !a.user.google_sub) fail(403, 'forbidden', 'للإدارة بس');
+  return a;
 }
 const body = (c: Ctx, max?: number) => readJson<Record<string, any>>(c.req, max);
 registerHub(on, { need, needAdmin, body });
@@ -90,10 +101,10 @@ on('POST', '/api/auth/register', async (c) => {
 });
 on('POST', '/api/auth/login', async (c) => {
   if (!(await rateLimit(c.env, `login:${c.req.headers.get('cf-connecting-ip')}`, 20, 600))) fail(429, 'rate_limited', 'محاولات كتير — استنى 10 دقايق');
-  return auth.login(c.env, await body(c));
+  return auth.login(c.env, await body(c), clientIp(c.req));
 });
 on('POST', '/api/auth/google', async (c) => auth.google(c.env, await body(c)));
-on('POST', '/api/auth/refresh', async (c) => auth.refresh(c.env, await body(c)));
+on('POST', '/api/auth/refresh', async (c) => auth.refresh(c.env, await body(c), clientIp(c.req)));
 on('POST', '/api/auth/logout', async (c) => auth.logout(c.env, await body(c)));
 on('POST', '/api/auth/forgot', async () => ({ ok: true, demoCode: null, message: 'لو حسابك متسجل بإيميل Gmail، ادخل بزرار «المواصلة باستخدام Google» بنفس الإيميل وغيّر الباسورد من حسابي.' }));
 on('GET', '/api/auth/me', async (c) => auth.publicUser((await need(c)).user, c.env));
@@ -541,7 +552,7 @@ on('GET', '/api/v2/admin/payments/:id/receipt', async (c) => {
   await needAdmin(c);
   const r = await c.env.KV.getWithMetadata<{ mime: string }>(`receipt:${c.p[0]}`);
   if (!r.value) fail(404, 'not_found', 'الإيصال اتمسح أو مش موجود');
-  return { mime: r.metadata?.mime ?? 'image/jpeg', data: r.value };
+  return { mime: r.metadata?.mime ?? 'image/jpeg', data: await openField(c.env.FIELD_KEYS, 'receipt', r.value!) };
 });
 on('POST', '/api/v2/admin/payments/:id/:action', async (c) => {
   const who = await needAdmin(c);
@@ -652,15 +663,52 @@ Smart.registerSmart(on, auth.authenticate);
 registerSystems(on, { needAdmin, me: async (env, req) => { const a = await auth.authenticate(env, req).catch(() => null); if (!a) fail(401, 'auth', 'سجّل دخول الأول'); return a!.user.id; } });
 Hunter.registerHunter(on);
 
+// ---------------- security: owner 2FA, intrusion log, bans, CSP reports ----------------
+on('GET', '/api/v2/admin/2fa', async (c) => TwoFA.status(c.env, await needOwner(c)));
+on('POST', '/api/v2/admin/2fa/setup', async (c) => { return TwoFA.setup(c.env, await needOwner(c)); });
+on('POST', '/api/v2/admin/2fa/enable', async (c) => { const a = await needOwner(c); const r = await TwoFA.enable(c.env, clientIp(c.req), a, str((await body(c)).code, 12)); await admin.audit(c.env, a.user.email, 'security.2fa_on', {}).catch(() => undefined); return r; });
+on('POST', '/api/v2/admin/2fa/verify', async (c) => TwoFA.verify(c.env, clientIp(c.req), await needOwner(c), str((await body(c)).code, 12)));
+on('POST', '/api/v2/admin/2fa/disable', async (c) => { const a = await needOwner(c); await TwoFA.requireSecondFactor(c.env, c.req, a); const r = await TwoFA.disable(c.env, clientIp(c.req), a, str((await body(c)).code, 12)); await admin.audit(c.env, a.user.email, 'security.2fa_off', {}).catch(() => undefined); return r; });
+on('GET', '/api/v2/admin/security', async (c) => {
+  await needAdmin(c);
+  const ev = await Sec.listSec(c.env, 200);
+  const bans = ((await c.env.KV.get('sec:bans', 'json').catch(() => null)) as Record<string, number> | null) ?? {};
+  return {
+    ...ev, bans: Object.entries(bans).filter(([, t]) => t > Date.now()).map(([ip, until]) => ({ ip, until: new Date(until).toISOString() })),
+    layers: {
+      rateLimitBindings: ['RL_IP', 'RL_AUTH', 'RL_WRITE', 'RL_NONCE', 'RL_OTP'].filter((k) => Boolean((c.env as unknown as Record<string, unknown>)[k])),
+      fieldEncryption: Boolean(c.env.FIELD_KEYS), signing: c.env.SIGNING_MODE ?? 'monitor', signingKey: Boolean(c.env.SIGNING_KEYS),
+      accessTokenMinutes: auth.ACCESS_TTL / 60, telegramAlerts: T.tgEnabled(c.env),
+    },
+    rules: Sec.RULES,
+  };
+});
+on('POST', '/api/v2/admin/security/ban', async (c) => {
+  const who = await needAdmin(c);
+  const b = await body(c);
+  const ip = str(b.ip, 64);
+  if (!/^[0-9a-f:.]{3,64}$/i.test(ip)) fail(400, 'invalid_ip', 'IP مش صحيح');
+  const minutes = Math.min(7 * 1440, Math.max(5, Number(b.minutes) || 60));
+  await Sec.ban(c.env, ip, minutes, b.unban !== true);
+  await admin.audit(c.env, who, b.unban === true ? 'security.unban' : 'security.ban', { ip, minutes }).catch(() => undefined);
+  return { ok: true };
+});
+on('POST', '/api/v2/csp-report', async (c) => {
+  const b = await body(c, 16_000).catch(() => ({}) as Record<string, any>);
+  const r = (b['csp-report'] ?? (Array.isArray(b) ? b[0]?.body : b.body) ?? b) as Record<string, unknown>;
+  Sec.secEvent('csp_report', clientIp(c.req), { path: str(r['document-uri'] ?? r.documentURL, 120), detail: `${str(r['violated-directive'] ?? r.effectiveDirective, 60)} ${str(r['blocked-uri'] ?? r.blockedURL, 160)}` });
+  return new Response(null, { status: 204 });
+});
+
 // ---------------- runtime ----------------
 function cors(env: Env, req: Request): Record<string, string> {
   const origin = req.headers.get('origin') ?? '';
   const allowed = env.ALLOWED_ORIGINS.split(',').map((s) => s.trim());
-  const ok = allowed.includes(origin) || /^https:\/\/[a-z0-9-]+\.safqa-admin\.pages\.dev$/.test(origin);
+  const ok = Boolean(origin) && originAllowed(env, origin);
   return {
     'access-control-allow-origin': ok ? origin : allowed[0]!,
     'access-control-allow-methods': 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
-    'access-control-allow-headers': 'authorization,content-type,x-safqa-ops',
+    'access-control-allow-headers': 'authorization,content-type,x-safqa-ops,x-safqa-2fa,x-safqa-ts,x-safqa-nonce,x-safqa-sig,x-safqa-client',
     'access-control-max-age': '86400',
     vary: 'origin',
   };
@@ -673,8 +721,12 @@ export default {
     const ch = cors(env, req);
     if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: ch });
     const url = new URL(req.url);
-    if (url.pathname === '/' ) return json({ name: 'Safqa edge API', ok: true, docs: 'https://github.com/Omar08263/safqa/blob/main/docs/backend.md' }, 200, ch);
+    if (url.pathname === '/' ) return json({ name: 'Safqa edge API', ok: true, docs: 'https://github.com/Omar08263/safqa/blob/main/docs/backend.md' }, 200, { ...ch, ...securityHeaders('/') });
+    const flush = () => { if (Sec.shouldFlush()) exec.waitUntil(Sec.flushSec(env).catch(() => 0)); };
+    const sh = securityHeaders(url.pathname);
     try {
+      const blocked = await guard(env, req, url, ch);
+      if (blocked) { flush(); return blocked; }
       for (const [m, re, h] of routes) {
         if (m !== req.method) continue;
         const match = url.pathname.match(re);
@@ -683,14 +735,25 @@ export default {
         if (Budget.pending()) exec.waitUntil(Budget.flush(env).catch(() => undefined));
         const res = out instanceof Response ? out : json(out);
         const headers = new Headers(res.headers);
+        for (const [k, v] of Object.entries(sh)) if (!headers.has(k)) headers.set(k, v);
         for (const [k, v] of Object.entries(ch)) headers.set(k, v);
+        flush();
         return new Response(res.body, { status: res.status, headers });
       }
-      return json({ error: { code: 'not_found', message: `No route for ${req.method} ${url.pathname}` } }, 404, ch);
+      return json({ error: { code: 'not_found', message: 'No such route' } }, 404, { ...ch, ...sh });
     } catch (e) {
-      if (e instanceof HttpError) return json({ error: { code: e.code, message: e.message } }, e.status, ch);
-      console.log('error', req.method, url.pathname, String((e as Error).stack ?? e));
-      return json({ error: { code: 'internal', message: 'حصلت مشكلة — جرّب تاني' } }, 500, ch);
+      if (e instanceof HttpError) {
+        const ip = clientIp(req);
+        const p = url.pathname;
+        if (e.status === 401 && p.startsWith('/api/auth/') && !['invalid_credentials', 'invalid_refresh'].includes(e.code)) Sec.secEvent('auth_fail', ip, { path: p, detail: e.code });
+        else if (e.status === 401 && e.code === 'bad_secret') Sec.secEvent('webhook_forged', ip, { path: p });
+        else if (e.status === 403 && /^\/api\/v2\/(admin|hub|owner)/.test(p) && e.code !== 'otp_required') Sec.secEvent('admin_denied', ip, { path: p, detail: e.code });
+        else if (e.status === 429) Sec.secEvent('rate_limited', ip, { path: p, detail: e.code });
+        flush();
+        return json({ error: { code: e.code, message: e.message } }, e.status, { ...ch, ...sh });
+      }
+      console.log('error', req.method, url.pathname, String((e as Error).stack ?? e).slice(0, 600)); // server log only, never in the response
+      return json({ error: { code: 'internal', message: 'حصلت مشكلة — جرّب تاني' } }, 500, { ...ch, ...sh });
     }
   },
   async scheduled(ev: ScheduledController, rawEnv: Env, exec: ExecutionContext) {
@@ -715,12 +778,16 @@ export default {
     }
     exec.waitUntil((async () => {
       Budget.setJob('cron');
+      await Sec.flushSec(env).catch(() => 0);
       await C.judgeAppeals(env).catch(() => 0);
       if (d.getUTCMinutes() < 10) {
         await env.DB.prepare("UPDATE users SET tier='free', tier_until=NULL WHERE tier<>'free' AND tier_until < ?").bind(nowIso()).run();
         await env.DB.prepare('DELETE FROM ai_cache WHERE exp < ?').bind(Date.now()).run();
         await env.DB.prepare('DELETE FROM rate WHERE reset < ?').bind(Math.floor(Date.now() / 1000)).run();
         await env.DB.prepare('DELETE FROM sessions WHERE exp < ?').bind(Date.now()).run();
+        // Rotated refresh tokens are kept 14 days for reuse detection; intrusion log 30 days. (Fails harmlessly before migration 0009.)
+        await env.DB.prepare('DELETE FROM sessions WHERE rotated_at IS NOT NULL AND rotated_at < ?').bind(Date.now() - 14 * 86400_000).run().catch(() => undefined);
+        await env.DB.prepare('DELETE FROM sec_events WHERE at < ?').bind(Date.now() - 30 * 86400_000).run().catch(() => undefined);
       }
       if (T.tgEnabled(env) && cairoH === 9 && d.getUTCMinutes() >= 30 && d.getUTCMinutes() < 40) await T.queueDigests(env);
       await autopilotTick(env, d).catch((e) => console.log('autopilot', String(e)));

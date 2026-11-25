@@ -4,6 +4,7 @@ import { installTaps } from './asmr.js';
 import { installOwner } from './owner.js';
 import { installBrain } from './brain.js';
 import { installSystems } from './systems.js';
+import { installSecurity, otpView } from './security.js';
 const API = 'https://safqa-api.safqaeg.workers.dev';
 const SITE = 'https://safqaeg.pages.dev';
 const GOOGLE_CLIENT_ID = '700154178904-k0hi0kp5v19m775u8t1bt6m6mnfhrghc.apps.googleusercontent.com';
@@ -25,7 +26,8 @@ const pill = (s) => `<span class="pill ${(STATUS[s] || [s, 'mut'])[1]}">${(STATU
 const store = { get a() { return localStorage.getItem('adm.access'); }, get r() { return localStorage.getItem('adm.refresh'); }, set(a, r) { a ? localStorage.setItem('adm.access', a) : localStorage.removeItem('adm.access'); r ? localStorage.setItem('adm.refresh', r) : localStorage.removeItem('adm.refresh'); } };
 let me = null;
 async function api(path, opts = {}, retry = true) {
-  const res = await fetch(API + path, { ...opts, headers: { 'content-type': 'application/json', ...(store.a ? { authorization: `Bearer ${store.a}` } : {}), ...(opts.headers || {}) } });
+  const pass = localStorage.getItem('adm.2fa');
+  const res = await fetch(API + path, { ...opts, headers: { 'content-type': 'application/json', ...(store.a ? { authorization: `Bearer ${store.a}` } : {}), ...(pass ? { 'x-safqa-2fa': pass } : {}), ...(opts.headers || {}) } });
   if (res.status === 401 && retry && store.r) {
     const r = await fetch(`${API}/api/auth/refresh`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ refreshToken: store.r }) });
     if (r.ok) { const j = await r.json(); store.set(j.accessToken, j.refreshToken); return api(path, opts, false); }
@@ -33,7 +35,7 @@ async function api(path, opts = {}, retry = true) {
     render();
   }
   const data = await res.json().catch(() => null);
-  if (!res.ok) throw new Error(data?.error?.message || res.statusText);
+  if (!res.ok) { const err = new Error(data?.error?.message || res.statusText); err.code = data?.error?.code; err.status = res.status; throw err; }
   return data;
 }
 const post = (p, b) => api(p, { method: 'POST', body: JSON.stringify(b ?? {}) });
@@ -88,6 +90,7 @@ async function render() {
   if (!store.a) return loginView();
   try { me = me || (await api('/api/auth/me')); await api('/api/v2/admin/whoami'); } catch (e) {
     if (!store.a) return loginView();
+    if (e.code === 'otp_required') { localStorage.removeItem('adm.2fa'); return otpView($, esc, post, render); }
     return loginView(`الحساب ده (${esc(me?.email || '')}) مش مسموح له بالإدارة. ${esc(e.message)}`);
   }
   const p = PAGES.find((x) => x[0] === page()) ?? PAGES[0];
@@ -132,7 +135,7 @@ VIEWS.payments = async (v) => {
   const status = { review: 'pending', provisional: 'provisional', approved: 'approved', all: 'all' }[tab] || 'pending';
   const [a, b] = await Promise.all([api(`/api/v2/admin/payments?status=${status}`), status === 'pending' ? api('/api/v2/admin/payments?status=provisional') : { items: [] }]);
   const items = [...b.items, ...a.items];
-  v.innerHTML = `<div class="tabs">${[['review', 'محتاج قرار'], ['provisional', 'متفعّل مبدئيًا'], ['approved', 'متأكد'], ['all', 'الكل']].map(([id, t]) => `<button class="${tab === id ? 'on' : ''}" onclick="location.hash='#/payments?s=${id}'">${t}</button>`).join('')}</div>
+  v.innerHTML = `<div class="tabs">${[['review', 'محتاج قرار'], ['provisional', 'متفعّل مبدئيًا'], ['approved', 'متأكد'], ['all', 'الكل']].map(([id, t]) => `<button class="${tab === id ? 'on' : ''}" data-href="#/payments?s=${id}">${t}</button>`).join('')}</div>
   <div class="grid">${items.length ? items.map((p) => `<div class="card pay" data-id="${p.id}"><div>${p.hasReceipt ? `<img class="rc" data-rc="${p.id}" alt="إيصال" src="data:image/gif;base64,R0lGODlhAQABAAAAACw=">` : '<div class="empty">مفيش إيصال لسه</div>'}</div>
     <div class="col"><div class="row"><b>${esc(p.userName || '')}</b><span class="muted small mono">${esc(p.userEmail || '')}</span><span class="sp"></span>${pill(p.status)}${p.note === 'TEST' ? '<span class="pill warn">اختبار</span>' : ''}</div>
     <div class="row"><span>${tierName(p.tier)} × ${p.months} شهر</span><b style="font-size:20px">${fmt(p.amount)} ج</b>${p.code ? `<span class="pill info">كود ${esc(p.code)} (بدل ${fmt(p.listAmount)})</span>` : ''}</div>
@@ -195,7 +198,7 @@ VIEWS.content = async (v) => {
   const type = new URLSearchParams(location.hash.split('?')[1]).get('t') || 'posts';
   const r = await api(`/api/v2/admin/content?type=${type}`);
   const one = { posts: 'post', comments: 'comment', messages: 'message', reviews: 'review' }[type];
-  v.innerHTML = `<div class="tabs">${[['posts', 'المنشورات'], ['comments', 'التعليقات'], ['messages', 'الدردشة'], ['reviews', 'التقييمات']].map(([id, t]) => `<button class="${type === id ? 'on' : ''}" onclick="location.hash='#/content?t=${id}'">${t}</button>`).join('')}</div>
+  v.innerHTML = `<div class="tabs">${[['posts', 'المنشورات'], ['comments', 'التعليقات'], ['messages', 'الدردشة'], ['reviews', 'التقييمات']].map(([id, t]) => `<button class="${type === id ? 'on' : ''}" data-href="#/content?t=${id}">${t}</button>`).join('')}</div>
   <div class="grid">${r.items.map((x) => { const a = r.authors[x.author_id] || {}; return `<div class="card" data-id="${x.id}"><div class="row"><b>${esc(a.name || x.author_id)}</b>${a.ai ? '<span class="pill info">🤖 وكيل ذكي</span>' : ''}<span class="muted small">${ago(x.created_at)}${x.room_id ? ` · ${esc(x.room_id)}` : ''}${x.group_id ? ` · ${esc(x.group_id)}` : ''}</span><span class="sp"></span><span class="pill ${x.status === 'visible' ? 'ok' : 'bad'}">${x.status}</span></div><p style="white-space:pre-wrap;margin:8px 0">${x.stars ? '⭐'.repeat(x.stars) + '<br>' : ''}${esc(x.text)}</p><div class="row">${x.status === 'visible' ? '<button class="btn s d" data-st="hidden">إخفاء</button>' : '<button class="btn s" data-st="visible">إظهار</button>'}${type === 'posts' ? `<button class="btn s" data-pin>${x.pinned ? '📌 فك التثبيت' : '📌 تثبيت'}</button>` : ''}</div></div>`; }).join('') || '<div class="card empty">مفيش محتوى</div>'}</div>`;
   v.querySelectorAll('[data-st]').forEach((b) => (b.onclick = async () => { await post(`/api/v2/admin/content/${one}/${b.closest('[data-id]').dataset.id}/${b.dataset.st}`); render(); }));
   v.querySelectorAll('[data-pin]').forEach((b) => (b.onclick = async () => { await post(`/api/v2/admin/posts/${b.closest('[data-id]').dataset.id}/pin`); render(); }));
@@ -265,6 +268,9 @@ installHub({ PAGES, VIEWS, api, post, esc, fmt, ago, toast });
 installOwner({ PAGES, VIEWS, api, post, esc, fmt, ago, toast });
 installBrain({ PAGES, VIEWS, api, post, esc, ago, toast });
 installSystems({ PAGES, VIEWS, api, post, esc, ago, toast });
+installSecurity({ PAGES, VIEWS, api, post, esc, ago, toast });
+// Tabs use data-href instead of inline onclick (strict CSP: no inline script).
+document.addEventListener('click', (e) => { const t = e.target.closest?.('[data-href]'); if (t) location.hash = t.dataset.href; });
 installTaps();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => 0);
 await completeLogin();

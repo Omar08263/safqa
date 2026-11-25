@@ -1,3 +1,4 @@
+import { open, seal } from './security/crypto';
 // InstaPay payments for the 4 tiers + discount codes.
 import { readReceipt } from './ai';
 import type { Authed } from './auth';
@@ -137,7 +138,8 @@ export async function submitReceipt(env: Env, a: Authed, id: string, body: Recor
   if (!image || image.length * 0.75 > MAX_RECEIPT) fail(400, 'invalid_image', 'ارفع صورة الإيصال (أقل من 1.5 ميجا)');
   // Privacy: receipts live in KV, readable only by admins, and auto-delete after 90 days.
   const key = `receipt:${id}`;
-  await env.KV.put(key, image, { expirationTtl: 90 * 86400, metadata: { mime, userId: a.user.id } });
+  // Encrypted at rest (AES-GCM, FIELD_KEYS); the AI reads the plaintext in memory only.
+  await env.KV.put(key, await seal(env.FIELD_KEYS, 'receipt', image), { expirationTtl: 90 * 86400, metadata: { mime, userId: a.user.id } });
   const vision = await readReceipt(env, image, mime);
   const x = (vision.data ?? {}) as unknown as Extraction;
   const verdict = vision.data
@@ -157,7 +159,7 @@ export async function submitReceipt(env: Env, a: Authed, id: string, body: Recor
   }
   const status = decision === 'provisional' ? 'provisional' : 'pending';
   await env.DB.prepare('UPDATE payments SET txn_ref=?, receipt_key=?, extraction=?, checks=?, confidence=?, status=?, submitted_at=? WHERE id=?')
-    .bind(txnRef, key, JSON.stringify({ ...x, model: vision.model }), JSON.stringify({ checks: verdict.checks, reasons: verdict.reasons }), verdict.confidence, status, nowIso(), id).run();
+    .bind(txnRef, key, await seal(env.FIELD_KEYS, 'extraction', JSON.stringify({ ...x, model: vision.model })), JSON.stringify({ checks: verdict.checks, reasons: verdict.reasons }), verdict.confidence, status, nowIso(), id).run();
   if (status === 'provisional') {
     await consumeCode(env, (p.code as string) ?? null, a.user.id, id);
     await setTier(env, a.user.id, String(p.tier), 30 * Number(p.months || 1), 'provisional');
@@ -193,9 +195,9 @@ export async function reverify(env: Env, id: string) {
   if (!p?.receipt_key) return fail(404, 'not_found', 'مفيش إيصال');
   const r = await env.KV.getWithMetadata<{ mime: string }>(String(p.receipt_key));
   if (!r.value) return fail(404, 'not_found', 'الإيصال اتمسح');
-  const vision = await readReceipt(env, r.value, r.metadata?.mime ?? 'image/jpeg');
+  const vision = await readReceipt(env, await open(env.FIELD_KEYS, 'receipt', r.value), r.metadata?.mime ?? 'image/jpeg');
   if (!vision.data) return { ok: false, error: vision.raw };
   const v = verifyReceipt(vision.data as unknown as Extraction, { amount: Number(p.amount), address: env.INSTAPAY_ADDRESS, refCode: String(p.ref_code), requestedAt: String(p.created_at), userTxnRef: String(p.txn_ref ?? '') });
-  await env.DB.prepare('UPDATE payments SET extraction=?, checks=?, confidence=? WHERE id=?').bind(JSON.stringify({ ...vision.data, model: vision.model }), JSON.stringify({ checks: v.checks, reasons: v.reasons }), v.confidence, id).run();
+  await env.DB.prepare('UPDATE payments SET extraction=?, checks=?, confidence=? WHERE id=?').bind(await seal(env.FIELD_KEYS, 'extraction', JSON.stringify({ ...vision.data, model: vision.model })), JSON.stringify({ checks: v.checks, reasons: v.reasons }), v.confidence, id).run();
   return { ok: true, confidence: v.confidence, suggestion: v.decision };
 }

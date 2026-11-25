@@ -8,6 +8,7 @@ import type { Authed } from './auth';
 import * as AP from './autopilot';
 import * as adm from './admin';
 import { enqueue, tgEnabled } from './telegram';
+import * as TwoFA from './security/owner2fa';
 import { type Env, fail, nowIso, parseJ, rateLimit, sha256, str, uid } from './util';
 
 type Ctx = { req: Request; env: Env; url: URL; p: string[]; exec: ExecutionContext };
@@ -110,7 +111,9 @@ export function registerHub(on: On, d: Deps) {
     const u = await auth.getUser(c.env, row!.admin_user);
     if (!u || !auth.isAdminEmail(c.env, u.email) || !u.google_sub) fail(403, 'forbidden', 'للمالك بس');
     await AP.opsLog(c.env, u!.email, 'pair', `جهاز جديد اتربط بـ Safqa Hub (${str(b.device, 60) || 'Android'})`, null, 'warn');
-    return auth.issue(c.env, u!);
+    // With owner 2FA on, the paired device also gets a 30-day admin pass (pairing itself required 2FA).
+    const twofa = await TwoFA.totpRecord(c.env, u!.id);
+    return auth.issue(c.env, u!, twofa ? { adminPass: await TwoFA.issuePass(c.env, { user: u!, admin: true }, TwoFA.DEVICE_PASS_TTL) } : {});
   });
 
   // ---------- hub (owner, Google-only) ----------

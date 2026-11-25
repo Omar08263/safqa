@@ -29,7 +29,7 @@ export function installOwner({ PAGES, VIEWS, api, post, esc, fmt, ago, toast }) 
         <div class="col" style="flex:1;min-width:220px;gap:2px"><b style="font-size:20px">🧠 أدواتي الذكية</b><span class="small muted">للمالك بس · كل حاجة بتتسجل في السجل · فاضل ${o.aiLeft} نداء AI النهارده</span></div>
         <div class="row"><span class="small">الطيار الآلي</span><button class="switch ${o.autopilot ? 'on' : ''}" id="gauto" data-sfx="${o.autopilot ? 'no' : 'chime'}" aria-label="الطيار الآلي العام"></button></div></div>
         <div class="crew" style="position:relative">${o.agents.map((a) => `<div class="mate ${a.enabled ? '' : 'off'}" title="${esc(a.role)}"><div class="ringwrap" style="width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.06)"><span>${a.emoji}</span></div><b>${esc(a.name)}</b><small>${a.rank.emoji} ${esc(a.rank.ar)} · ${a.auto ? 'لوحده' : 'يقترح'}</small></div>`).join('')}</div></div>
-      <div class="tabs" style="margin-top:12px">${TABS.map(([k, e, l]) => `<button class="${k === t ? 'on' : ''}" onclick="location.hash='#/genius?t=${k}'">${e} ${l}</button>`).join('')}</div><div id="gx"></div>`;
+      <div class="tabs" style="margin-top:12px">${TABS.map(([k, e, l]) => `<button class="${k === t ? 'on' : ''}" data-href="#/genius?t=${k}">${e} ${l}</button>`).join('')}</div><div id="gx"></div>`;
     v.querySelector('#gauto').onclick = async (e) => { const on = !e.currentTarget.classList.contains('on'); if (!on && !confirm('تقفل الطيار الآلي؟ الوكلاء هيقترحوا بس.')) return; await post('/api/v2/hub/owner/autopilot', { global: on }); toast(on ? '🤖 الوكلاء بيديروا لوحدهم' : '✋ الوكلاء هيستنوا موافقتك'); VIEWS.genius(v); };
     const gx = v.querySelector('#gx');
     const again = () => VIEWS.genius(v);

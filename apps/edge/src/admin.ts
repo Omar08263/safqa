@@ -1,3 +1,4 @@
+import { isSealed, open } from './security/crypto';
 // Admin API (Google-allowlisted owner only) + the AI ops agent.
 import { agents, aiBudgetLeft, extractJson, llm, logAgent } from './ai';
 import { normalizeCode } from './codes';
@@ -40,6 +41,7 @@ export async function stats(env: Env) {
 
 export async function listPayments(env: Env, status: string) {
   const rows = (await env.DB.prepare(`SELECT p.*, u.name AS user_name, u.email AS user_email FROM payments p LEFT JOIN users u ON u.id=p.user_id ${status && status !== 'all' ? 'WHERE p.status=?' : ''} ORDER BY p.created_at DESC LIMIT 100`).bind(...(status && status !== 'all' ? [status] : [])).all<Record<string, unknown>>()).results;
+  for (const r of rows) if (isSealed(r.extraction)) r.extraction = await open(env.FIELD_KEYS, 'extraction', r.extraction).catch(() => null);
   return { items: rows.map((r) => ({ ...paymentOut(env, r, true), userName: r.user_name, userEmail: r.user_email })) };
 }
 

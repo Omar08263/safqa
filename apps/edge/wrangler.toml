@@ -17,6 +17,37 @@ migrations_dir = "migrations"
 binding = "KV"
 id = "d7e02776ec5045bfbc176385cac1a876"
 
+# Security: edge rate limiters (Workers Rate Limiting API, free, zero D1/KV writes).
+# period must be 10 or 60 seconds. See src/security/ratelimit.ts and docs/security.md.
+[[ratelimits]]
+name = "RL_IP"
+namespace_id = "7101"
+simple = { limit = 240, period = 60 }
+
+[[ratelimits]]
+name = "RL_AUTH"
+namespace_id = "7102"
+simple = { limit = 20, period = 60 }
+
+[[ratelimits]]
+name = "RL_WRITE"
+namespace_id = "7103"
+simple = { limit = 60, period = 60 }
+
+[[ratelimits]]
+name = "RL_NONCE"
+namespace_id = "7104"
+simple = { limit = 1, period = 60 }
+
+[[ratelimits]]
+name = "RL_OTP"
+namespace_id = "7105"
+simple = { limit = 5, period = 60 }
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
 [triggers]
 # Every 10 min: appeals, Telegram outbox, hourly cleanup, daily 9:30 Cairo digest.
 # Minutes 5,15,25…: v5 ingestion agents only (feed poller + adaptive recrawl + smart notifications), own query budget.
@@ -33,6 +64,8 @@ CHAT_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
 CHAT_FALLBACK_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct"
 VISION_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct"
 AI_DAILY_CALL_BUDGET = "180"
+# App request signatures: "monitor" = bad signatures rejected, unsigned still allowed (old app versions).
+SIGNING_MODE = "monitor"
 # Secrets (wrangler secret put): JWT_SECRET, PUSH_SECRET, ADMIN_EMAILS, TELEGRAM_BOT_TOKEN (optional)
 
 # Shared web modules (rules, agents, moderation) read Vite env at import time.

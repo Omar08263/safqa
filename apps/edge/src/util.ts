@@ -26,7 +26,17 @@ export interface Env {
   GEMINI_API_KEY?: string;
   GITHUB_TOKEN?: string;
   GITHUB_REPO?: string;
+  // ---- security (see docs/security.md) ----
+  RL_IP?: RateLimiter; RL_AUTH?: RateLimiter; RL_WRITE?: RateLimiter; RL_NONCE?: RateLimiter; RL_OTP?: RateLimiter;
+  /** AES-GCM keyring "kid:base64,kid:base64" (first encrypts). Secret. */
+  FIELD_KEYS?: string;
+  /** App request-signing keys "current,previous". Secret. */
+  SIGNING_KEYS?: string;
+  SIGNING_MODE?: 'off' | 'monitor' | 'enforce';
+  /** Extra Telegram chat id(s) for security alerts (besides the owner's linked account). */
+  OWNER_TG_CHAT?: string;
 }
+interface RateLimiter { limit(o: { key: string }): Promise<{ success: boolean }> }
 
 export class HttpError extends Error {
   constructor(public status: number, public code: string, message: string) {
@@ -104,14 +114,19 @@ export async function signJwt(payload: Record<string, unknown>, secret: string, 
 export async function verifyJwt<T = Record<string, unknown>>(token: string, secret: string): Promise<T | null> {
   const [h, p, s] = token.split('.');
   if (!h || !p || !s) return null;
+  // Only our own HS256 tokens: no "alg":"none", no algorithm confusion.
+  try { if (JSON.parse(new TextDecoder().decode(b64urlDecode(h))).alg !== 'HS256') return null; } catch { return null; }
   const ok = await crypto.subtle.verify('HMAC', await hmacKey(secret), b64urlDecode(s), enc.encode(`${h}.${p}`));
   if (!ok) return null;
   const claims = JSON.parse(new TextDecoder().decode(b64urlDecode(p)));
   if (typeof claims.exp !== 'number' || claims.exp * 1000 < Date.now()) return null;
+  if (claims.iss !== undefined && claims.iss !== 'safqa-edge') return null;
   return claims as T;
 }
 
 export async function readJson<T = Record<string, unknown>>(req: Request, max = 64 * 1024): Promise<T> {
+  // Refuse before buffering when the client announces a too-large body.
+  if (Number(req.headers.get('content-length') ?? 0) > max * 4 + 1024) fail(413, 'too_large', 'Request body too large');
   const text = await req.text();
   if (text.length > max) fail(413, 'too_large', 'Request body too large');
   if (!text) return {} as T;
@@ -131,6 +146,14 @@ export const parseJ = <T>(s: string | null | undefined, d: T): T => {
     return d;
   }
 };
+
+/** Read-only check of a D1 fixed-window counter (true = still under the limit). Never writes. */
+export async function underLimit(env: Env, key: string, limit: number): Promise<boolean> {
+  try {
+    const row = await env.DB.prepare('SELECT count, reset FROM rate WHERE key=?').bind(key).first<{ count: number; reset: number }>();
+    return !row || row.reset <= Math.floor(Date.now() / 1000) || row.count < limit;
+  } catch { return true; }
+}
 
 /** Fixed-window rate limit stored in D1 (cheap, free-tier friendly). */
 export async function rateLimit(env: Env, key: string, limit: number, windowSec: number): Promise<boolean> {

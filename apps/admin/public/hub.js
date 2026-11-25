@@ -64,7 +64,7 @@ export function installHub({ PAGES, VIEWS, api, post, esc, fmt, ago, toast }) {
   VIEWS.decisions = async (v) => {
     const st = new URLSearchParams(location.hash.split('?')[1] || '').get('s') || 'open';
     const [r, ag] = await Promise.all([api(`/api/v2/hub/escalations?status=${st}`), api('/api/v2/hub/agents')]);
-    v.innerHTML = `<div class="tabs">${[['open', 'مفتوحة'], ['decided', 'اتقررت']].map(([k, t]) => `<button class="${k === st ? 'on' : ''}" onclick="location.hash='#/decisions?s=${k}'">${t}</button>`).join('')}</div>
+    v.innerHTML = `<div class="tabs">${[['open', 'مفتوحة'], ['decided', 'اتقررت']].map(([k, t]) => `<button class="${k === st ? 'on' : ''}" data-href="#/decisions?s=${k}">${t}</button>`).join('')}</div>
       <p class="muted small">الوكلاء بيرجعولك في القرارات الحقيقية بس. كل قرار بتاخده بيعلّمهم: لو وافقت اقتراحهم بياخدوا +10 خبرة، لو خالفته −5.</p>
       <div class="grid g2">${r.items.map((e) => (st === 'open' ? escCard(e, ag.items) : `<div class="card"><b>${esc(e.title)}</b><p class="small muted">${esc(e.agent_id)} · القرار: <b>${esc(e.decision)}</b> · ${ago(e.decided_at)}</p></div>`)).join('') || '<div class="empty">مفيش حاجة هنا 🎉</div>'}</div>`;
     wireEsc(v);
@@ -114,7 +114,7 @@ export function installHub({ PAGES, VIEWS, api, post, esc, fmt, ago, toast }) {
     const q = new URLSearchParams(location.hash.split('?')[1] || '');
     const r = await api(`/api/v2/hub/audit${q.get('kind') ? `?kind=${encodeURIComponent(q.get('kind'))}` : ''}`);
     const kinds = [...new Set(r.items.map((x) => x.kind))];
-    v.innerHTML = `<div class="tabs"><button class="${!q.get('kind') ? 'on' : ''}" onclick="location.hash='#/audit'">الكل</button>${kinds.map((k) => `<button class="${q.get('kind') === k ? 'on' : ''}" onclick="location.hash='#/audit?kind=${esc(k)}'">${esc(k)}</button>`).join('')}</div>
+    v.innerHTML = `<div class="tabs"><button class="${!q.get('kind') ? 'on' : ''}" data-href="#/audit">الكل</button>${kinds.map((k) => `<button class="${q.get('kind') === k ? 'on' : ''}" data-href="#/audit?kind=${esc(k)}">${esc(k)}</button>`).join('')}</div>
       <div class="grid g2"><div class="card"><b>🤖 الوكلاء والنظام</b><div class="tl" style="margin-top:8px">${r.items.map((a) => `<div><span>${SEV[a.severity] || '•'}</span><div><b>${esc(a.title)}</b><small class="muted">${esc(a.actor)} · ${esc(a.kind)} · ${ago(a.at)}</small>${a.detail ? `<details><summary class="small muted">تفاصيل</summary><pre class="mono small">${esc(a.detail)}</pre></details>` : ''}</div></div>`).join('') || '<div class="empty">فاضي</div>'}</div></div>
       <div class="card"><b>👤 عمليات الإدارة</b><div class="tl" style="margin-top:8px">${r.admin.map((a) => `<div><span>•</span><div><b>${esc(a.title)}</b><small class="muted">${esc(a.actor)} · ${ago(a.at)}</small></div></div>`).join('') || '<div class="empty">فاضي</div>'}</div></div></div>`;
   };

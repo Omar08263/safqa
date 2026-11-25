@@ -1,6 +1,7 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
+import { cspHeaders } from './csp';
 
 /** Emits /precache.json (every built JS/CSS chunk) so the service worker can make the whole app work offline, lazy pages included. */
 function precacheManifest(): Plugin {
@@ -20,7 +21,7 @@ function precacheManifest(): Plugin {
 const api = process.env.VITE_API_PROXY || 'http://127.0.0.1:8787';
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), precacheManifest()],
+  plugins: [react(), tailwindcss(), precacheManifest(), cspHeaders()],
   server: {
     host: '0.0.0.0',
     port: 47321,
