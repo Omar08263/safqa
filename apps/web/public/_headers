@@ -1,5 +1,11 @@
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+/fonts.css
+  Cache-Control: no-cache
+/appearance.js
+  Cache-Control: no-cache
 /media/*
   Cache-Control: public, max-age=604800
 /sw.js
@@ -18,5 +24,11 @@
   Origin-Agent-Cluster: ?1
 /ota/assets/*
   Cache-Control: public, max-age=31536000, immutable
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+/fonts.css
+  Cache-Control: no-cache
+/appearance.js
+  Cache-Control: no-cache
 /ota/android/*
   Cache-Control: no-cache

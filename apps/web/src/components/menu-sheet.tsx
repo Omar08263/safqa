@@ -6,6 +6,7 @@ import { useDevice } from '../lib/device';
 import { usePrefs } from '../lib/prefs';
 import { feedback, setSoundEnabled, useSound } from '../lib/sound';
 import { useTr } from '../lib/tr';
+import { AppearancePicker } from './appearance-picker';
 import { useBottomBarMode } from './bottom-nav';
 
 const groups: { ar: string; en: string; paths: string[] }[] = [
@@ -60,6 +61,7 @@ export function MenuSheet({ open, onClose }: { open: boolean; onClose: () => voi
             <Toggle on={bar !== 'hidden'} onClick={() => { setBar(bar === 'hidden' ? 'auto' : 'hidden'); feedback('tap'); }} icon={bar === 'hidden' ? <PanelBottomOpen className="h-4 w-4" /> : <PanelBottomClose className="h-4 w-4" />} text={bar === 'hidden' ? tr('أظهر الشريط', 'Show bar') : tr('خبّي الشريط', 'Hide bar')} />
           ) : <span />}
         </div>
+        <div className="mb-4 rounded-2xl border border-border p-3"><AppearancePicker compact /></div>
         {groups.map((g) => (
           <section key={g.en} className="mb-4">
             <h2 className="mb-1.5 px-1 text-xs font-semibold text-muted">{label(g)}</h2>

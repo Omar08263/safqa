@@ -16,7 +16,8 @@
   --accent-text: #9A5B00;
   --accent-soft: color-mix(in srgb, #D98A0B 14%, transparent);
   --accent-glow: color-mix(in srgb, #D98A0B 45%, transparent);
-  --font-stack: "Readex Pro", "Segoe UI", Tahoma, sans-serif;
+  --font-base: "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+  --font-stack: var(--font-base);
   --r-chip: 999px;
   --r-sm: 12px;
   --r-md: 18px;

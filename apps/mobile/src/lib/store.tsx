@@ -7,7 +7,7 @@ import { useSyncExternalStore } from 'react';
 import { ApiError, getAuth, type ServerWatch, serverAddWatch, serverRemoveWatch, serverSetTarget, serverWatchlist, tierOf, useAuth } from './api';
 
 export interface WatchItem { id: string; target: number | null; addedAt: string; lastPrice: number | null; notifiedAt?: string; serverId?: string; /** v5 catalog items are not in the snapshot: keep title/image for the list. */ title?: string; image?: string }
-export interface Settings { theme: 'system' | 'light' | 'dark'; haptics: boolean; notifications: boolean; onboarded: boolean; minDropPct: number }
+export interface Settings { theme: 'system' | 'light' | 'white' | 'dark' | 'navy'; haptics: boolean; notifications: boolean; onboarded: boolean; minDropPct: number }
 interface State { watch: WatchItem[]; settings: Settings; ready: boolean }
 
 const KEY = 'safqa.app.v1';

@@ -1,0 +1,44 @@
+/* Named palettes on top of tokens.css. Default (no data-theme, or sand) stays the Safqa cream. */
+/* Do not set letter-spacing or font-feature-settings here — Arabic letters must stay joined. */
+
+[data-theme="sand"] {
+  /* current default light tokens already apply via :root */
+}
+
+[data-theme="white"] {
+  --bg: #FFFFFF;
+  --elev: #F7F7F8;
+  --ink: #161513;
+  --muted: #5F5A54;
+  --line: #E8E4DE;
+  --chip: #F3F0EA;
+  --tile: #FFFFFF;
+  --saffron: #C9840A;
+  --palm: #0E6B52;
+  --clay: #B8432F;
+}
+
+html[data-theme="navy"],
+html[data-theme="navy"].dark {
+  --bg: #0B1220;
+  --elev: #111A2E;
+  --ink: #E7ECF6;
+  --muted: #93A1BD;
+  --line: #22304F;
+  --chip: #16213A;
+  --tile: #F3F6FB;
+  --saffron: #F0B429;
+  --palm: #3DBE9A;
+  --clay: #F07167;
+  --accent: #F0B429;
+  --accent-2: #FB8A3C;
+  --accent-ink: #1C1915;
+  --accent-text: #F7C55A;
+  --accent-soft: color-mix(in srgb, #F0B429 14%, transparent);
+  --accent-glow: color-mix(in srgb, #F0B429 45%, transparent);
+}
+
+html[data-theme="white"] { color-scheme: light; }
+html[data-theme="sand"] { color-scheme: light; }
+html[data-theme="navy"] { color-scheme: dark; }
+html[data-theme="dark"] { color-scheme: dark; }

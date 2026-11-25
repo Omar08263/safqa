@@ -14,6 +14,7 @@ import { Card, PageHeader, useToast } from '../fx/fx';
 import { SignInGate } from '../components/sign-in-gate';
 import { keys } from '../lib/activity';
 import { accents, type Appearance, defaultAppearance, useAppearance } from '../lib/appearance';
+import { AppearancePicker } from '../components/appearance-picker';
 import { downloadFile, isStaticDemo, useLocal, writeLocal } from '../lib/local';
 import { usePrefs } from '../lib/prefs';
 import { RawError, useSession } from '../lib/session';
@@ -139,7 +140,7 @@ export function ProfilePage() {
   );
 }
 
-const BACKUP_KEYS = ['safqa.activity.v1', keys.purchases, keys.collections, keys.budget, keys.compare, keys.savedSearches, keys.profile, 'safqa.appearance.v1', 'safqa.fx.v1'];
+const BACKUP_KEYS = ['safqa.activity.v1', keys.purchases, keys.collections, keys.budget, keys.compare, keys.savedSearches, keys.profile, 'safqa.appearance.v1', 'safqa.fx.v1', 'safqa.skin', 'safqa.font'];
 
 function Switch({ on, onClick, label, hint }: { on: boolean; onClick: () => void; label: string; hint: string }) {
   return (
@@ -153,7 +154,7 @@ function Switch({ on, onClick, label, hint }: { on: boolean; onClick: () => void
 export function SettingsPage() {
   const tr = useTr();
   const toast = useToast();
-  const { locale, setLocale, theme, setTheme } = usePrefs();
+  const { locale, setLocale } = usePrefs();
   const [a, setA] = useAppearance();
   const [, setTour] = useLocal<boolean>('safqa.welcome.v4', false);
   const [haptics, setHaptics] = useHaptics();
@@ -203,10 +204,7 @@ export function SettingsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="space-y-4">
           <h2 className="flex items-center gap-2 text-lg font-bold"><Palette className="h-5 w-5 text-primary" />{tr('الشكل', 'Appearance')}</h2>
-          <div className="grid grid-cols-2 gap-2">
-            <Button variant={theme === 'light' ? 'default' : 'outline'} onClick={() => { set('followSystem', false); setTheme('light'); }}>{tr('نهاري', 'Light')}</Button>
-            <Button variant={theme === 'dark' ? 'default' : 'outline'} onClick={() => { set('followSystem', false); setTheme('dark'); }}>{tr('ليلي', 'Dark')}</Button>
-          </div>
+          <AppearancePicker />
           <Toggle k="followSystem" label={tr('اتبع إعداد الجهاز', 'Follow device setting')} hint={tr('ليلي ونهاري أوتوماتيك', 'Automatic dark/light')} />
           <div>
             <p className="text-sm font-semibold">{tr('لون التطبيق', 'Accent colour')}</p>

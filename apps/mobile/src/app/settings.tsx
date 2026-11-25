@@ -38,10 +38,12 @@ export default function Settings() {
     <ScrollView style={{ backgroundColor: c.bg }} contentContainerStyle={{ padding: gutter, paddingBottom: 40, gap: 12 }}>
       <Card>
         <SectionTitle title="المظهر" />
-        <View style={{ flexDirection: 'row', gap: 8 }}>
+        <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
           <Chip label="زي الموبايل" active={settings.theme === 'system'} onPress={() => update({ theme: 'system' })} />
-          <Chip label="☀️ فاتح" active={settings.theme === 'light'} onPress={() => update({ theme: 'light' })} />
-          <Chip label="🌙 غامق" active={settings.theme === 'dark'} onPress={() => update({ theme: 'dark' })} />
+          <Chip label="🏜️ رملي" active={settings.theme === 'light'} onPress={() => update({ theme: 'light' })} />
+          <Chip label="🤍 أبيض" active={settings.theme === 'white'} onPress={() => update({ theme: 'white' })} />
+          <Chip label="🌙 داكن" active={settings.theme === 'dark'} onPress={() => update({ theme: 'dark' })} />
+          <Chip label="🌌 ليلي كحلي" active={settings.theme === 'navy'} onPress={() => update({ theme: 'navy' })} />
         </View>
       </Card>
       <Card>

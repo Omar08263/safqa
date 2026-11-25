@@ -75,22 +75,46 @@ window.addEventListener('hashchange', () => render());
 
 // Same section hues as the site and the app (packages/brand/tokens.json).
 const SECTION = { dashboard: 'account', hub: 'account', payments: 'plans', codes: 'coupons', ops: 'ai', agents: 'ai', members: 'community', moderation: 'community', content: 'community', catalog: 'deals', broadcast: 'radar', settings: 'tools' };
-function bindThemeBtn() {
-  const tb = $('#themeBtn');
-  if (!tb || !window.SafqaTheme) return;
-  const paint = (t) => { tb.innerHTML = `${t.icon} ${t.label}`; };
-  paint(window.SafqaTheme.get());
-  tb.onclick = () => paint(window.SafqaTheme.cycle());
+function lookHtml() {
+  const th = window.SafqaTheme?.get?.() || { label: 'داكن', icon: '🌙' };
+  return `<div class="look-wrap"><button class="btn s look-btn" id="lookBtn" type="button" title="الخط والثيم" aria-haspopup="dialog" aria-expanded="false">${th.icon} ${th.label} · خط</button><div class="look-panel" id="lookPanel" role="dialog" aria-label="الخط والثيم"></div></div>`;
 }
+function paintLookPanel() {
+  const T = window.SafqaTheme;
+  if (!T) return;
+  const th = T.get();
+  const fo = T.getFont();
+  const btn = $('#lookBtn');
+  const panel = $('#lookPanel');
+  if (btn) btn.innerHTML = `${th.icon} ${th.label} · خط`;
+  if (!panel) return;
+  panel.innerHTML = `<h4>الثيم</h4><div class="look-grid">${T.THEMES.map((t) => `<button type="button" class="look-opt ${t.id === th.id ? 'on' : ''}" data-skin="${t.id}"><span class="look-swatch" style="background:${t.color}"></span>${t.icon} ${t.label}</button>`).join('')}</div><h4>الخط</h4><div class="look-fonts">${T.FONTS.map((f) => `<button type="button" class="look-opt ${f.id === fo.id ? 'on' : ''}" data-font="${f.id}" style="font-family:${(f.family || 'inherit').replace(/"/g, '&quot;')}">${f.label}</button>`).join('')}</div><div class="look-preview" dir="rtl">Aa أفضل سعر 6,500 ج.م</div>`;
+  panel.querySelectorAll('[data-skin]').forEach((b) => { b.onclick = (e) => { e.stopPropagation(); T.set(b.dataset.skin); paintLookPanel(); }; });
+  panel.querySelectorAll('[data-font]').forEach((b) => { b.onclick = (e) => { e.stopPropagation(); T.setFont(b.dataset.font); paintLookPanel(); }; });
+}
+function bindLookBtn() {
+  const btn = $('#lookBtn');
+  const panel = $('#lookPanel');
+  if (!btn || !panel || !window.SafqaTheme) return;
+  paintLookPanel();
+  btn.onclick = (e) => { e.stopPropagation(); panel.classList.toggle('on'); btn.setAttribute('aria-expanded', panel.classList.contains('on') ? 'true' : 'false'); };
+}
+document.addEventListener('click', (e) => {
+  const panel = document.getElementById('lookPanel');
+  const btn = document.getElementById('lookBtn');
+  if (!panel || !btn) return;
+  if (panel.contains(e.target) || btn === e.target || btn.contains(e.target)) return;
+  panel.classList.remove('on');
+  btn.setAttribute('aria-expanded', 'false');
+});
 function shell(title, body) {
   document.documentElement.dataset.section = SECTION[page()] || 'account';
   const cur = page();
   const nav = PAGES.map(([id, e, t]) => `<a href="#/${id}" class="${cur === id ? 'on' : ''}" title="${t}"><span class="nav-ico">${e}</span><span class="nav-lab">${t}</span>${counts[id] ? `<span class="badge">${counts[id]}</span>` : ''}</a>`).join('');
-  const th = window.SafqaTheme?.get?.() || { label: 'داكن', icon: '🌙' };
-  $('#app').innerHTML = `<div class="layout"><header class="topbar"><div class="topbar-row"><div class="brand"><img src="/icons/admin-192.png" alt=""><div><b>Safqa Hub</b><small>الموقع + التطبيق + الإدارة</small></div></div><span class="sp"></span><button class="btn s theme-btn" id="themeBtn" type="button" title="تغيير الثيم">${th.icon} ${th.label}</button><div class="me">${me?.picture ? `<img src="${esc(me.picture)}" alt="">` : ''}<span>${esc(me?.name || '')}</span><button class="btn s" id="logout">خروج</button></div></div><nav class="nav">${nav}</nav></header>
+  $('#app').innerHTML = `<div class="layout"><header class="topbar"><div class="topbar-row"><div class="brand"><img src="/icons/admin-192.png" alt=""><div><b>Safqa Hub</b><small>الموقع + التطبيق + الإدارة</small></div></div><span class="sp"></span>${lookHtml()}<div class="me">${me?.picture ? `<img src="${esc(me.picture)}" alt="">` : ''}<span>${esc(me?.name || '')}</span><button class="btn s" id="logout">خروج</button></div></div><nav class="nav">${nav}</nav></header>
   <main class="main"><div class="top"><h1>${title}</h1></div><div id="view">${body}</div></main></div>`;
   $('#logout').onclick = async () => { await post('/api/auth/logout', { refreshToken: store.r }).catch(() => 0); store.set(null, null); render(); };
-  bindThemeBtn();
+  bindLookBtn();
 }
 const loading = '<div class="empty"><span class="spin"></span></div>';
 
@@ -106,13 +130,12 @@ async function render() {
   try { await VIEWS[p[0]]($('#view')); } catch (e) { $('#view').innerHTML = `<div class="card">⚠️ ${esc(e.message)}</div>`; }
 }
 function loginView(err) {
-  const th = window.SafqaTheme?.get?.() || { label: 'داكن', icon: '🌙' };
-  $('#app').innerHTML = `<div class="login"><button class="btn s theme-btn login-theme" id="themeBtn" type="button" title="تغيير الثيم">${th.icon} ${th.label}</button><div class="card"><img src="/icons/admin-512.png" alt=""><h2 style="margin:6px 0">لوحة إدارة صفقة</h2><p class="muted">الدخول بحساب Google المسموح له بس. كل العمليات بتتسجل في سجل الإدارة.</p>
+  $('#app').innerHTML = `<div class="login"><div class="login-look">${lookHtml()}</div><div class="card"><img src="/icons/admin-512.png" alt=""><h2 style="margin:6px 0">لوحة إدارة صفقة</h2><p class="muted">الدخول بحساب Google المسموح له بس. كل العمليات بتتسجل في سجل الإدارة.</p>
   ${err ? `<p class="pill bad" style="white-space:normal">${err}</p>` : ''}<button class="gbtn" id="g"><svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.5 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>المواصلة باستخدام Google</button>
   ${err ? '<p><button class="btn s" id="out">خروج من الحساب ده</button></p>' : ''}</div></div>`;
   $('#g').onclick = googleLogin;
   if ($('#out')) $('#out').onclick = () => { store.set(null, null); me = null; loginView(); };
-  bindThemeBtn();
+  bindLookBtn();
 }
 
 // ---------------- views ----------------

@@ -1,0 +1,25 @@
+/* Font + theme picker panel. White palette lives here so we don't touch styles.css mid-fix. */
+html[data-theme="white"]{
+  --bg:#FFFFFF;--elev:#F7F7F8;--ink:#161513;--muted:#5F5A54;--line:#E8E4DE;--chip:#F3F0EA;--tile:#FFFFFF;
+  --panel:#F7F7F8;--panel2:#F3F0EA;--text:#161513;
+  --card-bg:#F7F7F8;--card-bg-2:#FFFFFF;--input-bg:#FFFFFF;
+  --soft:color-mix(in srgb,#161513 5%,transparent);--soft-line:color-mix(in srgb,#161513 10%,transparent);
+  --topbar-bg:color-mix(in srgb,#F7F7F8 92%,transparent);
+  color-scheme:light;
+}
+.look-btn{white-space:nowrap}
+.look-panel{
+  position:absolute;inset-inline-end:0;top:calc(100% + 8px);z-index:40;
+  width:min(22rem,calc(100vw - 24px));padding:12px;border:1px solid var(--line);
+  border-radius:18px;background:var(--elev);box-shadow:var(--sh);display:none;
+}
+.look-panel.on{display:block}
+.look-panel h4{margin:0 0 8px;font-size:13px;color:var(--muted)}
+.look-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.look-opt{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--card-bg-2);cursor:pointer;text-align:start;font:inherit;color:inherit}
+.look-opt.on{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.look-swatch{width:18px;height:18px;border-radius:99px;border:1px solid var(--line);flex:none}
+.look-fonts{display:grid;gap:6px}
+.look-preview{margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:12px;text-align:center;font-size:16px}
+.look-wrap{position:relative}
+.login-look{position:fixed;top:calc(12px + env(safe-area-inset-top));inset-inline-start:12px;z-index:5;display:flex;gap:6px}

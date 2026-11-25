@@ -2,15 +2,16 @@ import * as Notifications from 'expo-notifications';
 import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
-import { I18nManager, useColorScheme } from 'react-native';
+import { I18nManager, Text, TextInput } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ToastProvider } from '../components/toast';
 import { SnapshotProvider } from '../lib/snapshot';
 import { hydrate, setSyncErrorHandler, syncWatchlist, useSettings } from '../lib/store';
 import { hydrateAuth } from '../lib/api';
 import { useToast } from '../components/toast';
-import { useColors } from '../lib/theme';
+import { faces, useColors, useMode } from '../lib/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { flagOn, initRemote } from '../lib/remote';
 import { initSfx } from '../lib/sfx';
@@ -21,11 +22,29 @@ I18nManager.allowRTL(true);
 I18nManager.forceRTL(true);
 void SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
+const PLEX = {
+  IBMPlexSansArabic: require('../../assets/fonts/IBMPlexSansArabic-Regular.ttf'),
+  'IBMPlexSansArabic-Medium': require('../../assets/fonts/IBMPlexSansArabic-Medium.ttf'),
+  'IBMPlexSansArabic-SemiBold': require('../../assets/fonts/IBMPlexSansArabic-SemiBold.ttf'),
+  'IBMPlexSansArabic-Bold': require('../../assets/fonts/IBMPlexSansArabic-Bold.ttf'),
+};
+
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts(PLEX);
   const { ready, settings } = useSettings();
   const c = useColors();
-  const system = useColorScheme();
-  const dark = settings.theme === 'dark' || (settings.theme === 'system' && system === 'dark');
+  const dark = useMode() === 'dark';
+
+  useEffect(() => {
+    if (!fontsLoaded) return;
+    const style = { fontFamily: faces.regular };
+    const patch = (C: typeof Text | typeof TextInput) => {
+      const Comp = C as typeof Text & { defaultProps?: { style?: unknown } };
+      Comp.defaultProps = { ...Comp.defaultProps, style: [style, Comp.defaultProps?.style] };
+    };
+    patch(Text);
+    patch(TextInput);
+  }, [fontsLoaded]);
 
   useEffect(() => {
     void initSfx();
@@ -43,7 +62,7 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || !fontsLoaded) return;
     void SplashScreen.hideAsync().catch(() => undefined);
     if (!settings.onboarded) router.replace('/onboarding');
     // «الجديد في صفقة»: once per release (new users get the onboarding instead and see the next one).
@@ -53,7 +72,7 @@ export default function RootLayout() {
       if (!settings.onboarded) { await AsyncStorage.setItem(WHATS_NEW_SEEN, cl.latest); return; }
       if (flagOn('whats_new', true)) setTimeout(() => router.push('/whats-new'), 900);
     })();
-  }, [ready, settings.onboarded]);
+  }, [ready, fontsLoaded, settings.onboarded]);
 
   return (
     <SafeAreaProvider>
@@ -65,7 +84,7 @@ export default function RootLayout() {
             screenOptions={{
               headerStyle: { backgroundColor: c.bg },
               headerTintColor: c.ink,
-              headerTitleStyle: { fontWeight: '800' },
+              headerTitleStyle: { fontFamily: faces.bold },
               headerShadowVisible: false,
               contentStyle: { backgroundColor: c.bg },
               animation: 'slide_from_left',

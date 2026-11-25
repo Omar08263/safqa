@@ -2,7 +2,7 @@ import { Link, useNavigate, useRouterState } from '@tanstack/react-router';
 import { TelegramFollowButton } from './telegram-follow';
 import { sectionFor } from '../brand/tokens';
 import { PriceFreshness } from './price-freshness';
-import { Bell, Command, Menu, MoonStar, Search, Sun, X } from 'lucide-react';
+import { Bell, Command, Menu, MoonStar, Search, Sun, Type, X } from 'lucide-react';
 import { FormEvent, ReactNode, useEffect, useRef, useState } from 'react';
 import { allNav, primaryNav } from '../features/nav';
 import { BackToTop, Logo, ScrollProgress } from '../fx/fx';
@@ -16,6 +16,7 @@ import { useQuery } from '@tanstack/react-query';
 import { CompareTray, InstallButton, OfflineBanner } from './chrome';
 import { BottomNav, NavRail } from './bottom-nav';
 import { MenuSheet } from './menu-sheet';
+import { AppearanceMenu } from './appearance-picker';
 import { WelcomeTour } from './welcome';
 import { WhatsNew } from './whats-new';
 import { RemoteBanner } from './remote-banner';
@@ -139,6 +140,9 @@ export function Shell({ children }: { children: ReactNode }) {
           <div className="ms-auto flex items-center gap-1" data-tour="prefs">
             <button type="button" className="only-phone h-9 w-9 place-items-center rounded-full hover:bg-accent" onClick={() => setPalette(true)} aria-label={tr('دوّر على منتج', 'Search products')} title={tr('دوّر على منتج', 'Search products')}><Search className="h-[18px] w-[18px]" /></button>
             <Button variant="ghost" size="sm" onClick={() => setLocale(locale === 'ar' ? 'en' : 'ar')} aria-label="language">{locale === 'ar' ? 'EN' : 'ع'}</Button>
+            <AppearanceMenu>
+              <Type className="h-4 w-4" />
+            </AppearanceMenu>
             <button type="button" onClick={toggleTheme} className="grid h-9 w-9 place-items-center rounded-full hover:bg-accent" aria-label={theme === 'dark' ? tr('الوضع النهاري', 'Light mode') : tr('الوضع الليلي', 'Dark mode')}>
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <MoonStar className="h-4 w-4" />}
             </button>

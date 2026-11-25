@@ -21,7 +21,8 @@ export function css() {
     return `  --accent: ${c.from};\n  --accent-2: ${c.to};\n  --accent-ink: ${c.ink};\n  --accent-text: ${c.text};\n  --accent-soft: color-mix(in srgb, ${c.from} 14%, transparent);\n  --accent-glow: color-mix(in srgb, ${c.from} 45%, transparent);`;
   };
   let out = HEAD;
-  out += `:root {\n${core('light')}\n${sec('deals', 'light')}\n  --font-stack: ${T.font.stack};\n${Object.entries(T.radius).map(([k, x]) => `  --r-${k}: ${x}px;`).join('\n')}\n${Object.entries(T.shadow).map(([k, x]) => `  --sh-${k}: ${x};`).join('\n')}\n${Object.entries(T.motion).map(([k, x]) => `  --m-${k}: ${x};`).join('\n')}\n${Object.entries(T.type).map(([k, [s, l]]) => `  --t-${k}: ${s}px;\n  --lh-${k}: ${l}px;`).join('\n')}\n${Object.entries(T.state).map(([k, x]) => `  --st-${k}: ${x};`).join('\n')}\n}\n`;
+  out += `:root {\n${core('light')}\n${sec('deals', 'light')}\n  --font-base: ${T.font.stack};
+  --font-stack: var(--font-base);\n${Object.entries(T.radius).map(([k, x]) => `  --r-${k}: ${x}px;`).join('\n')}\n${Object.entries(T.shadow).map(([k, x]) => `  --sh-${k}: ${x};`).join('\n')}\n${Object.entries(T.motion).map(([k, x]) => `  --m-${k}: ${x};`).join('\n')}\n${Object.entries(T.type).map(([k, [s, l]]) => `  --t-${k}: ${s}px;\n  --lh-${k}: ${l}px;`).join('\n')}\n${Object.entries(T.state).map(([k, x]) => `  --st-${k}: ${x};`).join('\n')}\n}\n`;
   out += `.dark {\n${core('dark')}\n${sec('deals', 'dark')}\n}\n`;
   for (const s of Object.keys(T.sections)) {
     out += `[data-section="${s}"] {\n${sec(s, 'light')}\n}\n.dark [data-section="${s}"], .dark[data-section="${s}"] {\n${sec(s, 'dark')}\n}\n`;

@@ -32,18 +32,16 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="https://safqaeg.pages.dev/brand/og-image.png" />
     <link rel="preconnect" href="https://safqa-api.safqaeg.workers.dev" crossorigin />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Fonts never block the first paint (system font until Readex Pro arrives). -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600;700;800&display=swap" />
-    <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" /></noscript>
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-400.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/ibm-plex-sans-arabic/ibm-plex-sans-arabic-700.woff2" crossorigin />
+    <link rel="stylesheet" href="/fonts.css" />
+    <script src="/appearance.js"></script>
     <title>صفقة Safqa — ذكاء الأسعار في مصر</title>
   </head>
   <body>
     <div id="root">
       <!-- Instant first paint; React replaces this as soon as it mounts. -->
-      <div style="min-height:100vh;display:grid;place-items:center;font-family:'Readex Pro',system-ui,sans-serif">
+      <div style="min-height:100vh;display:grid;place-items:center;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif">
         <div style="text-align:center">
           <img src="/brand/icon-192.png" alt="صفقة" width="72" height="72" style="border-radius:20px;box-shadow:0 18px 40px -18px rgb(201 132 10 / .6)" />
           <p style="margin:14px 0 0;font-weight:700;font-size:20px;color:#1c1915">صفقة</p>
