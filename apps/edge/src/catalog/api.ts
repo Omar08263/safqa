@@ -145,7 +145,7 @@ export function bestSeries(offers: Offer[]) {
 }
 
 // ---------------- refresh (cron + on view) ----------------
-const UA = 'SafqaBot/5.0 (+https://safqa-eg-safqa.static.hf.space/#/about; price comparison)';
+const UA = 'SafqaBot/5.0 (+https://safqaeg.pages.dev/about; price comparison)';
 async function readOffer(env: Env, o: Offer): Promise<{ price: number | null; inStock: boolean | null; listPrice?: number | null } | 'blocked' | null> {
   const u = new URL(o.u);
   if (!(await robotsOk(env, u))) return null;

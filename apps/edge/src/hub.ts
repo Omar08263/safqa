@@ -14,7 +14,7 @@ type Deps = { need: (c: Ctx) => Promise<Authed>; needAdmin: (c: Ctx) => Promise<
 
 const REPO = 'Omar08263/safqa';
 const SURFACES = [
-  { id: 'site', ar: 'الموقع', url: 'https://safqa-eg-safqa.static.hf.space/' },
+  { id: 'site', ar: 'الموقع', url: 'https://safqaeg.pages.dev/' },
   { id: 'api', ar: 'السيرفر', url: 'https://safqa-api.safqaeg.workers.dev/api/health' },
   { id: 'hub', ar: 'Safqa Hub', url: 'https://safqa-admin.pages.dev/' },
 ];
