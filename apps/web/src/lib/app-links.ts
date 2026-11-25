@@ -1,6 +1,6 @@
 // Where the native Android app lives (GitHub Releases on the public repo).
 // Pinned to the tag so another release (e.g. an admin build) never breaks the link.
-export const APP_VERSION = '4.0.0';
+export const APP_VERSION = '5.0.0';
 export const APK_URL = `https://github.com/Omar08263/safqa/releases/download/v${APP_VERSION}/safqa.apk`;
 export const RELEASES_URL = `https://github.com/Omar08263/safqa/releases/tag/v${APP_VERSION}`;
 export const SITE_URL = 'https://safqaeg.pages.dev';

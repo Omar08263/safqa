@@ -65,6 +65,28 @@ write changed rows (hash-skip), so a daily refresh of 16k products costs a few t
 2. Once approved, copy the product-feed URL (CSV/XML) they give you.
 3. `npx wrangler secret put NOON_FEED_URL`, and set it for the box importer too (env `NOON_FEED_URL`).
 
+## Freshness, measured honestly (Nov 25, 2026)
+
+| Source | How | Realistic freshness |
+|---|---|---|
+| Kimo, Compumarts, Tradeline (Shopify) | Official `/products.json` feed: the Worker cron polls one store every 10 min for new arrivals and sweeps a deeper page in rotation | New arrivals appear in **~30 min**; the full price sweep takes **~12 h** |
+| Watched / hot products (any store) | Adaptive recrawl of the product page (JSON-LD → healed selector → Workers AI) | Watched **~1 h**, very hot **~90 min**, hot **~3 h**, the rest **~6 h**; a product page also refreshes on view when its price is older than 6 h |
+| 2B, Raya, Sigma, El Badr, Jumia (sitemaps) | Box crawler `deploy/catalog/crawl.ts`, a few hundred pages per run, ≥2.5 s apart | Whenever a crawl runs (manual or scheduled on the box), so **hours to days** |
+| B.TECH | Sitemap times out for a polite fetch | **Not covered yet** |
+| El Araby | Returns 404 to our honest UA | **Disabled. We do not evade.** |
+| Amazon.eg | Creators API only (dormant until free keys are added), pasted links, the extension | **On demand** |
+| noon | Affiliate feed only (`NOON_FEED_URL`), pasted links, the extension | **On demand**. noon blocks bots and we never disguise the crawler. |
+
+Budget: D1 free tier is 100k writes/day. Ingestion is capped at about 14 writes per tick, and each cron invocation stays within about 50 queries.
+
+## CLI
+
+```bash
+node deploy/catalog/cli.ts status                 # live per-store freshness + ingest log
+node deploy/catalog/cli.ts probe https://store.eg # adapter generator: robots, Shopify/Woo feeds, sitemap, JSON-LD -> StoreSrc snippet
+node deploy/catalog/cli.ts crawl --stores 2b,raya # polite sitemap crawl + push (needs the CF env)
+```
+
 ## Honest limits
 - Multi-store matching only merges when brand + model + storage/RAM (or GTIN) agree, so some same products stay
   separate (≈270 cross-store groups today). Better matching needs GTINs, which most Egyptian stores don't publish.

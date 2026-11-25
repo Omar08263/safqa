@@ -26,6 +26,43 @@ robots.txt and bot protection (no disguised crawlers, proxies or captcha solving
 | 18 | ✅ Micro-interactions: flame flicker by heat level, spinning border on hot cards, stagger-in, vote confetti + haptics, live dot, low-price pulse (reduced-motion respected) | `styles.css`, RN `Animated` |
 | 19 | ✅ Amazon Creators API + noon affiliate-feed integration points (dormant until keys) | `docs/catalog.md` |
 
+### Shipped in the v5 live-prices and smart-tools pass (Nov 25, 2026)
+
+20. **Always-on ingestion agents**: a second Worker cron (`5-55/10`) polls the official Shopify storefront feeds (newest first) for new arrivals, plus a rotating deep sweep for price updates. Robots are checked; a store is paused 6 h on 403/429.
+21. **Adaptive priority recrawl scheduler**: watched products are rechecked every 60 min, very hot every 90 min, hot every 3 h and the rest every 6 h. Products that dropped recently or move a lot are rechecked sooner, most overdue first.
+22. **Self-healing extractor**: when JSON-LD and OG tags have no price, it tries a stored per-host selector, then Workers AI (≤60 calls/day). It saves a selector that worked so the next fetch is cheap.
+23. **Source health and freshness dashboard**: `/api/v5/health`, the `/sources` page and `node deploy/catalog/cli.ts status`.
+24. **Catalog CLI with a store-adapter generator**: `cli.ts probe <url>` checks robots.txt, Shopify `/products.json`, WooCommerce Store API, sitemaps and JSON-LD, then prints a `StoreSrc` snippet. It stops when the site refuses our honest bot.
+25. **Live price UI**: SSE with a polling fallback; the ticker flashes and plays a soft sound (respects the sound toggle) when new drops arrive. The product price flips when it changes (refetched every 60 s). Reduced-motion users get no animation.
+26. **Smart opt-in notifications**: a per-user interest model (watchlist, views, searches, categories and brands), deal ranking, quiet hours (Cairo time), instant or daily digest, daily cap, dedupe and AI headlines. Delivery is in-app plus Telegram. Email is not offered on the free stack, and the UI says so.
+27. **Auto price tracking for everything you view**: stored on the device and synced when signed in. Home shows "Dropped since you viewed it".
+28. **Deal DNA**: a 0–100 score with a grade, split into explained factors: own price history, gap to the next store, claimed discount, votes, freshness and stock.
+29. **Fake-discount radar**: flags a "was" price above anything we actually recorded, or a price raised in the days before a "sale".
+30. **Price-war detector**: ≥2 stores and ≥3 drops in 14 days.
+31. **Cross-store basket optimizer**: an exact search over store splits (≤10 stores), including an estimated delivery fee per store, compared with buying everything from one store.
+32. **Egyptian sale-season calendar and advice**: White Friday, year-end, Ramadan, Eid, back-to-school and others, shown on product pages and at `/smart?tab=seasons`. Islamic-calendar dates are approximate.
+
+## Black's ideas (original, beyond what deal sites do)
+
+| Idea | Status |
+|---|---|
+| Fake-discount radar | **Shipped**. It gets sharper as history builds; on Nov 25 it found 0 flags because most products have only one price point. |
+| Deal DNA score | **Shipped** |
+| Price-war detector | **Shipped**. It needs a few days of history before wars show up. |
+| Cross-store basket optimizer | **Shipped**. Delivery fees are a user-set estimate. |
+| Egyptian seasonality forecaster | **Partly done**: calendar and advice shipped. Per-category "expected % off next season" needs a full season of recorded history. |
+| Savings wallet / ledger | Next. `/savings` exists; logging the real "paid vs. next-best price" at click-out is planned. |
+| Group-buy alerts | Next. A per-product counter of people waiting for a target price; alert everyone at once and show the count to stores. |
+| Auto coupon tester | **Not built, on purpose**. It needs checkout automation on third-party stores; we only collect coupons with community worked/failed votes. |
+
+## Still to do (tooling)
+
+- **Embedding matching**: Workers AI `bge-m3` embeddings in Vectorize as a fourth matching step after GTIN, MPN and model tokens, with a human-review queue for low-confidence pairs. Both are free.
+- **Crawlee + Playwright** for JS-only stores, run politely: one browser, honest UA, robots, ≥2.5 s delay, no stealth plugins.
+- **Instant search**: D1 FTS5 virtual table (free, already on the platform), then Meilisearch on a free host if latency needs it.
+- **WooCommerce adapter** in `crawl.ts`: the CLI already detects WooCommerce stores.
+- **B.TECH**: its sitemap times out for a polite single fetch. We need its sitemap index split or a partner feed.
+
 ## Phase 1 · weeks 1-4: coverage and freshness
 - 🔜 Nightly box cron for the crawler (one store family per night to stay under D1's 100k writes/day).
 - 🔜 Complete B.TECH (≈60k URLs) and Raya (≈22k) with polite incremental passes; add WooCommerce Store API adapter
