@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Image, Modal, Pressable, RefreshControl, ScrollView, Switch, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Btn, Card, Pill, Ring, T, s } from '../components/ui';
+import { Genius } from '../components/genius';
 import { ago, api, claim, fmt, HUB_WEB, hydrate, logout, onAuth, post } from '../lib/api';
 import { initSfx, play, setSound, soundOn } from '../lib/sfx';
 import { C } from '../lib/theme';
@@ -49,8 +50,8 @@ function Pair({ initial }: { initial: string }) {
   );
 }
 
-type Tab = 'home' | 'decisions' | 'payments' | 'agents' | 'flags' | 'audit';
-const TABS: [Tab, string, string][] = [['home', '🛰️', 'القيادة'], ['decisions', '🧭', 'القرارات'], ['payments', '💳', 'المدفوعات'], ['agents', '🤝', 'الوكلاء'], ['flags', '🎛️', 'المزايا'], ['audit', '📜', 'السجل']];
+type Tab = 'home' | 'genius' | 'decisions' | 'payments' | 'agents' | 'flags' | 'audit';
+const TABS: [Tab, string, string][] = [['home', '🛰️', 'القيادة'], ['genius', '🧠', 'أدواتي'], ['decisions', '🧭', 'القرارات'], ['payments', '💳', 'المدفوعات'], ['agents', '🤝', 'الوكلاء'], ['flags', '🎛️', 'المزايا'], ['audit', '📜', 'السجل']];
 
 function Main() {
   const [tab, setTab] = useState<Tab>('home');
@@ -76,7 +77,7 @@ function Main() {
     <SafeAreaView style={{ flex: 1, backgroundColor: C.bg }} edges={['top']}>
       <ScrollView contentContainerStyle={{ padding: 14, paddingBottom: 110 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={C.gold} colors={[C.brand]} />}>
         {err ? <Card><T>⚠️ {err}</T></Card> : null}
-        {!ov ? <T muted style={{ textAlign: 'center', marginTop: 60 }}>جاري التحميل…</T> : tab === 'home' ? <Home o={ov} reload={load} go={setTab} /> : tab === 'decisions' ? <Decisions o={ov} reload={load} /> : tab === 'payments' ? <Payments reload={load} /> : tab === 'agents' ? <Agents reload={load} /> : tab === 'flags' ? <Flags /> : <Audit />}
+        {!ov ? <T muted style={{ textAlign: 'center', marginTop: 60 }}>جاري التحميل…</T> : tab === 'home' ? <Home o={ov} reload={load} go={setTab} /> : tab === 'genius' ? <Genius /> : tab === 'decisions' ? <Decisions o={ov} reload={load} /> : tab === 'payments' ? <Payments reload={load} /> : tab === 'agents' ? <Agents reload={load} /> : tab === 'flags' ? <Flags /> : <Audit />}
       </ScrollView>
       <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', backgroundColor: 'rgba(11,18,32,0.97)', borderTopWidth: 1, borderTopColor: C.line, paddingBottom: 18, paddingTop: 8 }}>
         {TABS.map(([id, e, t]) => (
@@ -129,7 +130,7 @@ function Home({ o, reload, go }: { o: any; reload: () => Promise<void>; go: (t: 
       <Card i={6}><T b>⚙️ الإعدادات</T>
         <View style={[s.row, { justifyContent: 'space-between', marginTop: 8 }]}><T>🔊 أصوات الواجهة</T><Switch value={snd} onValueChange={(v) => { setSnd(v); void setSound(v); }} trackColor={{ true: C.brand, false: '#334155' }} /></View>
         <View style={[s.row, { marginTop: 10 }]}><Btn small title="🌐 Hub على الويب" onPress={() => void WebBrowser.openBrowserAsync(HUB_WEB)} cue="nav" /><Btn small title="🛍️ الموقع" onPress={() => void WebBrowser.openBrowserAsync('https://safqaeg.pages.dev')} cue="nav" /><Btn small title="خروج" kind="danger" onPress={() => Alert.alert('خروج', 'هتحتاج كود ربط جديد.', [{ text: 'لأ' }, { text: 'اخرج', style: 'destructive', onPress: () => void logout() }])} /></View>
-        <T muted size={11} style={{ marginTop: 8 }}>Safqa Hub 1.0.0 · الأصوات متولّدة بالكود (CC0)</T>
+        <T muted size={11} style={{ marginTop: 8 }}>Safqa Hub 1.1.0 · الأصوات متولّدة بالكود (CC0)</T>
       </Card>
     </>
   );
