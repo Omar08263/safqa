@@ -82,9 +82,20 @@ export async function escalate(env: Env, agentId: string, kind: string, ref: str
 
 /** Telegram DM to every linked owner account (ADMIN_EMAILS). */
 export async function notifyOwner(env: Env, html: string) {
-  if (!tgEnabled(env)) return 0;
   const emails = (env.ADMIN_EMAILS || '').toLowerCase().split(/[,\s]+/).filter(Boolean);
   if (!emails.length) return 0;
+  // 🔔 Also ring the owner's phone through ntfy when they opted in (Hub → الأنظمة).
+  try {
+    const { pushUser } = await import('./systems/ntfy');
+    const { systemOn } = await import('./systems/registry');
+    if (await systemOn(env, 'ntfy')) {
+      const owners = (await env.DB.prepare(`SELECT id FROM users WHERE lower(email) IN (${emails.map(() => '?').join(',')})`).bind(...emails).all<{ id: string }>()).results;
+      const text = html.replace(/<[^>]+>/g, '');
+      const [title, ...rest] = text.split('\n');
+      for (const o of owners) await pushUser(env, o.id, { title: title || 'صفقة', message: rest.join('\n').trim() || text, click: 'https://safqa-admin.pages.dev', tags: ['rotating_light'], priority: 4 });
+    }
+  } catch (e) { console.log('owner ntfy', String(e).slice(0, 100)); }
+  if (!tgEnabled(env)) return 0;
   const rows = (await env.DB.prepare(`SELECT t.chat_id FROM tg_links t JOIN users u ON u.id=t.user_id WHERE lower(u.email) IN (${emails.map(() => '?').join(',')})`).bind(...emails).all<{ chat_id: string }>()).results;
   for (const r of rows) await enqueue(env, r.chat_id, html);
   return rows.length;

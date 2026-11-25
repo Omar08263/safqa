@@ -8,6 +8,8 @@ import { sget, sput } from '../infra/state';
 import * as Budget from '../infra/budget';
 import { llm } from '../ai';
 import { enqueue, tgEnabled } from '../telegram';
+import * as Ntfy from '../systems/ntfy';
+import { systemOn } from '../systems/registry';
 import type { Env } from '../util';
 import { fail, nowIso, parseJ, rateLimit } from '../util';
 import { cached, type On, storeInfo, toCard } from './api';
@@ -62,6 +64,8 @@ export async function smartTick(env: Env, d: Date) {
   const users = (await env.DB.prepare(`SELECT p.*, t.chat_id FROM notif_prefs p LEFT JOIN tg_links t ON t.user_id=p.user_id AND t.subscribed=1 WHERE p.opted_in=1 AND p.mode<>'off' LIMIT 200`).all<Row>()).results;
   if (!users.length) { await sput(env, 'smart:since', now); return { users: 0 }; }
   let sent = 0;
+  // 🔔 ntfy phone push (opt-in, one read for the whole tick).
+  const pushers = (await systemOn(env, 'ntfy')) ? await Ntfy.optedIn(env, users.map((u) => u.user_id)).catch(() => new Set<string>()) : new Set<string>();
   // Instant: fresh real drops.
   const drops = (await env.DB.prepare(`SELECT d.id dropId, d.product_id id, d.old, d.new, d.pct, d.store, d.at, c.title, c.title_ar, c.category, c.brand, c.heat, c.price
     FROM drops d JOIN catalog c ON c.id=d.product_id WHERE d.at > ? ORDER BY d.pct DESC LIMIT 40`).bind(since).all<Row>()).results;
@@ -82,6 +86,7 @@ export async function smartTick(env: Env, d: Date) {
         const body = `${String(r.x.title_ar || r.x.title).slice(0, 90)} — من ${Math.round(r.x.old)} لـ ${Math.round(r.x.new)} ج.م في ${storeInfo(r.x.store).nameAr}${r.why ? ` · ${r.why}` : ''}`;
         await env.DB.prepare(`INSERT INTO alerts (id,user_id,type,title,body,product_id,read,created_at) VALUES ('al_'||lower(hex(randomblob(8))),?,?,?,?,?,0,?)`).bind(u.user_id, 'smart_drop', title, body, r.x.id, now).run();
         if (u.chat_id && tgEnabled(env)) await enqueue(env, u.chat_id, `${title}\n\n${body}\n\n<i>🤖 تنبيه ذكي من صفقة · سعر حقيقي</i>`, [[{ text: '🛒 افتح العرض', url: `${env.SITE_URL}/p/${r.x.id}` }]]);
+        if (pushers.has(u.user_id)) await Ntfy.pushUser(env, u.user_id, { title, message: body, click: `${env.SITE_URL}/p/${r.x.id}`, tags: ['chart_with_downwards_trend'], priority: 4 }, pushers);
         budget--; sent++;
       }
     }
@@ -97,6 +102,7 @@ export async function smartTick(env: Env, d: Date) {
       const lines = top.map((t, i) => `${i + 1}. ${String(t.x.title_ar || t.x.title).slice(0, 60)} — ${Math.round(t.x.price)} ج${t.why ? ` (${t.why})` : ''}`).join('\n');
       await env.DB.prepare(`INSERT INTO alerts (id,user_id,type,title,body,product_id,read,created_at) VALUES ('al_'||lower(hex(randomblob(8))),?,?,?,?,?,0,?)`).bind(u.user_id, 'smart_digest', '☀️ صفقاتك المختارة النهارده', lines, top[0]!.x.id, now).run();
       if (u.chat_id && tgEnabled(env)) await enqueue(env, u.chat_id, `☀️ <b>صفقاتك المختارة النهارده</b>\n\n${lines}\n\n<i>مرتبة على ذوقك — من اللي شفته ودوّرت عليه</i>`, [[{ text: '🔥 كل الصفقات', url: `${env.SITE_URL}/hot` }]]);
+      if (pushers.has(u.user_id)) await Ntfy.pushUser(env, u.user_id, { title: '☀️ صفقاتك المختارة النهارده', message: lines, click: `${env.SITE_URL}/hot` }, pushers);
       await env.DB.prepare('UPDATE notif_prefs SET last_digest=? WHERE user_id=?').bind(now, u.user_id).run();
       sent++;
     }

@@ -18,6 +18,7 @@ import * as Hunter from './catalog/hunter';
 import * as Budget from './infra/budget';
 import { ensureState } from './infra/state';
 import * as Smart from './catalog/smart';
+import { registerSystems } from './systems/api';
 import { cairoDay, type Env, fail, HttpError, json, nowIso, parseJ, rateLimit, readJson, str, timingSafeEqual, uid, b64 } from './util';
 
 type Ctx = { req: Request; env: Env; url: URL; p: string[]; exec: ExecutionContext };
@@ -647,6 +648,7 @@ on('POST', '/api/v2/admin/telegram/digest', async (c) => { await needAdmin(c); c
 
 V5.register(on, auth.authenticate);
 Smart.registerSmart(on, auth.authenticate);
+registerSystems(on, { needAdmin, me: async (env, req) => { const a = await auth.authenticate(env, req).catch(() => null); if (!a) fail(401, 'auth', 'سجّل دخول الأول'); return a!.user.id; } });
 Hunter.registerHunter(on);
 
 // ---------------- runtime ----------------
