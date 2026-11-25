@@ -119,7 +119,7 @@ In the static demo, accounts, watchlist, collections and reset codes live in you
 
 <h2 id="v5">🔥 Safqa v5: Egypt's live price index</h2>
 
-**16,000+ real products and 16,200+ offers from 8 Egyptian stores.** Every price comes from an official store feed or the store's own published schema.org data, with an honest crawler: robots.txt respected, rate-limited, no disguise. Live at **[safqaeg.pages.dev](https://safqaeg.pages.dev)** · [Android APK v5.0.0](https://github.com/Omar08263/safqa/releases/download/v5.0.0/safqa.apk)
+**16,000+ real products and 16,200+ offers from 8 Egyptian stores.** Every price comes from an official store feed or the store's own published schema.org data, with an honest crawler: robots.txt respected, rate-limited, no disguise. Live at **[safqaeg.pages.dev](https://safqaeg.pages.dev)** · [Android APK v5.2.0](https://github.com/Omar08263/safqa/releases/download/v5.2.0/safqa.apk)
 
 - **Hot deals with heat and votes**, cross-store matching (GTIN → MPN → model tokens), real price history in D1, and a live "just dropped" feed (SSE) with price-flip animations and soft sounds.
 - **Always-on ingestion agents** on Worker cron: new Shopify arrivals in ~30 min, an adaptive recrawl scheduler (watched ~1 h, hot ~90 min–3 h), a self-healing AI extractor, and a [source health dashboard](https://safqaeg.pages.dev/sources).
@@ -139,7 +139,7 @@ In the static demo, accounts, watchlist, collections and reset codes live in you
 <h2 id="v4">✨ Safqa v4: native app, real backend, one design</h2>
 
 <p align="center">
-<a href="https://github.com/Omar08263/safqa/releases/download/v5.0.0/safqa.apk"><img alt="Download the native Android app" src="https://img.shields.io/badge/Android-Native%20app%20v5.0.0-3DDC84?style=for-the-badge&labelColor=1c1915&logo=android&logoColor=3DDC84"></a>
+<a href="https://github.com/Omar08263/safqa/releases/download/v5.2.0/safqa.apk"><img alt="Download the native Android app" src="https://img.shields.io/badge/Android-Native%20app%20v5.2.0-3DDC84?style=for-the-badge&labelColor=1c1915&logo=android&logoColor=3DDC84"></a>
 <a href="https://safqaeg.pages.dev/plans"><img alt="Plans" src="https://img.shields.io/badge/Plans-4%20tiers-F5B524?style=for-the-badge&labelColor=1c1915"></a>
 <a href="https://t.me/SafqaDealsBot"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SafqaDealsBot-229ED9?style=for-the-badge&labelColor=1c1915&logo=telegram&logoColor=white"></a>
 </p>
@@ -167,7 +167,7 @@ In the static demo, accounts, watchlist, collections and reset codes live in you
 <h2 id="v3">🚀 Safqa v3: a real shopping app</h2>
 
 <p align="center">
-<a href="https://github.com/Omar08263/safqa/releases/download/v5.0.0/safqa.apk"><img alt="Download the Android APK" src="https://img.shields.io/badge/Android-Download%20APK-3DDC84?style=for-the-badge&labelColor=1c1915&logo=android&logoColor=3DDC84"></a>
+<a href="https://github.com/Omar08263/safqa/releases/download/v5.2.0/safqa.apk"><img alt="Download the Android APK" src="https://img.shields.io/badge/Android-Download%20APK-3DDC84?style=for-the-badge&labelColor=1c1915&logo=android&logoColor=3DDC84"></a>
 <a href="https://safqaeg.pages.dev/app"><img alt="Install the PWA" src="https://img.shields.io/badge/PWA-Install-5A0FC8?style=for-the-badge&labelColor=1c1915&logo=pwa&logoColor=white"></a>
 <a href="https://safqaeg.pages.dev/toolbox"><img alt="402 offline tools" src="https://img.shields.io/badge/Toolbox-402%20offline%20tools-d99a1b?style=for-the-badge&labelColor=1c1915"></a>
 </p>
@@ -534,7 +534,7 @@ Stub or best-effort, on purpose: live HTML for stores that block bots (amazon.eg
 
 **صفقة** بتتابع أسعار المتاجر المصرية (نون، أمازون مصر، جوميا، كارفور وغيرهم)، وبترسم تاريخ السعر لكل عرض، وبتكشف الخصم المضخّم لما سعر «كان» يبقى بعيد عن تاريخ البيع، وبتخلّي خمس وكلاء ذكاء اصطناعي يتناقشوا على كل صفقة قبل ما تدفع.
 
-**الجديد في v3:** صفحات منتجات زي أمازون ونون بصور ومواصفات حقيقية من المتاجر وملخص ذكي، مجتمع ودردشة بنقاط ورتب وشارات، قوانين وإشراف تلقائي بتظلمات، مقر لـ٢٨ وكيل ذكي (بوتات واضحة)، رادار عروض بتنبيهات للتخفيضات الحقيقية بس، صندوق عدة فيه ٤٠٢ أداة شغالة من غير نت، و[تطبيق أندرويد](https://github.com/Omar08263/safqa/releases/download/v5.0.0/safqa.apk) — كله مجاني ومن غير بيانات مزيفة: المحتوى التجريبي مكتوب عليه «تجريبي».
+**الجديد في v3:** صفحات منتجات زي أمازون ونون بصور ومواصفات حقيقية من المتاجر وملخص ذكي، مجتمع ودردشة بنقاط ورتب وشارات، قوانين وإشراف تلقائي بتظلمات، مقر لـ٢٨ وكيل ذكي (بوتات واضحة)، رادار عروض بتنبيهات للتخفيضات الحقيقية بس، صندوق عدة فيه ٤٠٢ أداة شغالة من غير نت، و[تطبيق أندرويد](https://github.com/Omar08263/safqa/releases/download/v5.2.0/safqa.apk) — كله مجاني ومن غير بيانات مزيفة: المحتوى التجريبي مكتوب عليه «تجريبي».
 
 <table>
 <tr>
