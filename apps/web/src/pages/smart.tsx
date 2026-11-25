@@ -132,7 +132,7 @@ function Alerts() {
       {viewed ? <button type="button" onClick={() => { clearViewed(); toast(tr('اتمسح', 'Cleared')); }} className="mt-2 text-xs font-semibold text-primary">{tr('امسح المتتبَّع', 'Clear tracked')}</button> : null}
     </div>
   );
-  if (!signed) return <div className="space-y-3">{local}<Empty e="🔔" ar="التنبيهات الذكية (على تيليجرام وجوه صفقة) محتاجة تسجيل دخول — وبتشتغل بس لو وافقت." en="Smart alerts (Telegram + in-app) need sign-in, and only run if you opt in." /><div className="text-center"><Link to="/login" className="press rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground">{tr('سجّل دخول', 'Sign in')}</Link></div></div>;
+  if (!signed) return <div className="space-y-3">{local}<Empty e="🔔" ar="التنبيهات الذكية (على تيليجرام وجوه صفقة) محتاجة تسجيل الدخول — وبتشتغل بس لو وافقت." en="Smart alerts (Telegram + in-app) need sign-in, and only run if you opt in." /><div className="text-center"><Link to="/login" className="press rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground">{tr('سجّل دخول', 'Sign in')}</Link></div></div>;
   if (!p) return <Loading />;
   const set = (patch: Partial<NotifyPrefs>) => setP({ ...p, ...patch });
   const hours = Array.from({ length: 24 }, (_, i) => i);

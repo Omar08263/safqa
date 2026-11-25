@@ -28,6 +28,11 @@ const queryClient = new QueryClient({
 const root = document.getElementById('root');
 if (!root) throw new Error('root missing');
 
+// Download the router + pages in parallel with the price snapshot (was sequential).
+const routerModule = import('./router');
+/** Where to land once the router exists (Google sign-in result). */
+let afterBoot: string | null = null;
+
 if (import.meta.env.VITE_DEMO_MODE === 'static') {
   const { installDemoApi } = await import('./lib/demo-api');
   await installDemoApi(`${import.meta.env.BASE_URL}demo/snapshot.json`);
@@ -36,15 +41,16 @@ if (import.meta.env.VITE_DEMO_MODE === 'static') {
   // The member's tier (limits, perks, flair) comes from the server; cached for offline.
   void (await import('./lib/tiers')).syncServerTier();
   const google = await completeGoogleRedirectLogin();
-  if (google?.ok) window.history.replaceState(null, '', '/dashboard');
-  else if (google && !google.ok) window.history.replaceState(null, '', '/login');
-  else if (window.location.pathname === '/auth/callback') window.history.replaceState(null, '', '/login');
+  if (google?.ok) afterBoot = '/dashboard';
+  else if (google && !google.ok) afterBoot = '/login';
+  else if (window.location.pathname === '/auth/callback') afterBoot = '/login';
 }
 // v5: remote config + telemetry (Safqa Hub), a voice for every tap, premium motion.
 installRemote();
 installTapSounds();
 installPremiumFx();
-const { router } = await import('./router');
+const { router } = await routerModule;
+if (afterBoot) router.history.replace(afterBoot);
 
 // Invite links: remember who invited this browser (local only).
 const ref = new URLSearchParams(window.location.search).get('ref');

@@ -177,7 +177,7 @@ export function Shell({ children }: { children: ReactNode }) {
 
       <MenuSheet open={menu} onClose={() => setMenu(false)} />
       <NavRail />
-      <main id="main" className="rail-pad mx-auto max-w-7xl px-4 py-6 sm:py-8">
+      <main id="main" className="rail-pad mx-auto min-h-[100svh] max-w-7xl px-4 py-6 sm:py-8">
         <div key={path} className="page-enter">{children}</div>
       </main>
 
