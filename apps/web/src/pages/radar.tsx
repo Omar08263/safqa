@@ -93,7 +93,7 @@ export function RadarPage() {
                 <Link to="/product/$id" params={{ id: x.productId }} className="absolute inset-0 z-0 rounded-3xl" aria-label={locale === 'ar' ? x.headline : x.headlineEn} />
                 <ProductThumb id={x.productId} className="w-16 flex-none sm:w-20" />
                 <div className="min-w-0 flex-1">
-                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${kindLabel[x.kind][2]}`}>{tr(kindLabel[x.kind][0], kindLabel[x.kind][1])}{x.exceptional ? ' ⚡' : ''}</span>
+                  <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${kindLabel[x.kind][2]}`}>{tr(kindLabel[x.kind][0], kindLabel[x.kind][1])}{x.exceptional ? ' ⚡' : ''}</span>
                   <p className="t-title mt-1 !min-h-0">{locale === 'ar' ? x.headline : x.headlineEn}</p>
                   <p className="t-meta line-clamp-2">{x.body}</p>
                 </div>

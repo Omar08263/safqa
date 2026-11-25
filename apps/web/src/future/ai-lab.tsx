@@ -174,8 +174,8 @@ export function AiLabPage() {
         <section className="glass mt-5 rounded-3xl p-5">
           <h2 className="flex items-center gap-2 text-lg font-extrabold"><Brain className="h-5 w-5 text-violet-500" /> بحث بالمعنى</h2>
           <form className="mt-3 flex gap-2" onSubmit={(e) => { e.preventDefault(); void run(); }}>
-            <input value={q} onChange={(e) => setQ(e.target.value)} className="flex-1 rounded-full border border-border bg-transparent px-4 py-2.5" aria-label="اكتب اللي في بالك" />
-            <button type="submit" data-sfx="none" className="press rounded-full bg-gradient-to-l from-violet-600 to-fuchsia-500 px-5 font-bold text-white">افهمني</button>
+            <input value={q} onChange={(e) => setQ(e.target.value)} className="min-w-0 flex-1 rounded-full border border-border bg-transparent px-4 py-2.5" aria-label="اكتب اللي في بالك" />
+            <button type="submit" data-sfx="none" className="press shrink-0 rounded-full bg-gradient-to-l from-violet-600 to-fuchsia-500 px-5 font-bold text-white">افهمني</button>
           </form>
           <div className="mt-2 flex flex-wrap gap-2 text-xs">
             {['حاجة أشحن بيها الموبايل في السفر', 'لابتوب للمذاكرة تحت 30 ألف', 'هدية لماما في المطبخ', 'سبيكر صغير للبحر'].map((x) => <button key={x} type="button" className="press rounded-full border border-border px-3 py-1" onClick={() => { setQ(x); void run(x); }}>{x}</button>)}

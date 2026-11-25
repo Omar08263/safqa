@@ -1,6 +1,7 @@
 import { Download, Eye } from 'lucide-react';
 import { PageHeader, useToast } from '../fx/fx';
 import { StateMessage } from '../components/bits';
+import { SignInGate } from '../components/sign-in-gate';
 import { downloadFile, toCsv } from '../lib/local';
 import { formatEGP, localized } from '@safqa/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -57,11 +58,7 @@ export function WatchlistPage() {
 
   if (!user) {
     return (
-      <div className="rounded-3xl border border-dashed border-border p-8 text-center">
-        <Link to="/login" className="font-semibold text-primary">
-          {t('nav.login')}
-        </Link>
-      </div>
+      <SignInGate emoji="👀" ar="قايمة المتابعة" en="Watchlist" ledeAr="تابع المنتجات اللي نفسك فيها، وحط السعر اللي تستناه، وسيب الباقي علينا." ledeEn="Follow the products you want, set your target price, and leave the rest to us." />
     );
   }
 

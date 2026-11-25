@@ -194,7 +194,7 @@ function PostCard({ postId, state, products, me, index }: { postId: string; stat
             <MemberName m={author} />
             <p className="text-[11px] text-muted">{group ? `${group.emoji} ${locale === 'ar' ? group.name : group.nameEn} · ` : ''}{timeAgo(p.at, locale)}{p.pinned ? <span className="ms-1 inline-flex items-center gap-0.5 text-primary"><Pin className="h-3 w-3" />{tr('مثبّت', 'Pinned')}</span> : null}</p>
           </div>
-          {p.kind === 'deal' ? <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">🎯 {tr('صفقة اليوم', 'Deal of the day')}</span> : null}
+          {p.kind === 'deal' ? <span className="rounded-full bg-primary px-2 py-0.5 text-[11px] font-bold text-primary-foreground">🎯 {tr('صفقة اليوم', 'Deal of the day')}</span> : null}
         </header>
         <p className="mt-3 whitespace-pre-line text-[15px] leading-7" dir="auto">{p.text}</p>
         {p.warned ? <div className="mt-2 flex items-center gap-1 text-[11px] text-muted">{tr('اتنشر مع إنذار:', 'Published with a warning:')} {p.warned.split('، ').map((r) => <RuleChip key={r} id={r} />)}</div> : null}

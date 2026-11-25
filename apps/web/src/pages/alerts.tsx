@@ -1,6 +1,7 @@
 import type { AlertSettings } from '@safqa/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
+import { SignInGate } from '../components/sign-in-gate';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { usePrefs } from '../lib/prefs';
@@ -35,11 +36,7 @@ export function AlertsPage() {
 
   if (!user) {
     return (
-      <div className="rounded-3xl border border-dashed border-border p-8 text-center">
-        <Link to="/login" className="font-semibold text-primary">
-          {t('nav.login')}
-        </Link>
-      </div>
+      <SignInGate emoji="🔔" ar="تنبيهات الأسعار" en="Price alerts" ledeAr="سجّل دخول وحدد السعر اللي يناسبك، وإحنا نبلّغك أول ما ينزل — على الموقع والتطبيق وتيليجرام." ledeEn="Sign in, set the price you want, and we will tell you the moment it drops — on the web, the app and Telegram." />
     );
   }
 

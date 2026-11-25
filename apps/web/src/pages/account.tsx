@@ -11,6 +11,7 @@ import { Avatar } from '../components/shell';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, PageHeader, useToast } from '../fx/fx';
+import { SignInGate } from '../components/sign-in-gate';
 import { keys } from '../lib/activity';
 import { accents, type Appearance, defaultAppearance, useAppearance } from '../lib/appearance';
 import { downloadFile, isStaticDemo, useLocal, writeLocal } from '../lib/local';
@@ -29,7 +30,7 @@ export function ProfilePage() {
   const [profile, setProfile] = useLocal<Profile>(keys.profile, {});
   const [pw, setPw] = useState('');
   if (!user) {
-    return <Card className="text-center"><p className="py-6">{tr('سجّل دخول الأول عشان تشوف ملفك.', 'Sign in to see your profile.')}</p><Button onClick={() => void navigate({ to: '/login' })}>{tr('دخول', 'Sign in')}</Button></Card>;
+    return <SignInGate emoji="🙋" ar="ملفك الشخصي" en="Your profile" ledeAr="سجّل دخول عشان تشوف ملفك، باقتك، ونقاطك وشاراتك." ledeEn="Sign in to see your profile, plan, points and badges." />;
   }
   function onAvatar(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];

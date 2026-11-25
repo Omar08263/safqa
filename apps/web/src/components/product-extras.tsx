@@ -108,7 +108,7 @@ export function PercentileBar({ price, min, max }: { price: number; min: number;
   return (
     <div>
       <div className="relative mt-6 h-3 rounded-full" style={{ background: 'linear-gradient(90deg, var(--palm), var(--saffron), var(--clay))' }} dir="ltr">
-        <span className="absolute -top-7 -translate-x-1/2 rounded-full bg-foreground px-2 py-0.5 text-[10px] font-bold text-background" style={{ left: `${pct}%` }}>{tr('دلوقتي', 'Now')}</span>
+        <span className="absolute -top-7 -translate-x-1/2 rounded-full bg-foreground px-2 py-0.5 text-[11px] font-bold text-background" style={{ left: `${pct}%` }}>{tr('دلوقتي', 'Now')}</span>
         <span className="absolute top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-card bg-foreground shadow" style={{ left: `${pct}%` }} />
       </div>
       <div className="mt-2 flex justify-between text-xs text-muted" dir="ltr">

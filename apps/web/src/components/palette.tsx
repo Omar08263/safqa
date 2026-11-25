@@ -121,7 +121,7 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
           <div className="flex items-center gap-3 border-b border-border px-4">
             <Command className="h-5 w-5 text-primary" />
             <input autoFocus value={q} onChange={(e) => { setQ(e.target.value); setActive(0); }} placeholder={tr('اكتب صفحة، منتج، أو أمر…', 'Type a page, product, or command…')} className="h-14 flex-1 bg-transparent outline-none" />
-            <kbd className="rounded-md border border-border px-1.5 text-[10px] text-muted">Esc</kbd>
+            <kbd className="rounded-md border border-border px-1.5 text-[11px] text-muted">Esc</kbd>
           </div>
           <div ref={listRef} className="max-h-[60vh] overflow-y-auto p-2" role="listbox">
             {withSearch.length === 0 ? <p className="p-6 text-center text-sm text-muted">{tr('مفيش نتايج', 'No results')}</p> : null}

@@ -105,8 +105,8 @@ export function ChatPage({ dm }: { dm?: string }) {
             return (
               <button key={r.id} type="button" onClick={() => setRoom(r.id)} className={`flex items-center gap-2 rounded-2xl px-2 py-2 text-start text-sm ${room === r.id ? 'bg-primary/15 font-semibold' : 'hover:bg-accent'}`}>
                 <span className="text-lg">{r.emoji}</span>
-                <span className="flex-1"><span className="block">{locale === 'ar' ? r.name : r.nameEn}</span><span className="block text-[10px] text-muted">{h?.name} {h && onShift(h) ? '🟢' : '🌙'}</span></span>
-                <span className="num text-[10px] text-muted">{state.messages[r.id]?.length ?? 0}</span>
+                <span className="flex-1"><span className="block">{locale === 'ar' ? r.name : r.nameEn}</span><span className="block text-[11px] text-muted">{h?.name} {h && onShift(h) ? '🟢' : '🌙'}</span></span>
+                <span className="num text-[11px] text-muted">{state.messages[r.id]?.length ?? 0}</span>
               </button>
             );
           })}
@@ -120,7 +120,7 @@ export function ChatPage({ dm }: { dm?: string }) {
         <section className="glass flex flex-col overflow-hidden rounded-3xl">
           <header className="flex items-center gap-3 border-b border-border p-3">
             {isDm ? <><MemberAvatar m={peer} size={36} /><div><MemberName m={peer} /><p className="flex items-center gap-1 text-[11px] text-muted"><Lock className="h-3 w-3" />{tr('رسالة خاصة · محفوظة على جهازك', 'Private · stored on this device')}</p></div></> : <><Hash className="h-5 w-5 text-primary" /><div><p className="font-bold">{roomDef ? (locale === 'ar' ? roomDef.name : roomDef.nameEn) : ''}</p><p className="text-[11px] text-muted">{roomDef?.topic}</p></div></>}
-            {responder ? <span className="ms-auto flex items-center gap-2 text-xs"><AgentAvatar agent={responder} mood={moodOf(responder, quietSignals)} size={30} /><span><span className="font-semibold">{responder.name}</span><span className="block text-[10px]" style={{ color: statusLabel[statusOf(responder, quietSignals)][2] }}>● {tr(statusLabel[statusOf(responder, quietSignals)][0], statusLabel[statusOf(responder, quietSignals)][1])}</span></span></span> : null}
+            {responder ? <span className="ms-auto flex items-center gap-2 text-xs"><AgentAvatar agent={responder} mood={moodOf(responder, quietSignals)} size={30} /><span><span className="font-semibold">{responder.name}</span><span className="block text-[11px]" style={{ color: statusLabel[statusOf(responder, quietSignals)][2] }}>● {tr(statusLabel[statusOf(responder, quietSignals)][0], statusLabel[statusOf(responder, quietSignals)][1])}</span></span></span> : null}
           </header>
           <div className="flex-1 space-y-3 overflow-y-auto p-4">
             {msgs.map((m) => {

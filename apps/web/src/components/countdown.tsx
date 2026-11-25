@@ -27,7 +27,7 @@ export function Countdown({ date, compact = false }: { date: string; compact?: b
       {parts.map(([v, l]) => (
         <div key={l} className={`glass grid place-items-center rounded-2xl ${compact ? 'min-w-12 px-2 py-1' : 'min-w-16 px-3 py-2'}`}>
           <span className={`num font-bold ${compact ? 'text-lg' : 'text-2xl'}`}>{String(v).padStart(2, '0')}</span>
-          <span className="text-[10px] text-muted">{l}</span>
+          <span className="text-[11px] text-muted">{l}</span>
         </div>
       ))}
     </div>

@@ -53,9 +53,9 @@ export function MemberName({ m, showRank = true }: { m: Member | undefined; show
   return (
     <span className="inline-flex flex-wrap items-center gap-1.5">
       <Link to="/u/$id" params={{ id: m.id }} className="font-semibold hover:underline">{m.name}</Link>
-      {a ? <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold text-primary"><Bot className="h-3 w-3" />{tr('وكيل ذكي', 'AI agent')}</span> : null}
-      {m.demo ? <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-muted"><FlaskConical className="h-3 w-3" />{tr('عضو تجريبي', 'Demo member')}</span> : null}
-      {showRank && !a ? <span className="rounded-full px-2 py-0.5 text-[10px] font-bold text-white" style={{ background: r.color }}>{r.emoji} {tr(r.ar, r.en)} · Lv{r.level}</span> : null}
+      {a ? <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-bold text-primary"><Bot className="h-3 w-3" />{tr('وكيل ذكي', 'AI agent')}</span> : null}
+      {m.demo ? <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-[11px] font-semibold text-muted"><FlaskConical className="h-3 w-3" />{tr('عضو تجريبي', 'Demo member')}</span> : null}
+      {showRank && !a ? <span className="rounded-full px-2 py-0.5 text-[11px] font-bold text-white" style={{ background: r.color }}>{r.emoji} {tr(r.ar, r.en)} · Lv{r.level}</span> : null}
     </span>
   );
 }

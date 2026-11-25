@@ -296,7 +296,7 @@ export function ReviewsSection({ item, media }: { item: ProductDetail; media: Pr
             <div className="space-y-2">
               <p className="font-bold">{tr('اكتب تقييمك', 'Write a review')}</p>
               <div className="flex gap-1" role="radiogroup" aria-label={tr('النجوم', 'Stars')}>
-                {[1, 2, 3, 4, 5].map((s) => <button key={s} type="button" onClick={() => setStars(s)} aria-checked={stars === s} role="radio" className="transition hover:scale-125"><Star className={`h-7 w-7 ${s <= stars ? 'fill-[var(--saffron)] text-[var(--saffron)]' : 'text-muted'}`} /></button>)}
+                {[1, 2, 3, 4, 5].map((s) => <button key={s} type="button" onClick={() => setStars(s)} aria-checked={stars === s} role="radio" aria-label={tr(`${s} من 5 نجوم`, `${s} of 5 stars`)} className="transition hover:scale-125"><Star className={`h-7 w-7 ${s <= stars ? 'fill-[var(--saffron)] text-[var(--saffron)]' : 'text-muted'}`} /></button>)}
               </div>
               <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={tr('عنوان قصير', 'Short title')} className="h-10 w-full rounded-xl border border-border bg-background px-3 text-sm" maxLength={80} />
               <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} placeholder={tr('جرّبته؟ قول رأيك بصراحة (بدون شتيمة أو بيانات شخصية)', 'Tried it? Be honest (no profanity or personal data)')} className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm" maxLength={3000} />
@@ -321,7 +321,7 @@ export function ReviewsSection({ item, media }: { item: ProductDetail; media: Pr
               return (
                 <article key={r.id} className="rounded-2xl border border-border p-3">
                   <div className="flex items-center gap-2"><MemberAvatar m={m} size={32} /><MemberName m={m} /><span className="ms-auto text-[11px] text-muted">{timeAgo(r.at, locale)}</span></div>
-                  <div className="mt-2 flex items-center gap-2"><Stars value={r.stars} />{r.title ? <p className="font-semibold">{r.title}</p> : null}{r.verified ? <span className="inline-flex items-center gap-1 rounded-full bg-[var(--palm)]/15 px-2 py-0.5 text-[10px] font-bold text-palm"><BadgeCheck className="h-3 w-3" />{tr('سجّل إنه اشتراه', 'Logged purchase')}</span> : null}</div>
+                  <div className="mt-2 flex items-center gap-2"><Stars value={r.stars} />{r.title ? <p className="font-semibold">{r.title}</p> : null}{r.verified ? <span className="inline-flex items-center gap-1 rounded-full bg-[var(--palm)]/15 px-2 py-0.5 text-[11px] font-bold text-palm"><BadgeCheck className="h-3 w-3" />{tr('سجّل إنه اشتراه', 'Logged purchase')}</span> : null}</div>
                   <p className="mt-1 whitespace-pre-line text-sm leading-7">{r.text}</p>
                   <Attachments items={r.attachments} size={80} />
                   <button type="button" disabled={!meId || r.authorId === meId} onClick={() => { const s = readCommunity(); const x = s?.reviews.find((y) => y.id === r.id); if (!s || !x || !meId) return; x.helpful = mine ? x.helpful.filter((h) => h !== meId) : [...x.helpful, meId]; if (!mine) grantXp(s, x.authorId, XP.reactionReceived, 'تقييمه مفيد'); writeCommunity(s); }} className={`mt-2 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs ${mine ? 'bg-primary/20' : 'bg-accent'}`}><ThumbsUp className="h-3.5 w-3.5" />{tr('مفيد', 'Helpful')} <span className="num">{r.helpful.length}</span></button>
@@ -408,7 +408,7 @@ export function QASection({ item, media }: { item: ProductDetail; media: Product
           <div className="mt-2 space-y-2 border-s-2 border-primary/30 ps-3">
             {q.answers.map((a) => (
               <div key={a.id} className="text-sm">
-                <div className="flex items-center gap-2"><MemberAvatar m={state?.members[a.authorId]} size={22} /><MemberName m={state?.members[a.authorId]} showRank={false} />{a.fromSpecs ? <span className="rounded-full bg-[var(--palm)]/15 px-2 text-[10px] font-bold text-palm">{tr('من المواصفات', 'From specs')}</span> : null}</div>
+                <div className="flex items-center gap-2"><MemberAvatar m={state?.members[a.authorId]} size={22} /><MemberName m={state?.members[a.authorId]} showRank={false} />{a.fromSpecs ? <span className="rounded-full bg-[var(--palm)]/15 px-2 text-[11px] font-bold text-palm">{tr('من المواصفات', 'From specs')}</span> : null}</div>
                 <p className="mt-0.5 ps-8">{a.text}</p>
               </div>
             ))}
@@ -433,7 +433,7 @@ export function ProductRow({ title, items }: { title: string; items: ProductCard
             <ProductThumb id={p.id} slug={p.category?.slug} className="w-full" seed={k} />
             <p className="mt-2 line-clamp-2 text-xs font-semibold">{localized(locale, { ar: p.titleAr, en: p.titleEn })}</p>
             <p className="num mt-1 text-sm font-bold">{p.lowestPriceEgp ? formatEGP(p.lowestPriceEgp, locale) : '—'}</p>
-            {p.bestOffer?.discountPct && !p.bestOffer.fakeDiscount ? <span className="text-[10px] font-bold text-palm">-{Math.round(p.bestOffer.discountPct)}%</span> : null}
+            {p.bestOffer?.discountPct && !p.bestOffer.fakeDiscount ? <span className="text-[11px] font-bold text-palm">-{Math.round(p.bestOffer.discountPct)}%</span> : null}
           </Link>
         ))}
       </div>

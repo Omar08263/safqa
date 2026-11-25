@@ -40,7 +40,7 @@ export function ProductThumb({ id, slug, className = 'w-full', seed = 0, alt = '
   return (
     <div className={`media-tile group/tile ${className}`}>
       <img src={img.thumb} alt={alt} loading="lazy" decoding="async" width={480} height={480} className="transition duration-500 group-hover:scale-[1.04]" />
-      {img.count > 1 ? <span className="num absolute bottom-1.5 end-1.5 rounded-full bg-black/55 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white" aria-label={`${img.count} photos`}>{img.count} 📷</span> : null}
+      {img.count > 1 ? <span className="num absolute bottom-1.5 end-1.5 rounded-full bg-black/55 px-1.5 py-0.5 text-[11px] font-bold leading-none text-white" aria-label={`${img.count} photos`}>{img.count} 📷</span> : null}
     </div>
   );
 }

@@ -169,6 +169,7 @@ const alertsRoute = createRoute({
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/login',
+  validateSearch: (s: Record<string, unknown>): { next?: string } => ({ next: typeof s.next === 'string' && s.next.startsWith('/') && !s.next.startsWith('//') ? s.next : undefined }),
   component: LoginPage,
 });
 

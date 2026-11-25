@@ -127,5 +127,5 @@ function Li({ children }: { children: React.ReactNode }) {
   return <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 flex-none text-palm" aria-hidden="true" /><span>{children}</span></li>;
 }
 function Soon() {
-  return <span className="ms-1.5 rounded-full bg-accent px-1.5 py-0.5 align-middle text-[10px] font-semibold text-muted">بتتفعّل تدريجيًا</span>;
+  return <span className="ms-1.5 rounded-full bg-accent px-1.5 py-0.5 align-middle text-[11px] font-semibold text-muted">بتتفعّل تدريجيًا</span>;
 }

@@ -118,7 +118,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <form onSubmit={onSearch} className="not-phone min-w-0 flex-1" data-tour="search" role="search">
             <div className="relative mx-auto max-w-md">
               <input ref={searchRef} name="q" placeholder={tr('ابحث عن منتج… (اضغط /)', 'Search products… (press /)')} className="h-10 w-full rounded-full border border-border bg-card/80 px-4 pe-16 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15" />
-              <button type="button" onClick={() => setPalette(true)} className="absolute end-1.5 top-1/2 flex -translate-y-1/2 items-center gap-1 rounded-full border border-border px-2 py-1 text-[10px] text-muted" aria-label={tr('لوحة الأوامر', 'Command palette')}>
+              <button type="button" onClick={() => setPalette(true)} className="absolute end-1.5 top-1/2 flex -translate-y-1/2 items-center gap-1 rounded-full border border-border px-2 py-1 text-[11px] text-muted" aria-label={tr('لوحة الأوامر', 'Command palette')}>
                 <Command className="h-3 w-3" />K
               </button>
             </div>
@@ -139,7 +139,7 @@ export function Shell({ children }: { children: ReactNode }) {
             {user ? (
               <Link to="/alerts" className="relative grid h-9 w-9 place-items-center rounded-full hover:bg-accent" aria-label={tr('التنبيهات', 'Alerts')}>
                 <Bell className="h-4 w-4" />
-                {unread > 0 ? <span className="absolute -end-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white">{unread}</span> : null}
+                {unread > 0 ? <span className="absolute -end-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-destructive px-1 text-[11px] font-bold text-white">{unread}</span> : null}
               </Link>
             ) : null}
             <div className="relative" data-tour="account">
@@ -181,7 +181,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <div>
             <Logo size={44} />
             <p className="mt-3 max-w-sm text-sm leading-6 text-muted">{tr('صفقة بتتابع أسعار المتاجر المصرية، بتكشف الخصومات المضخّمة، وبتقولك إمتى تشتري.', 'Safqa tracks Egyptian store prices, exposes inflated discounts, and tells you when to buy.')}</p>
-            <div className="mt-4 flex flex-wrap gap-2"><InstallButton /><TelegramFollowButton compact /><Button variant="outline" size="sm" onClick={() => setShortcuts(true)}>{tr('اختصارات الكيبورد', 'Keyboard shortcuts')} <kbd className="text-[10px]">?</kbd></Button></div>
+            <div className="mt-4 flex flex-wrap gap-2"><InstallButton /><TelegramFollowButton compact /><Button variant="outline" size="sm" onClick={() => setShortcuts(true)}>{tr('اختصارات الكيبورد', 'Keyboard shortcuts')} <kbd className="text-[11px]">?</kbd></Button></div>
           </div>
           <ul className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-3">
             {allNav.map((n) => (

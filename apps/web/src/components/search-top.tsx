@@ -74,6 +74,7 @@ export function SearchTop({ search, count }: { search: SearchFilters; count?: nu
   }
   return (
     <div className="mb-6 space-y-3">
+      <h1 className="sr-only">{search.q ? tr(`نتايج البحث عن «${search.q}»`, `Search results for “${search.q}”`) : tr('البحث في كل المتاجر', 'Search every store')}</h1>
       <div className="relative">
       <form onSubmit={(e) => { setOpen(false); go(e); }} className="glass flex items-center gap-2 rounded-full p-1.5 ps-4">
         <Search className="h-5 w-5 text-muted" />

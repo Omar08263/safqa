@@ -81,7 +81,10 @@ export function LoginPage() {
   const done = useCallback(() => {
     confetti({ count: 90 });
     toast(tr('أهلًا بيك في صفقة!', 'Welcome to Safqa!'));
-    void navigate({ to: '/dashboard' });
+    // Back to the page that asked for sign-in (?next=/alerts), else the dashboard.
+    const next = new URLSearchParams(window.location.search).get('next');
+    if (next && next.startsWith('/') && !next.startsWith('//')) void import('../lib/nav').then(({ go }) => go(next, true));
+    else void navigate({ to: '/dashboard' });
   }, [navigate, toast, tr]);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {

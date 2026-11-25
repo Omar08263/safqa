@@ -66,7 +66,7 @@ export function AttachmentThumb({ a, size = 96, onOpen }: { a: Attachment; size?
     <button type="button" onClick={onOpen} title={`${a.name} · ${humanSize(a.size)}`} className="group relative grid place-items-center overflow-hidden rounded-xl border border-border bg-accent" style={{ width: size, height: size }}>
       {url && !missing ? <img src={url} alt={a.name} className="h-full w-full object-cover transition group-hover:scale-105" /> : <Icon className="h-6 w-6 text-muted" />}
       {a.kind === 'video' ? <span className="absolute inset-0 grid place-items-center bg-black/25"><Play className="h-6 w-6 fill-white text-white" /></span> : null}
-      {a.kind === 'file' || a.kind === 'audio' ? <span className="absolute inset-x-0 bottom-0 truncate bg-black/50 px-1 text-[9px] text-white">{a.name}</span> : null}
+      {a.kind === 'file' || a.kind === 'audio' ? <span className="absolute inset-x-0 bottom-0 truncate bg-black/50 px-1 text-[11px] text-white">{a.name}</span> : null}
     </button>
   );
 }

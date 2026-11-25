@@ -47,7 +47,7 @@ export function SoundStudio() {
             <button key={p.cue} type="button" data-sfx="none" onClick={() => { play(p.cue, true); setLast(p.cue); }} className={`press glass-tile rounded-2xl p-2 text-center ${last === p.cue ? 'ring-2 ring-primary' : ''}`}>
               <span className={`block text-2xl ${last === p.cue ? 'sfx-bounce' : ''}`} key={last === p.cue ? Date.now() : p.cue}>{p.emoji}</span>
               <span className="block text-xs font-semibold">{tr(p.ar, p.en)}</span>
-              <span className="block text-[10px] text-muted">{p.mood}</span>
+              <span className="block text-[11px] text-muted">{p.mood}</span>
             </button>
           ))}
         </div>
