@@ -14,6 +14,7 @@ import { useColors } from '../lib/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { flagOn, initRemote } from '../lib/remote';
 import { initSfx } from '../lib/sfx';
+import { startOta } from '../lib/ota';
 import { fetchChangelog, WHATS_NEW_SEEN } from './whats-new';
 
 I18nManager.allowRTL(true);
@@ -37,7 +38,8 @@ export default function RootLayout() {
       const id = r.notification.request.content.data?.productId;
       if (typeof id === 'string') router.push(`/product/${id}`);
     });
-    return () => sub.remove();
+    const stopOta = startOta();
+    return () => { sub.remove(); stopOta(); };
   }, []);
 
   useEffect(() => {

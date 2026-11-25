@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { applyOtaNow, checkForOta, otaInfo } from '../lib/ota';
 import { Alert, ScrollView, Switch, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useToast } from '../components/toast';
@@ -80,7 +81,8 @@ export default function Settings() {
           />
         </View>
       </Card>
-      <Text style={[t.meta, { color: c.muted, textAlign: 'center' }]}>صفقة {Constants.expoConfig?.version ?? '4.0.0'} · مفتوح المصدر · من غير إعلانات ومن غير دفع</Text>
+      <OtaRow />
+      <Text style={[t.meta, { color: c.muted, textAlign: 'center' }]}>صفقة {Constants.expoConfig?.version ?? '5.2.0'} · مفتوح المصدر · من غير إعلانات ومن غير دفع</Text>
     </ScrollView>
   );
 }
@@ -89,4 +91,28 @@ function SoundRow() {
   const [on, setOn] = useState(soundOn());
   useEffect(() => onSound(setOn), []);
   return <Row title="أصوات الواجهة" hint="أصوات هادية وفخمة مع كل ضغطة (متولّدة بالكود، CC0)" value={on} onChange={(v) => setSound(v)} />;
+}
+
+/** Over-the-air updates: which code is running and a manual «check now». */
+function OtaRow() {
+  const c = useColors();
+  const toast = useToast();
+  const [info, setInfo] = useState(otaInfo());
+  if (!info.enabled) return null;
+  const when = info.createdAt && !info.embedded ? new Date(info.createdAt).toLocaleDateString('ar-EG', { day: 'numeric', month: 'long' }) : null;
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
+      <Text style={[t.meta, { color: c.muted }]}>{info.emergency ? '🛟 رجعنا لنسخة سليمة تلقائيًا' : when ? `📦 آخر تحديث تلقائي: ${when}` : '📦 النسخة الأصلية للتطبيق'}</Text>
+      <Chip
+        label={info.pending ? '✨ طبّق التحديث' : '🔎 دوّر على تحديث'}
+        onPress={() => {
+          if (info.pending) { void applyOtaNow(); return; }
+          void checkForOta(true).then((r) => {
+            setInfo(otaInfo());
+            toast({ text: r === 'downloaded' ? 'نزل تحديث جديد ✨ هيشتغل أول ما تقفل التطبيق وتفتحه' : r === 'error' ? 'مش قادرين نوصل لسيرفر التحديثات دلوقتي' : 'إنت على أحدث نسخة 👌' });
+          });
+        }}
+      />
+    </View>
+  );
 }

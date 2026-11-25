@@ -31,6 +31,8 @@ if [ -f "$ASSETS_DIR/ai/index.json" ]; then mkdir -p "$OUT/ai" && cp "$ASSETS_DI
 # 🧬 v6 cross-store twins (static shards from the same index; ~1s with numpy).
 if [ -f "$ASSETS_DIR/ai/index.json" ]; then python3 deploy/ai/twins.py "$ASSETS_DIR/ai" || echo "twins: skipped"; fi
 if [ -d "$ASSETS_DIR/ai/twins" ]; then mkdir -p "$OUT/ai/twins" && cp "$ASSETS_DIR/ai/twins/"*.json "$OUT/ai/twins/"; fi
+# 📦 OTA updates for the Android app (deploy/mobile/publish-ota.mjs stages them; served by functions/ota/manifest.ts).
+if [ -d "$ASSETS_DIR/ota" ]; then mkdir -p "$OUT/ota" && cp -r "$ASSETS_DIR/ota/." "$OUT/ota/" && rm -f "$OUT/ota/history.jsonl"; fi
 # Keep a copy for the next deploy.
 mkdir -p "$ASSETS_DIR" && cp -r "$OUT/demo" "$ASSETS_DIR/" && { [ -d "$OUT/media" ] && cp -r "$OUT/media" "$ASSETS_DIR/" || true; }
 # Run from apps/web so wrangler bundles apps/web/functions (v6 share cards on /p/:id).

@@ -29,7 +29,11 @@
       "permissions": [
         "POST_NOTIFICATIONS",
         "VIBRATE",
-        "RECEIVE_BOOT_COMPLETED"
+        "RECEIVE_BOOT_COMPLETED",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ],
       "intentFilters": [
         {
@@ -48,10 +52,14 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.safqa.mobile"
+      "bundleIdentifier": "app.safqa.mobile",
+      "infoPlist": {
+        "ExpoLocalization_forcesRTL": true
+      }
     },
     "plugins": [
       "expo-router",
+      "expo-updates",
       [
         "expo-splash-screen",
         {
@@ -93,6 +101,21 @@
     ],
     "experiments": {
       "typedRoutes": false
+    },
+    "updates": {
+      "codeSigningCertificate": "./certs/certificate.pem",
+      "codeSigningMetadata": {
+        "keyid": "main",
+        "alg": "rsa-v1_5-sha256"
+      },
+      "enabled": true,
+      "url": "https://safqaeg.pages.dev/ota/manifest",
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0,
+      "useEmbeddedUpdate": true
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }

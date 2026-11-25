@@ -26,3 +26,7 @@ dump.rdb
 *.rdb
 apps/web/public/demo/
 apps/web/public/media/
+
+# OTA code-signing certificate is public (the private key lives in ~/.safqa/ota/keys)
+!apps/mobile/certs/certificate.pem
+.wrangler/
