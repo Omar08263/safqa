@@ -1,6 +1,7 @@
 // 🟢 نبض صفقة — public status page (Upptime-style: GitHub Actions probes every 10 min,
 // results committed to the status-data branch; this page only reads that JSON).
 import { useQuery } from '@tanstack/react-query';
+import { edge } from '../lib/edge';
 import { PageHeader, Skeleton } from '../fx/fx';
 import { useTr } from '../lib/tr';
 import { usePrefs } from '../lib/prefs';
@@ -8,7 +9,13 @@ import { usePrefs } from '../lib/prefs';
 export const STATUS_URL = 'https://raw.githubusercontent.com/Omar08263/safqa/status-data/status/summary.json';
 export interface StatusCheck { id: string; name: string; nameEn: string; url: string; ok: boolean; ms: number; code: number; uptime24: number | null; uptime7d: number | null; p50: number | null; last: [string, number, 0 | 1][] }
 export interface StatusSummary { at: string; ok: boolean; checks: StatusCheck[]; incidents: { id: string; at: string; until: string | null; note: string }[] }
-export const fetchStatus = async (): Promise<StatusSummary> => { const r = await fetch(`${STATUS_URL}?t=${Math.floor(Date.now() / 120000)}`); if (!r.ok) throw new Error(String(r.status)); return r.json(); };
+/** GitHub Actions data first (when the pulse workflow runs), else the Worker-cron monitor. */
+export const fetchStatus = async (): Promise<StatusSummary> => {
+  try { const r = await fetch(STATUS_URL); if (r.ok) return r.json(); } catch { /* not published yet */ }
+  const s = await edge<StatusSummary>('/api/v6/status');
+  if (!s.checks?.length) throw new Error('no data');
+  return s;
+};
 
 function Bars({ last }: { last: StatusCheck['last'] }) {
   return (
@@ -26,7 +33,7 @@ export function StatusPage() {
   const fmt = (iso: string) => new Date(iso).toLocaleString(locale === 'ar' ? 'ar-EG' : 'en-GB', { timeZone: 'Africa/Cairo', hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' });
   return (
     <div className="space-y-5">
-      <PageHeader title={tr('🟢 نبض صفقة', '🟢 Safqa status')} lede={tr('حالة الموقع والتطبيق والـ API — بنقيسها كل 10 دقايق من GitHub Actions، والنتايج علنية.', 'Site, app and API health — probed every 10 minutes from GitHub Actions; results are public.')} />
+      <PageHeader title={tr('🟢 نبض صفقة', '🟢 Safqa status')} lede={tr('حالة الموقع والتطبيق والـ API — بنقيسها أوتوماتيك كل 20 دقيقة، والنتايج علنية.', 'Site, app and API health — probed automatically every 20 minutes; results are public.')} />
       {q.isPending ? <Skeleton className="h-40 w-full rounded-3xl" /> : q.isError || !d ? (
         <p className="rounded-3xl border border-border bg-card p-4">{tr('لسه مفيش قياسات منشورة — أول قياس بيتنشر بعد أول تشغيل للمراقب.', 'No published probes yet — they appear after the first monitor run.')}</p>
       ) : (

@@ -4,6 +4,7 @@ import { fail, str } from '../util';
 import { setFlag, opsLog } from '../autopilot';
 import { SYSTEMS, systemById, systemFlags } from './registry';
 import { registerNtfy } from './ntfy';
+import { uptimeSummary } from './uptime';
 import { cached, storeInfo } from '../catalog/api';
 
 type On = (m: string, path: string, h: (c: any) => unknown) => void;
@@ -17,6 +18,7 @@ async function health(env: Env) {
   };
   const extra: Record<string, unknown> = { ntfy: { optedIn: ntfyUsers?.n ?? null } };
   await Promise.all(SYSTEMS.filter((s) => s.statusUrl?.startsWith('http')).map(async (s) => { extra[s.id] = await remote(s.statusUrl); }));
+  if (!extra.uptime || (extra.uptime as { error?: unknown }).error) { const u = await uptimeSummary(env); extra.uptime = u ? { at: u.at, ok: u.ok, checks: u.checks.map((c) => ({ id: c.id, ok: c.ok, uptime24: c.uptime24, ms: c.ms })), source: u.source } : null; }
   return SYSTEMS.map((s) => ({ ...s, state: flags[s.id], status: extra[s.id] ?? null }));
 }
 
@@ -51,5 +53,6 @@ export function registerSystems(on: On, d: { needAdmin: (c: any) => Promise<stri
     return { found: true, id: r.id, title: r.title_ar || r.title, titleEn: r.title, brand: r.brand, image: r.image, price: r.price, listPrice: r.list_price, low: r.low, category: r.category, inStock: Boolean(r.in_stock),
       checkedAt: r.checked_at ?? r.updated_at, offers: offers.slice(0, 8).map((o) => ({ store: storeInfo(o.s).nameEn, storeAr: storeInfo(o.s).nameAr, price: o.p, inStock: Boolean(o.k), url: o.u })) };
   }, c.exec));
+  on('GET', '/api/v6/status', async (c) => (await uptimeSummary(c.env)) ?? { at: null, ok: true, checks: [], incidents: [], source: 'none' });
   registerNtfy(on, d.me);
 }

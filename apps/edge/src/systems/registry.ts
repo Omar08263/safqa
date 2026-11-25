@@ -41,13 +41,13 @@ export const SYSTEMS: SystemDef[] = [
   {
     id: 'uptime', flag: 'sys_uptime', emoji: '🟢', nameAr: 'نبض صفقة', nameEn: 'Status & uptime',
     forUsers: 'صفحة حالة علنية بتقول الموقع والتطبيق والـ API شغالين ولا لأ، وسرعتهم، كل 10 دقايق',
-    oss: { name: 'Upptime', url: 'https://github.com/upptime/upptime', license: 'MIT', what: 'GitHub Actions cron probes → JSON on the status-data branch; status page + Hub card read it' },
-    surfaces: ['web', 'hub', 'actions'], defaultOn: true, statusUrl: 'https://raw.githubusercontent.com/Omar08263/safqa/status-data/status/summary.json',
+    oss: { name: 'Upptime', url: 'https://github.com/upptime/upptime', license: 'MIT', what: 'same probes from the Worker cron every 20 min (KV, 7-day history); GitHub Actions version staged in deploy/status/pulse.yml' },
+    surfaces: ['web', 'hub', 'edge'], defaultOn: true, statusUrl: '/api/v6/status',
   },
   {
     id: 'quality', flag: 'sys_quality', emoji: '♿', nameAr: 'مفتّش الجودة', nameEn: 'Quality & accessibility audit',
     forUsers: 'كل يوم بيتأكد إن الموقع سريع وسهل للكل (مكفوفين، شاشات صغيرة، نت بطيء) وبيبلّغ لو حاجة باظت',
-    oss: { name: 'Lighthouse + axe-core', url: 'https://github.com/GoogleChrome/lighthouse', license: 'Apache-2.0 / MPL-2.0', what: 'daily Actions run of Lighthouse on key pages; scores + top issues land on status-data' },
+    oss: { name: 'Lighthouse + axe-core', url: 'https://github.com/GoogleChrome/lighthouse', license: 'Apache-2.0 / MPL-2.0', what: 'Lighthouse on key pages (box run now; daily Actions run staged) → scores + top issues on the status-data branch' },
     surfaces: ['hub', 'actions'], defaultOn: true, statusUrl: 'https://raw.githubusercontent.com/Omar08263/safqa/status-data/quality/latest.json',
   },
 ];

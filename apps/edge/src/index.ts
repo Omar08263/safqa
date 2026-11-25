@@ -19,6 +19,7 @@ import * as Budget from './infra/budget';
 import { ensureState } from './infra/state';
 import * as Smart from './catalog/smart';
 import { registerSystems } from './systems/api';
+import { uptimeTick } from './systems/uptime';
 import { cairoDay, type Env, fail, HttpError, json, nowIso, parseJ, rateLimit, readJson, str, timingSafeEqual, uid, b64 } from './util';
 
 type Ctx = { req: Request; env: Env; url: URL; p: string[]; exec: ExecutionContext };
@@ -723,6 +724,7 @@ export default {
       }
       if (T.tgEnabled(env) && cairoH === 9 && d.getUTCMinutes() >= 30 && d.getUTCMinutes() < 40) await T.queueDigests(env);
       await autopilotTick(env, d).catch((e) => console.log('autopilot', String(e)));
+      await uptimeTick(env, d).catch((e) => console.log('uptime', String(e)));
       await T.drainOutbox(env);
       // Last: priority recrawl of hot/watched products uses the remaining subrequest budget of this invocation.
       await Ingest.adaptiveRecrawl(env, 3).catch((e) => console.log('recrawl', String(e)));
