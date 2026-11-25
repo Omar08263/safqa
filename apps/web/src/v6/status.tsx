@@ -10,11 +10,15 @@ export const STATUS_URL = 'https://raw.githubusercontent.com/Omar08263/safqa/sta
 export interface StatusCheck { id: string; name: string; nameEn: string; url: string; ok: boolean; ms: number; code: number; uptime24: number | null; uptime7d: number | null; p50: number | null; last: [string, number, 0 | 1][] }
 export interface StatusSummary { at: string; ok: boolean; checks: StatusCheck[]; incidents: { id: string; at: string; until: string | null; note: string }[] }
 /** GitHub Actions data first (when the pulse workflow runs), else the Worker-cron monitor. */
+/** Newest of the GitHub Actions data (status-data branch) and the Worker-cron monitor. */
 export const fetchStatus = async (): Promise<StatusSummary> => {
-  try { const r = await fetch(STATUS_URL); if (r.ok) return r.json(); } catch { /* not published yet */ }
-  const s = await edge<StatusSummary>('/api/v6/status');
-  if (!s.checks?.length) throw new Error('no data');
-  return s;
+  const [gh, wk] = await Promise.all([
+    fetch(STATUS_URL).then((r) => (r.ok ? (r.json() as Promise<StatusSummary>) : null)).catch(() => null),
+    edge<StatusSummary>('/api/v6/status').catch(() => null),
+  ]);
+  const ok = [gh, wk].filter((x): x is StatusSummary => Boolean(x?.at && x.checks?.length));
+  if (!ok.length) throw new Error('no data');
+  return ok.sort((a, b) => Date.parse(b.at) - Date.parse(a.at))[0]!;
 };
 
 function Bars({ last }: { last: StatusCheck['last'] }) {
@@ -47,7 +51,11 @@ export function StatusPage() {
               <li key={c.id} className="rounded-3xl border border-border bg-card p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="font-bold">{c.ok ? '🟢' : '🔴'} {locale === 'ar' ? c.name : c.nameEn}</p>
-                  <p className="t-meta num">{c.ms}ms · {tr('٢٤ ساعة', '24h')}: {c.uptime24 ?? '—'}% · {tr('٧ أيام', '7d')}: {c.uptime7d ?? '—'}%{c.p50 ? ` · p50 ${c.p50}ms` : ''}</p>
+                  <p className="t-meta flex flex-wrap gap-1.5">
+                    <span className="rounded-full bg-accent px-2 py-0.5">{tr('آخر 24 ساعة', 'Last 24h')} <bdi className="num font-bold">{c.uptime24 ?? '—'}%</bdi></span>
+                    <span className="rounded-full bg-accent px-2 py-0.5">{tr('آخر 7 أيام', 'Last 7 days')} <bdi className="num font-bold">{c.uptime7d ?? '—'}%</bdi></span>
+                    <span className="rounded-full bg-accent px-2 py-0.5">{tr('السرعة', 'Speed')} <bdi className="num font-bold" dir="ltr">{c.ms} ms</bdi></span>
+                  </p>
                 </div>
                 <Bars last={c.last} />
               </li>
