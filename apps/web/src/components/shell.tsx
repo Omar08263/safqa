@@ -37,6 +37,7 @@ export function Avatar({ name, size = 32 }: { name: string; size?: number }) {
 
 export function Shell({ children }: { children: ReactNode }) {
   const tr = useTr();
+  const coarse = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches;
   const { locale, setLocale, theme, toggleTheme } = usePrefs();
   const { user, logout, client } = useSession();
   const navigate = useNavigate();
@@ -122,8 +123,8 @@ export function Shell({ children }: { children: ReactNode }) {
           </Link>
           <form onSubmit={onSearch} className="not-phone min-w-0 flex-1" data-tour="search" role="search">
             <div className="relative mx-auto max-w-md">
-              <input ref={searchRef} name="q" placeholder={tr('ابحث عن منتج… (اضغط /)', 'Search products… (press /)')} className="h-10 w-full rounded-full border border-border bg-card/80 px-4 pe-16 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15" />
-              <button type="button" onClick={() => setPalette(true)} className="absolute end-1.5 top-1/2 flex -translate-y-1/2 items-center gap-1 rounded-full border border-border px-2 py-1 text-[11px] text-muted" aria-label={tr('لوحة الأوامر', 'Command palette')}>
+              <input ref={searchRef} name="q" placeholder={coarse ? tr('ابحث عن منتج…', 'Search products…') : tr('ابحث عن منتج… (اضغط /)', 'Search products… (press /)')} className="search-input h-10 w-full rounded-full border border-border bg-card/80 px-4 pe-16 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15" />
+              <button type="button" onClick={() => setPalette(true)} className="kbd-hint absolute end-1.5 top-1/2 flex -translate-y-1/2 items-center gap-1 rounded-full border border-border px-2 py-1 text-[11px] text-muted" aria-label={tr('لوحة الأوامر', 'Command palette')}>
                 <Command className="h-3 w-3" />K
               </button>
             </div>

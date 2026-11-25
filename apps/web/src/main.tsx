@@ -82,5 +82,19 @@ createRoot(root).render(
 );
 
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-  void navigator.serviceWorker.register('/sw.js');
+  void navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).then((r) => r.update()).catch(() => undefined);
+  // Stale-tab guard: a tablet tab left open keeps running yesterday's bundle. When the tab comes back
+  // (or every 10 min) compare our entry bundle with the live one and reload once if a new build shipped.
+  const mine = [...document.scripts].map((s) => s.src).find((s) => /\/assets\/index-[^/]+\.js$/.test(s));
+  const check = async () => {
+    if (!mine || !navigator.onLine) return;
+    try {
+      const html = await (await fetch(`/?v=${Date.now()}`, { cache: 'no-store' })).text();
+      const live = html.match(/\/assets\/index-[^"']+\.js/)?.[0];
+      if (live && !mine.endsWith(live) && sessionStorage.getItem('safqa.reloadedFor') !== live) { sessionStorage.setItem('safqa.reloadedFor', live); location.reload(); }
+    } catch {}
+  };
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') void check(); });
+  setInterval(() => void check(), 600_000);
+  setTimeout(() => void check(), 4000);
 }

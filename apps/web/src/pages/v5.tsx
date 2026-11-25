@@ -10,6 +10,7 @@ import { CountUp, PageHeader, Skeleton, useToast } from '../fx/fx';
 import { signedInToBackend } from '../lib/edge';
 import { usePrefs } from '../lib/prefs';
 import { useSession } from '../lib/session';
+import { Money, NumText } from '../lib/money';
 import { useTr } from '../lib/tr';
 import { ago, noteInterest, noteView, useLiveDrops, useV5Deals, useV5Meta, useV5Product, v5, type V5Card } from '../lib/v5';
 import { waLink } from '../components/social';
@@ -132,11 +133,11 @@ export function V5ProductPage({ id }: { id: string }) {
           <div className="flex flex-wrap items-end justify-between gap-3 rounded-3xl border border-border bg-card p-4">
             <div className="min-w-0 flex-[1_1_18rem]">
               <p className="t-meta">{tr(`أحسن سعر في ${offer.store.nameAr}`, `Best price at ${offer.store.nameEn}`)}</p>
-              <p key={offer.priceEgp} className="num price-flip text-4xl font-black tracking-tight">{formatEGP(offer.priceEgp, locale)}</p>
+              <p key={offer.priceEgp} className="num price-flip text-4xl font-black tracking-tight"><Money v={offer.priceEgp} locale={locale} /></p>
               <dl data-qa="price-stats" className="mt-3 grid grid-cols-3 gap-2 text-center">
                 {[
-                  { k: 'low', label: tr('أقل سعر شفناه', 'Lowest seen'), value: p.v5?.low ? formatEGP(p.v5.low, locale) : '—', cls: '' },
-                  { k: 'save', label: tr('توفير', 'You save'), value: saving > 0 ? formatEGP(saving, locale) : '—', cls: saving > 0 ? 'text-palm' : '' },
+                  { k: 'low', label: tr('أقل سعر شفناه', 'Lowest seen'), value: p.v5?.low ? <Money v={p.v5.low} locale={locale} /> : '—', cls: '' },
+                  { k: 'save', label: tr('توفير', 'You save'), value: saving > 0 ? <Money v={saving} locale={locale} /> : '—', cls: saving > 0 ? 'text-palm' : '' },
                   { k: 'ago', label: tr('آخر تحديث', 'Last checked'), value: p.v5?.checkedAt ? ago(p.v5.checkedAt, ar) : '—', cls: '' },
                 ].map((x) => (
                   <div key={x.k} className="min-w-0 rounded-2xl bg-accent/60 px-2 py-2">
@@ -393,7 +394,7 @@ export function DealDnaCard({ dna }: { dna: { score: number; grade: string; fact
         {dna.factors.map((f, i) => (
           <li key={f.key} className="dna-row flex items-center gap-2 text-sm" style={{ animationDelay: `${i * 70}ms` }}>
             <span className={`num w-10 flex-none text-end font-bold ${f.tone === 'good' ? 'text-palm' : f.tone === 'bad' ? 'text-destructive' : 'text-muted'}`}>{f.points === 0 ? <span aria-label={tr('لسه', 'pending')} title={tr('مش داخل في الحساب لسه', 'Not scored yet')}>⏳</span> : f.points > 0 ? `+${f.points}` : f.points}</span>
-            <span className={`min-w-0 flex-1 ${f.points === 0 ? 'text-muted' : ''}`}>{locale === 'ar' ? f.ar : f.en}</span>
+            <span className={`min-w-0 flex-1 ${f.points === 0 ? 'text-muted' : ''}`}><NumText text={locale === 'ar' ? f.ar : f.en} /></span>
           </li>
         ))}
       </ul>

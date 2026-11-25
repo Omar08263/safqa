@@ -414,3 +414,12 @@ html { overflow-x: clip; }
   input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']), select, textarea { font-size: 16px; }
   input::placeholder, textarea::placeholder { font-size: inherit; }
 }
+
+/* One money format: digits + currency as an isolated unit with a real gap (never glued). */
+.money { display: inline-flex; align-items: baseline; gap: .28em; unicode-bidi: isolate; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.money-c { font-size: .62em; font-weight: 700; opacity: .85; }
+.money-n { unicode-bidi: isolate; }
+/* Touch screens: no keyboard hints in the header search; placeholder centered with even padding. */
+[data-pointer="coarse"] .kbd-hint { display: none; }
+[data-pointer="coarse"] .search-input { padding-inline-end: 1rem; }
+.search-input { line-height: 2.5rem; padding-block: 0; }

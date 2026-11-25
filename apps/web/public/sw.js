@@ -3,7 +3,7 @@
 //   so every page — including the 400-tool toolbox — opens with no connection.
 // - Hashed build assets & product photos: cache-first (they never change).
 // - Pages, demo snapshot and GET API calls: network-first, falling back to the last synced copy.
-const VERSION = 'safqa-v6';
+const VERSION = 'safqa-v7';
 const MEDIA = 'safqa-media-v1';
 const SHELL = ['/', '/privacy.html', '/terms.html', '/manifest.webmanifest', '/favicon.svg', '/brand/safqa-mark.svg', '/brand/icon-192.png', '/brand/icon-512.png', '/demo/snapshot.json'];
 
