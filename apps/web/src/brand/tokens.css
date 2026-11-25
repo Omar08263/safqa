@@ -202,8 +202,8 @@
 .tier-silver { --tier: #C9D1DC; --tier-2: #7C8796; --tier-ink: #14181F; }
 .tier-gold { --tier: #FFD76A; --tier-2: #E19C0B; --tier-ink: #2A1A00; }
 .tier-diamond { --tier: #67E8F9; --tier-2: #8B5CF6; --tier-ink: #0B1030; }
-.heat-0 { --heat: #94A3B8; --heat-ink: #0F172A; }
-.heat-1 { --heat: #38BDF8; --heat-ink: #06243A; }
-.heat-2 { --heat: #FACC15; --heat-ink: #2A1F00; }
-.heat-3 { --heat: #F97316; --heat-ink: #2A1000; }
-.heat-4 { --heat: #EF4444; --heat-ink: #FFFFFF; }
+.temp-0 { --heat: #94A3B8; --heat-ink: #0F172A; }
+.temp-1, .heat-cool { --heat: #38BDF8; --heat-ink: #06243A; }
+.temp-2, .heat-warm { --heat: #FACC15; --heat-ink: #2A1F00; }
+.temp-3, .heat-hot { --heat: #F97316; --heat-ink: #2A1000; }
+.temp-4, .heat-blaze { --heat: #EF4444; --heat-ink: #FFFFFF; }

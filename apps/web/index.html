@@ -20,6 +20,8 @@
     <meta name="theme-color" content="#c9840a" />
     <meta name="description" content="صفقة — تتبع أسعار المتاجر في مصر واكشف الخصم المضخّم." />
     <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- Start downloading prices while the app code loads (used by src/lib/demo-api.ts). -->
+    <link rel="preload" href="/demo/snapshot.json" as="fetch" crossorigin="anonymous" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -41,7 +43,16 @@
     <title>صفقة Safqa — ذكاء الأسعار في مصر</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Instant first paint; React replaces this as soon as it mounts. -->
+      <div style="min-height:100vh;display:grid;place-items:center;font-family:'Readex Pro',system-ui,sans-serif">
+        <div style="text-align:center">
+          <img src="/brand/icon-192.png" alt="صفقة" width="72" height="72" style="border-radius:20px;box-shadow:0 18px 40px -18px rgb(201 132 10 / .6)" />
+          <p style="margin:14px 0 0;font-weight:700;font-size:20px;color:#1c1915">صفقة</p>
+          <p style="margin:4px 0 0;font-size:13px;color:#6e665b">بنجيب أحدث الأسعار…</p>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

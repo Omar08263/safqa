@@ -27,7 +27,8 @@ export function css() {
     out += `[data-section="${s}"] {\n${sec(s, 'light')}\n}\n.dark [data-section="${s}"], .dark[data-section="${s}"] {\n${sec(s, 'dark')}\n}\n`;
   }
   for (const [id, t] of Object.entries(T.tiers)) out += `.tier-${id} { --tier: ${t.from}; --tier-2: ${t.to}; --tier-ink: ${t.ink}; }\n`;
-  T.heat.stops.forEach((c, i) => { out += `.heat-${i} { --heat: ${c}; --heat-ink: ${T.heat.ink[i]}; }\n`; });
+  const names = ['', 'cool', 'warm', 'hot', 'blaze'];
+  T.heat.stops.forEach((c, i) => { out += `.temp-${i}${names[i] ? `, .heat-${names[i]}` : ''} { --heat: ${c}; --heat-ink: ${T.heat.ink[i]}; }\n`; });
   return out;
 }
 

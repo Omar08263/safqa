@@ -17,7 +17,7 @@ export function ScoreRing({ score, size = 'md' }: { score: number; size?: 'sm' |
   const r = px / 2 - 5;
   const c = 2 * Math.PI * r;
   return (
-    <div className={`heat-${heat} relative flex-none ${heat === 4 ? 'drop-shadow-[0_0_10px_rgb(239_68_68_/_0.45)]' : ''}`} style={{ width: px, height: px }} title={`درجة الصفقة ${score}/100 · Deal score`} role="img" aria-label={`Deal score ${score} of 100`}>
+    <div className={`temp-${heat} relative flex-none ${heat === 4 ? 'drop-shadow-[0_0_10px_rgb(239_68_68_/_0.45)]' : ''}`} style={{ width: px, height: px }} title={`درجة الصفقة ${score}/100 · Deal score`} role="img" aria-label={`Deal score ${score} of 100`}>
       <svg width={px} height={px} className="-rotate-90" aria-hidden="true">
         <circle cx={px / 2} cy={px / 2} r={r} stroke="var(--chip)" strokeWidth={size === 'sm' ? 5 : 6} fill="none" />
         <circle cx={px / 2} cy={px / 2} r={r} stroke={color} strokeWidth={size === 'sm' ? 5 : 6} fill="none" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - score / 100)} className="ring-anim" style={{ ['--c' as string]: c }} />
@@ -44,7 +44,7 @@ export function DealCard({ product, index = 0 }: { product: ProductCard; index?:
       <div className="relative">
         <ProductThumb id={product.id} slug={product.category?.slug} seed={index} alt={title} />
         <div className="pointer-events-none absolute start-2 top-2 flex flex-col items-start gap-1">
-          {pct > 0 && !offer.fakeDiscount ? <span className={`num heat heat-${pct >= 40 ? 4 : pct >= 25 ? 3 : pct >= 15 ? 2 : pct >= 5 ? 1 : 0} !px-2 !py-0.5 !text-[11px] leading-4`}>-{pct}%</span> : null}
+          {pct > 0 && !offer.fakeDiscount ? <span className={`num temp temp-${pct >= 40 ? 4 : pct >= 25 ? 3 : pct >= 15 ? 2 : pct >= 5 ? 1 : 0} !px-2 !py-0.5 !text-[11px] leading-4`}>-{pct}%</span> : null}
           {offer.fakeDiscount ? <span className="flex items-center gap-1 rounded-full bg-destructive px-2 py-0.5 text-[11px] font-bold leading-4 text-white"><ShieldAlert className="h-3 w-3" />{t('deal.fake')}</span> : null}
         </div>
         <button
