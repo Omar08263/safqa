@@ -45,5 +45,10 @@ describe('العقل الرئيسي — planFixes guardrails', () => {
     const p = planFixes([{ id: 'x', spec: 'amn', sev: 'crit', title: 't', fixes: [{ t: 'flag_off', target: 'payments' }] }], [], base.now, true);
     expect(p.act).toHaveLength(0); expect(p.propose).toHaveLength(0);
   });
+  it('D1 cap exhausted → D1-writing fixes wait for the owner', () => {
+    const g = diagnose({ ...base, guardedFlagErrors: [{ flag: 'ar_lens', n: 20, users: 5 }] });
+    const p = planFixes(g, [], base.now, true, 3, false);
+    expect(p.act.map((a) => a.fix.t)).toEqual(['cache_purge']); expect(p.propose.map((a) => a.fix.t)).toEqual(['flag_off']);
+  });
   it('rule plan narrative', () => { expect(rulePlan([], 0, 0).summary).toContain('كله تمام'); });
 });

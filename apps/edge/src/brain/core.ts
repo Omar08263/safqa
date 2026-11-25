@@ -112,7 +112,9 @@ export interface Done { id: string; at: string; key: string; fix: Fix; finding: 
  * Pick what to do now. Safe fixes run alone when Autopilot is on, within daily caps and a per-target cooldown;
  * everything else (and everything when Autopilot is off) becomes an owner proposal. Issues become drafts.
  */
-export function planFixes(findings: Finding[], done: Done[], now: number, autopilot: boolean, maxActions = 3) {
+/** Fixes that need D1 writes; deferred to the owner while the free daily write cap is exhausted. */
+export const NEEDS_D1: Fix['t'][] = ['flag_off', 'run_agent'];
+export function planFixes(findings: Finding[], done: Done[], now: number, autopilot: boolean, maxActions = 3, canWrite = true) {
   const today = new Date(now).toISOString().slice(0, 10);
   const used: Partial<Record<Fix['t'], number>> = {};
   for (const d of done) if (d.at.slice(0, 10) === today && d.by === 'auto') used[d.fix.t] = (used[d.fix.t] ?? 0) + 1;
@@ -125,7 +127,7 @@ export function planFixes(findings: Finding[], done: Done[], now: number, autopi
       if (FORBIDDEN.test(`${fix.t} ${fix.target}`)) continue;
       if (fix.t === 'issue') { drafts.push({ fix, finding: fd }); continue; }
       if (recent.has(fixKey(fix))) continue;
-      if (autopilot && SAFE[fix.t] && (used[fix.t] ?? 0) < CAPS[fix.t] && act.length < maxActions) { act.push({ fix, finding: fd }); used[fix.t] = (used[fix.t] ?? 0) + 1; recent.add(fixKey(fix)); }
+      if (autopilot && SAFE[fix.t] && (canWrite || !NEEDS_D1.includes(fix.t)) && (used[fix.t] ?? 0) < CAPS[fix.t] && act.length < maxActions) { act.push({ fix, finding: fd }); used[fix.t] = (used[fix.t] ?? 0) + 1; recent.add(fixKey(fix)); }
       else propose.push({ fix, finding: fd });
     }
   }

@@ -33,7 +33,7 @@ export interface BrainState {
   lastTick?: string; ticks: number; sig?: string;
   findings: Finding[]; plan?: Plan; done: Done[]; pending: Pending[]; issues: Issue[];
   skipped: Record<string, number>; paused: Record<string, number>;
-  vitals?: Record<string, unknown>; dayNote?: string;
+  vitals?: Record<string, unknown>; dayNote?: string; lastProbe?: { at: number; ok: boolean };
 }
 const KEY = 'brain:state';
 const fresh = (): BrainState => ({ v: 1, settings: { auto: true, github: false }, ticks: 0, findings: [], done: [], pending: [], issues: [], skipped: {}, paused: {} });
@@ -55,21 +55,25 @@ async function saveState(env: Env, st: BrainState, persist: boolean) {
 }
 
 // ---------------------------------------------------------------- sensors (read-only)
-async function timed(url: string, ms = 8000) {
+async function timed(url: string, ms = 8000, range?: string) {
   const t0 = Date.now();
-  try { const r = await fetch(url, { signal: AbortSignal.timeout(ms), headers: { 'user-agent': 'SafqaBrain/1.0 (+https://safqaeg.pages.dev; self health check)' } }); return { ok: r.ok, status: r.status, ms: Date.now() - t0, r }; }
+  try { const r = await fetch(url, { signal: AbortSignal.timeout(ms), headers: { 'user-agent': 'SafqaBrain/1.0 (+https://safqaeg.pages.dev; self health check)', ...(range ? { range } : {}) } }); return { ok: r.ok, status: r.status, ms: Date.now() - t0, r }; }
   catch { return { ok: false, status: 0, ms: Date.now() - t0, r: null }; }
 }
 export async function sense(env: Env, st: BrainState): Promise<Signals> {
   const s: Signals = { now: Date.now(), d1Ok: false, kvOk: false, paused: st.paused };
   const q = async <T,>(sql: string, ...b: unknown[]) => (await env.DB.prepare(sql).bind(...b).all<T>()).results;
   const site = (env.SITE_URL || 'https://safqaeg.pages.dev').replace(/\/$/, '');
-  const [home, snap, admin] = await Promise.all([timed(`${site}/`), timed(`${site}/demo/snapshot.json`, 10000), timed('https://safqa-admin.pages.dev/', 6000)]);
+  const [home, snap, admin] = await Promise.all([timed(`${site}/`), timed(`${site}/demo/snapshot.json`, 10000, 'bytes=0-511'), timed('https://safqa-admin.pages.dev/', 6000)]);
   s.site = { ok: home.ok, status: home.status, ms: home.ms }; s.admin = { ok: admin.ok, status: admin.status };
-  if (snap.r?.ok) { try { const j = (await snap.r.json()) as Record<string, unknown>; const at = String(j.generatedAt ?? j.at ?? j.updatedAt ?? ''); s.snapshotAgeH = at ? (Date.now() - Date.parse(at)) / 3600_000 : null; } catch { s.snapshotAgeH = null; } }
+  if (snap.r?.ok) { const head = (await snap.r.text().catch(() => '')).slice(0, 4000); const at = head.match(/"(?:recordedAt|generatedAt|updatedAt)"\s*:\s*"([^"]+)"/)?.[1]; s.snapshotAgeH = at ? (Date.now() - Date.parse(at)) / 3600_000 : null; }
   try { await env.DB.prepare('SELECT 1').first(); s.d1Ok = true; } catch { /* down */ }
+  // Write probe (≤1 row/hour): the Worker's own meter can't see writes made elsewhere on the account.
+  let writable = true;
+  if (st.lastProbe && Date.now() - st.lastProbe.at < 3600_000) writable = st.lastProbe.ok;
+  else { try { await env.DB.prepare("INSERT INTO kstate (key,value,exp) VALUES ('brain:probe',?,NULL) ON CONFLICT(key) DO UPDATE SET value=excluded.value").bind(nowIso()).run(); } catch (e) { writable = !/row write limit|exceeded D1/i.test(String(e)); } st.lastProbe = { at: Date.now(), ok: writable }; }
   try { await env.KV.get('brain:ping'); s.kvOk = true; } catch { /* down */ }
-  try { const b = await Budget.report(env); s.budget = { state: b.state, used: b.used, pct: b.pct, exhausted: b.exhausted }; } catch { /* */ }
+  try { const b = await Budget.report(env); s.budget = { state: writable ? b.state : 'red', used: b.used, pct: b.pct, exhausted: b.exhausted || !writable }; } catch { if (!writable) s.budget = { state: 'red', used: 0, pct: 100, exhausted: true }; }
   try { s.aiLeft = await aiBudgetLeft(env); } catch { /* */ }
   const since = Date.now() - 15 * 60_000;
   try {
@@ -87,7 +91,7 @@ export async function sense(env: Env, st: BrainState): Promise<Signals> {
   try { s.wildDrops = await q<{ store: string; n: number; wild: number }>('SELECT store, COUNT(*) AS n, SUM(CASE WHEN pct>=80 THEN 1 ELSE 0 END) AS wild FROM drops WHERE at>? GROUP BY store', new Date(Date.now() - 86400_000).toISOString()); } catch { /* */ }
   try { s.rateHot = await q<{ key: string; count: number }>('SELECT key, count FROM rate WHERE reset>? ORDER BY count DESC LIMIT 5', Math.floor(Date.now() / 1000)); } catch { /* */ }
   s.secrets = { jwtLen: (env.JWT_SECRET ?? '').length, corsWildcard: (env.ALLOWED_ORIGINS ?? '').split(',').some((o) => o.trim() === '*'), adminEmails: (env.ADMIN_EMAILS ?? '').split(',').filter((x) => x.includes('@')).length };
-  try { const c = (await q<{ n: number; ni: number; na: number }>('SELECT COUNT(*) AS n, SUM(CASE WHEN image IS NULL OR image=\'\' THEN 1 ELSE 0 END) AS ni, SUM(CASE WHEN title_ar IS NULL OR title_ar=\'\' THEN 1 ELSE 0 END) AS na FROM catalog'))[0]; if (c) s.content = { products: c.n, noImage: c.ni ?? 0, noArabic: c.na ?? 0 }; } catch { /* */ }
+  try { const c = (await q<{ n: number; ni: number }>('SELECT COUNT(*) AS n, SUM(CASE WHEN image IS NULL OR image=\'\' THEN 1 ELSE 0 END) AS ni FROM catalog'))[0]; if (c) s.content = { products: c.n, noImage: c.ni ?? 0, noArabic: 0 }; } catch { /* */ }
   try {
     const d = (n: number) => new Date(Date.now() - n * 86400_000).toISOString();
     const g = (await q<{ a: number; b: number; c: number; p: number }>(`SELECT (SELECT COUNT(*) FROM users WHERE created_at>?) a, (SELECT COUNT(*) FROM users WHERE created_at>? AND created_at<=?) b,
@@ -142,9 +146,9 @@ export function rulePlan(fs: Finding[], acted: number, pending: number): Omit<Pl
 }
 async function narrate(env: Env, st: BrainState, sig: string, acted: number): Promise<Plan> {
   const base = rulePlan(st.findings, acted, st.pending.length);
-  const due = !st.plan || (st.plan.sig !== sig && Date.now() - Date.parse(st.plan.at) > 15 * 60_000) || Date.now() - Date.parse(st.plan.at) > 3 * 3600_000;
+  const due = !st.plan || (st.plan.sig !== sig && (Date.now() - Date.parse(st.plan.at) > 15 * 60_000 || st.findings.some((f) => f.sev === 'crit' && !st.plan!.sig.includes(f.id)))) || Date.now() - Date.parse(st.plan.at) > 3 * 3600_000;
   if (!due) return st.plan!;
-  if (!st.findings.length) return { at: nowIso(), sig, ...base, model: 'rules' };
+  if (!st.findings.some((f) => f.sev !== 'info')) return { at: nowIso(), sig, ...base, model: 'rules' }; // no AI spend on a calm day
   const prompt = `انت "العقل الرئيسي" لموقع صفقة (مقارنة أسعار في مصر). فريقك: الطبيب، الكتالوج، الأسعار، الأمن، المحتوى، النمو.
 المشاكل دلوقتي:\n${st.findings.map((f) => `- [${f.sev}] (${f.spec}) ${f.title}${f.detail ? ` — ${f.detail}` : ''}`).join('\n')}
 اللي اتعمل تلقائي: ${st.done.slice(0, 5).map((d) => `${FIX_AR[d.fix.t]} ${d.fix.target} (${d.status})`).join('، ') || 'ولا حاجة'}
@@ -189,7 +193,7 @@ export async function brainTick(env: Env, opts: { manual?: string } = {}) {
   st.findings = findings;
   const globalAuto = await env.DB.prepare("SELECT enabled FROM flags WHERE key='owner_autopilot'").first<{ enabled: number }>().then((r) => Boolean(r?.enabled)).catch(() => false);
   const autopilot = st.settings.auto && globalAuto;
-  const plan = planFixes(findings.filter((f) => !st.done.some((d) => d.finding === f.id && d.status === 'ineffective' && Date.now() - Date.parse(d.at) < 6 * 3600_000)), st.done, Date.now(), autopilot);
+  const plan = planFixes(findings.filter((f) => !st.done.some((d) => d.finding === f.id && d.status === 'ineffective' && Date.now() - Date.parse(d.at) < 6 * 3600_000)), st.done, Date.now(), autopilot, 3, !s.budget?.exhausted);
   let acted = 0;
   for (const { fix, finding } of plan.act) {
     const r = await execute(env, fix, st).catch((e) => ({ ok: false, note: String((e as Error).message ?? e).slice(0, 160), undo: undefined }));
