@@ -261,7 +261,7 @@ body { overflow-x: clip; }
 .t-price { font-size: 1.25rem; line-height: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; white-space: nowrap; }
 [data-device="phone"] .t-title { font-size: 0.875rem; }
 [data-device="phone"] .t-price { font-size: 1.0625rem; }
-.num, .t-price, [data-num] { font-variant-numeric: tabular-nums; unicode-bidi: plaintext; }
+.num, .t-price, [data-num] { font-variant-numeric: tabular-nums; unicode-bidi: isolate; }
 
 /* Touch targets */
 [data-pointer="coarse"] button, [data-pointer="coarse"] a { touch-action: manipulation; }

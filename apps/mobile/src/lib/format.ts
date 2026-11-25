@@ -1,6 +1,6 @@
 /** One digits style everywhere (Latin digits, like Egyptian stores print them). */
 export const num = (n: number, d = 0) => (Number.isFinite(n) ? n.toLocaleString('en-US', { maximumFractionDigits: d }) : '—');
-export const egp = (n: number | null | undefined) => (n == null ? '—' : `${num(Math.round(n))} ج.م`);
+export const egp = (n: number | null | undefined) => (n == null ? '—' : `\u2068${num(Math.round(n))}\u00a0ج.م\u2069`);
 export const pct = (n: number) => `${num(Math.round(n))}%`;
 export function ago(iso: string): string {
   const s = Math.max(0, (Date.now() - Date.parse(iso)) / 1000);

@@ -3,7 +3,7 @@
 import { formatEGP, localized } from '@safqa/shared';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { Bell, CheckCircle2, Clock, Copy, ExternalLink, Flame, Link2, Puzzle, Radio, Share2, ShieldCheck, Sparkles, Tag, ThumbsDown, ThumbsUp, TrendingDown, XCircle } from 'lucide-react';
+import { Bell, CheckCircle2, Copy, ExternalLink, Flame, Link2, Puzzle, Radio, Share2, ShieldCheck, Sparkles, Tag, ThumbsDown, ThumbsUp, TrendingDown, XCircle } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { CardGrid, CAT_EMOJI, LivePill, PredictionCard, RemoteThumb, SeriesChart, VoteBar } from '../components/v5';
 import { CountUp, PageHeader, Skeleton, useToast } from '../fx/fx';
@@ -130,14 +130,21 @@ export function V5ProductPage({ id }: { id: string }) {
             {p.titleAr !== p.titleEn ? <p className="t-meta mt-1" dir="auto">{ar ? p.titleEn : p.titleAr}</p> : null}
           </div>
           <div className="flex flex-wrap items-end justify-between gap-3 rounded-3xl border border-border bg-card p-4">
-            <div>
+            <div className="min-w-0 flex-[1_1_18rem]">
               <p className="t-meta">{tr(`أحسن سعر في ${offer.store.nameAr}`, `Best price at ${offer.store.nameEn}`)}</p>
               <p key={offer.priceEgp} className="num price-flip text-4xl font-black tracking-tight">{formatEGP(offer.priceEgp, locale)}</p>
-              <p className="t-meta num mt-1 flex flex-wrap gap-x-3">
-                {p.v5?.low ? <span>{tr('أقل سعر شفناه', 'Lowest seen')}: <b>{formatEGP(p.v5.low, locale)}</b></span> : null}
-                {saving > 0 ? <span className="text-palm">{tr(`بتوفّر ${formatEGP(saving, locale)} عن أغلى متجر`, `Save ${formatEGP(saving, locale)} vs priciest store`)}</span> : null}
-                {p.v5?.checkedAt ? <span><Clock className="inline h-3 w-3" /> {ago(p.v5.checkedAt, ar)}</span> : null}
-              </p>
+              <dl data-qa="price-stats" className="mt-3 grid grid-cols-3 gap-2 text-center">
+                {[
+                  { k: 'low', label: tr('أقل سعر شفناه', 'Lowest seen'), value: p.v5?.low ? formatEGP(p.v5.low, locale) : '—', cls: '' },
+                  { k: 'save', label: tr('بتوفّر عن أغلى متجر', 'Save vs priciest'), value: saving > 0 ? formatEGP(saving, locale) : '—', cls: saving > 0 ? 'text-palm' : '' },
+                  { k: 'ago', label: tr('آخر تحديث', 'Last checked'), value: p.v5?.checkedAt ? ago(p.v5.checkedAt, ar) : '—', cls: '' },
+                ].map((x) => (
+                  <div key={x.k} className="min-w-0 rounded-2xl bg-accent/60 px-2 py-2">
+                    <dt className="truncate text-[11px] leading-4 text-muted">{x.label}</dt>
+                    <dd className={`num mt-0.5 truncate whitespace-nowrap text-sm font-bold leading-5 tabular-nums ${x.cls}`}><bdi dir="auto">{x.value}</bdi></dd>
+                  </div>
+                ))}
+              </dl>
             </div>
             <VoteBar id={p.id} hot={p.votes.hot} cold={p.votes.cold} heat={p.v5?.heat ?? 0} size="md" />
           </div>

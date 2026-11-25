@@ -12,7 +12,8 @@ export function formatNumber(value: number, digits = 0): string {
 
 export function formatEGP(value: number, locale: Locale): string {
   const n = formatNumber(Math.round(value));
-  return locale === 'ar' ? `${n}\u00a0ج.م` : `EGP\u00a0${n}`;
+  // Bidi-isolated (FSI…PDI) so an amount never jumbles with surrounding Arabic/English text.
+  return locale === 'ar' ? `\u2068${n}\u00a0ج.م\u2069` : `\u2068EGP\u00a0${n}\u2069`;
 }
 
 export function formatPct(value: number, _locale: Locale): string {
