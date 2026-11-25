@@ -32,11 +32,27 @@ export function memberCard(u: Pick<UserRow, 'id' | 'name' | 'picture' | 'handle'
   return { id: u.id, name: u.name, picture: u.picture, handle: u.handle, tier: effectiveTier(u), xp: u.xp, badges: parseJ<string[]>(u.badges, []), joinedAt: u.created_at };
 }
 
-export async function issue(env: Env, u: UserRow, extra: Record<string, unknown> = {}) {
+const REFRESH_DAYS = 60;
+/**
+ * Access token (1 h) + refresh token (60 days, sliding). The refresh token is a
+ * random id stored hashed in D1. If D1 refuses writes (free-tier daily write cap),
+ * sign-in must still work: we fall back to a signed, stateless refresh JWT
+ * (typ "refresh", bound to token_version so "sign out everywhere" still revokes it),
+ * or keep the caller's current refresh token when rotating fails.
+ */
+export async function issue(env: Env, u: UserRow, extra: Record<string, unknown> = {}, keep?: string) {
   const accessToken = await signJwt({ sub: u.id, tv: u.token_version }, env.JWT_SECRET, 3600);
-  const refresh = uid('r_') + uid();
-  await env.DB.prepare('INSERT INTO sessions (id,user_id,exp,created_at) VALUES (?,?,?,?)').bind(await sha256(refresh), u.id, Date.now() + 60 * 86400_000, nowIso()).run();
-  await env.DB.prepare('UPDATE users SET last_seen=? WHERE id=?').bind(nowIso(), u.id).run();
+  let refresh = uid('r_') + uid();
+  try {
+    await env.DB.prepare('INSERT INTO sessions (id,user_id,exp,created_at) VALUES (?,?,?,?)').bind(await sha256(refresh), u.id, Date.now() + REFRESH_DAYS * 86400_000, nowIso()).run();
+  } catch {
+    refresh = keep ?? (await signJwt({ sub: u.id, tv: u.token_version, typ: 'refresh' }, env.JWT_SECRET, REFRESH_DAYS * 86400));
+  }
+  try {
+    await env.DB.prepare('UPDATE users SET last_seen=? WHERE id=?').bind(nowIso(), u.id).run();
+  } catch {
+    /* read-only D1: last_seen can wait */
+  }
   return { accessToken, refreshToken: refresh, user: publicUser(u, env), ...extra };
 }
 
@@ -86,22 +102,36 @@ export async function google(env: Env, body: Record<string, unknown>) {
   }
   let u = await getUserByEmail(env, c.email);
   if (!u) u = await createUser(env, c.email, c.name || c.email, { google_sub: c.sub, picture: c.picture ?? null });
-  else await env.DB.prepare('UPDATE users SET google_sub=?, picture=COALESCE(?,picture) WHERE id=?').bind(c.sub, c.picture ?? null, u.id).run();
+  else await env.DB.prepare('UPDATE users SET google_sub=?, picture=COALESCE(?,picture) WHERE id=?').bind(c.sub, c.picture ?? null, u.id).run().catch(() => undefined); // read-only D1: sign in anyway
   u = (await getUser(env, u.id)) as UserRow;
   return issue(env, u, { picture: c.picture ?? null });
 }
 
 export async function refresh(env: Env, body: Record<string, unknown>) {
-  const id = await sha256(str(body.refreshToken, 200));
+  const token = str(body.refreshToken, 2000);
+  // Stateless refresh JWT (issued while D1 was read-only).
+  if (token.split('.').length === 3) {
+    const c = await verifyJwt<{ sub: string; tv: number; typ?: string }>(token, env.JWT_SECRET);
+    if (!c || c.typ !== 'refresh') return fail(401, 'invalid_refresh', 'Session expired');
+    const u = await getUser(env, c.sub);
+    if (!u || u.token_version !== c.tv) return fail(401, 'invalid_refresh', 'Session expired');
+    return issue(env, u, {}, token); // upgrades to a D1 session when writes work again
+  }
+  const id = await sha256(token);
   const s = await env.DB.prepare('SELECT user_id, exp FROM sessions WHERE id=?').bind(id).first<{ user_id: string; exp: number }>();
   if (!s || s.exp < Date.now()) fail(401, 'invalid_refresh', 'Session expired');
-  await env.DB.prepare('DELETE FROM sessions WHERE id=?').bind(id).run(); // rotate
   const u = await getUser(env, (s as { user_id: string }).user_id);
   if (!u) return fail(401, 'invalid_refresh', 'Session expired');
-  return issue(env, u);
+  let rotated = true;
+  try {
+    await env.DB.prepare('DELETE FROM sessions WHERE id=?').bind(id).run(); // rotate
+  } catch {
+    rotated = false; // read-only D1: keep using the same refresh token
+  }
+  return issue(env, u, {}, rotated ? undefined : token);
 }
 export async function logout(env: Env, body: Record<string, unknown>) {
-  await env.DB.prepare('DELETE FROM sessions WHERE id=?').bind(await sha256(str(body.refreshToken, 200))).run();
+  await env.DB.prepare('DELETE FROM sessions WHERE id=?').bind(await sha256(str(body.refreshToken, 2000))).run().catch(() => undefined);
   return { ok: true };
 }
 
