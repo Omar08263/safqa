@@ -43,6 +43,8 @@ export interface Signals {
   content?: { products: number; noImage: number; noArabic: number };
   growth?: { new7: number; newPrev7: number; checkouts30: number; paid30: number };
   paused?: Record<string, number>;
+  /** v6 systems (apps/edge/src/systems): flag state + their own health. */
+  systems?: { id: string; flag: string; on: boolean; down?: string[]; ageH?: number | null; a11y?: number | null }[];
 }
 
 const h = (ms: number) => ms / 3600_000;
@@ -100,6 +102,13 @@ export function diagnose(s: Signals): Finding[] {
   // 📈 النمو
   if (s.growth && s.growth.newPrev7 >= 10 && s.growth.new7 < s.growth.newPrev7 * 0.6) f.push({ id: 'growth_drop', spec: 'numuw', sev: 'warn', title: `التسجيلات الجديدة نزلت ${Math.round((1 - s.growth.new7 / s.growth.newPrev7) * 100)}% عن الأسبوع اللي فات`, fixes: [{ t: 'run_agent', target: 'numuw' }] });
   if (s.growth && s.growth.checkouts30 >= 10 && s.growth.paid30 / s.growth.checkouts30 < 0.3) f.push({ id: 'checkout_leak', spec: 'numuw', sev: 'info', title: `${Math.round((1 - s.growth.paid30 / s.growth.checkouts30) * 100)}% من محاولات الدفع ماكملتش`, fixes: [] });
+  // 🧩 v6 systems
+  for (const x of s.systems ?? []) {
+    if (!x.on) continue;
+    if (x.id === 'uptime' && x.down?.length) f.push({ id: `uptime:${x.down.join(',')}`, spec: 'tabib', sev: x.down.length > 1 ? 'crit' : 'warn', title: `نبض صفقة: ${x.down.join('، ')} مش بيرد`, fixes: [{ t: 'cache_purge', target: 'config' }] });
+    if (x.id === 'twins' && x.ageH != null && x.ageH > 7 * 24) f.push({ id: 'twins_stale', spec: 'katalog', sev: 'info', title: `فهرس «توأم المنتج» قديم (${Math.round(x.ageH / 24)} يوم)`, fixes: [{ t: 'issue', target: 'twins_stale', title: 'Cross-store twins index is stale', body: 'Re-run deploy/pages/deploy.sh (it rebuilds deploy/ai/twins.py from the offline-AI index).' }] });
+    if (x.id === 'quality' && x.a11y != null && x.a11y < 85) f.push({ id: 'a11y_low', spec: 'muhtawa', sev: 'info', title: `درجة سهولة الاستخدام (Accessibility) ${x.a11y}/100`, fixes: [] });
+  }
   return f;
 }
 

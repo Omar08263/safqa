@@ -99,6 +99,19 @@ export async function sense(env: Env, st: BrainState): Promise<Signals> {
       (SELECT COUNT(*) FROM payments WHERE created_at>?) c, (SELECT COUNT(*) FROM payments WHERE created_at>? AND status IN ('approved','provisional')) p`, d(7), d(14), d(7), d(30), d(30)))[0];
     if (g) s.growth = { new7: g.a, newPrev7: g.b, checkouts30: g.c, paid30: g.p };
   } catch { /* */ }
+  try {
+    const { SYSTEMS, systemFlags } = await import('../systems/registry');
+    const { uptimeSummary } = await import('../systems/uptime');
+    const [flags, up, twins, qa] = await Promise.all([
+      systemFlags(env), uptimeSummary(env).catch(() => null),
+      fetch(`${site}/ai/twins/meta.json`, { cf: { cacheTtl: 3600 } } as RequestInit).then((r) => (r.ok ? r.json() as Promise<{ at: string }> : null)).catch(() => null),
+      fetch('https://raw.githubusercontent.com/Omar08263/safqa/status-data/quality/latest.json', { cf: { cacheTtl: 3600 } } as RequestInit).then((r) => (r.ok ? r.json() as Promise<{ avg?: { accessibility?: number } }> : null)).catch(() => null),
+    ]);
+    s.systems = SYSTEMS.map((x) => ({ id: x.id, flag: x.flag, on: flags[x.id]?.on ?? x.defaultOn,
+      down: x.id === 'uptime' ? (up?.checks ?? []).filter((c) => !c.ok && c.id !== 'api').map((c) => c.name) : undefined,
+      ageH: x.id === 'twins' && twins?.at ? (Date.now() - Date.parse(twins.at)) / 3600_000 : null,
+      a11y: x.id === 'quality' ? qa?.avg?.accessibility ?? null : null }));
+  } catch { /* systems optional */ }
   return s;
 }
 
