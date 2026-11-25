@@ -7,12 +7,14 @@ export const API: string = (Constants.expoConfig?.extra?.apiUrl as string) ?? 'h
 export const HUB_WEB: string = (Constants.expoConfig?.extra?.hubWeb as string) ?? 'https://safqa-admin.pages.dev';
 const KA = 'hub.access', KR = 'hub.refresh';
 let access: string | null = null, refresh: string | null = null;
+let adminPass: string | null = null; // owner 2FA pass for this paired device (30 days), see docs/security.md
 const listeners = new Set<(on: boolean) => void>();
 export const onAuth = (f: (on: boolean) => void) => { listeners.add(f); return () => { listeners.delete(f); }; };
 const emit = () => listeners.forEach((f) => f(Boolean(access)));
 
 export async function hydrate() {
   access = await SecureStore.getItemAsync(KA); refresh = await SecureStore.getItemAsync(KR);
+  adminPass = await SecureStore.getItemAsync('hub.2fa');
   return Boolean(access);
 }
 async function save(a: string | null, r: string | null) {
@@ -39,7 +41,7 @@ async function doRefresh() {
 }
 
 export async function api<T = any>(path: string, init: { method?: string; body?: unknown } = {}, retry = true): Promise<T> {
-  const res = await fetch(API + path, { method: init.method ?? 'GET', headers: { 'content-type': 'application/json', ...(access ? { authorization: `Bearer ${access}` } : {}) }, body: init.body === undefined ? undefined : JSON.stringify(init.body) });
+  const res = await fetch(API + path, { method: init.method ?? 'GET', headers: { 'content-type': 'application/json', ...(access ? { authorization: `Bearer ${access}` } : {}), ...(adminPass ? { 'x-safqa-2fa': adminPass } : {}) }, body: init.body === undefined ? undefined : JSON.stringify(init.body) });
   if (res.status === 401 && retry && (await doRefresh())) return api(path, init, false);
   const data = await res.json().catch(() => null);
   if (!res.ok) throw new Error(data?.error?.message || `HTTP ${res.status}`);
@@ -51,6 +53,7 @@ export async function claim(code: string) {
   const r = await fetch(`${API}/api/v2/hub/pair/claim`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ code, device: 'Safqa Hub Android' }) });
   const j = await r.json().catch(() => null);
   if (!r.ok) throw new Error(j?.error?.message || 'الكود مش شغال');
+  if (j.adminPass) { adminPass = j.adminPass; await SecureStore.setItemAsync('hub.2fa', j.adminPass); }
   await save(j.accessToken, j.refreshToken);
 }
 

@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import * as SecureStore from 'expo-secure-store';
 import { useSyncExternalStore } from 'react';
+import { learnClock, signHeaders } from './sign';
 
 const extra = (Constants.expoConfig?.extra ?? {}) as { apiUrl?: string; telegramUrl?: string };
 export const API_URL = (extra.apiUrl ?? 'https://safqa-api.safqaeg.workers.dev').replace(/\/$/, '');
@@ -59,7 +60,11 @@ async function raw(path: string, init: RequestInit = {}, timeoutMs = 12_000) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    return await fetch(API_URL + path, { ...init, signal: ctrl.signal });
+    const method = (init.method ?? 'GET').toUpperCase();
+    const signed = signHeaders(method, path, typeof init.body === 'string' ? init.body : '');
+    const res = await fetch(API_URL + path, { ...init, headers: { ...(init.headers as Record<string, string> | undefined), ...signed }, signal: ctrl.signal });
+    learnClock(res);
+    return res;
   } finally {
     clearTimeout(timer);
   }

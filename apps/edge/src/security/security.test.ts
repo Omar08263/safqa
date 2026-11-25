@@ -194,3 +194,14 @@ describe('intrusion log', () => {
     expect(await allow({}, 'RL_NONCE', 'n1')).toBe(false);
   });
 });
+
+describe('mobile signer ↔ server verifier', () => {
+  it('signatures made by the app (pure-JS HMAC) verify on the Worker', async () => {
+    const { signHeaders } = await import('../../../mobile/src/lib/sign');
+    const body = JSON.stringify({ productId: 'p1', note: 'عربي' });
+    const h = signHeaders('POST', '/api/watchlist?x=1', body, 'k-app');
+    const req = new Request('https://x/api/watchlist?x=1', { method: 'POST', headers: h, body });
+    expect((await verifySignature('k-app', req, await req.clone().arrayBuffer())).status).toBe('ok');
+    expect(signHeaders('GET', '/api/x', '', 'k-app')).toEqual({});
+  });
+});
