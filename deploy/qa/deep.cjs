@@ -28,7 +28,7 @@ function checks() {
   while (walker.nextNode()) {
     const t = walker.currentNode; const txt = t.textContent.trim(); if (!txt) continue;
     const el = t.parentElement; if (!el || seen.has(el) || skip(el) || !vis(el)) continue; seen.add(el);
-    const r = document.createRange(); r.selectNodeContents(t); const b = r.getBoundingClientRect(); if (!b.width || b.bottom < 0 || b.top > document.documentElement.scrollHeight) continue;
+    const r = document.createRange(); r.selectNodeContents(t); let b = r.getBoundingClientRect(); { const cs = getComputedStyle(el); if (cs.overflow !== 'visible' || cs.webkitLineClamp !== 'none') { const e = el.getBoundingClientRect(); const L = Math.max(b.left, e.left), T = Math.max(b.top, e.top), Rr = Math.min(b.right, e.right), B = Math.min(b.bottom, e.bottom); b = { left: L, top: T, right: Rr, bottom: B, width: Math.max(0, Rr - L), height: Math.max(0, B - T) }; } } if (!b.width || b.bottom < 0 || b.top > document.documentElement.scrollHeight) continue;
     leaves.push({ el, b, txt, fixed: inFixed(el) });
     const ff = getComputedStyle(el).fontFamily.split(',')[0].replace(/["']/g, '').trim(); R.fonts[ff] = (R.fonts[ff] || 0) + 1;
     if (/^(0|0%|0 ?ج\.م|NaN|undefined|null|\[object Object\]|Invalid Date|-?Infinity)$/.test(txt) || /\b(NaN|undefined|Invalid Date)\b/.test(txt)) R.bare.push(desc(el));
