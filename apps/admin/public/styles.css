@@ -49,3 +49,25 @@ table{width:100%;border-collapse:collapse}th,td{text-align:start;padding:10px 8p
 @media (max-width:860px){.layout{grid-template-columns:1fr}.side{display:none}.bottom{display:flex;position:fixed;bottom:0;inset-inline:0;background:rgba(11,18,32,.95);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:20;overflow-x:auto;gap:2px}
 .bottom a{flex:0 0 auto;min-width:64px;text-align:center;color:var(--muted);text-decoration:none;font-size:11px;padding:4px 6px;border-radius:10px;position:relative}.bottom a span{display:block;font-size:20px}.bottom a.on{color:#fff;background:var(--panel2)}.bottom .badge{position:absolute;top:0;left:6px}
 .pay{grid-template-columns:1fr}.pay img.rc{width:100%}.g2{grid-template-columns:1fr}.top h1{font-size:20px}}
+/* ---------- Safqa Hub layer ---------- */
+:root{--spring:linear(0,.009,.035 2.1%,.141,.281 6.7%,.723 12.9%,.938 16.7%,1.017,1.077,1.121,1.149 24.3%,1.159,1.163,1.161,1.154 29.9%,1.129 32.8%,1.051 39.6%,1.017 43.1%,.991,.977 51%,.974 53.8%,.975 57.1%,.997 69.8%,1.003 76.9%,1)}
+.card{animation:in .55s var(--spring) both;transition:transform .35s var(--spring),box-shadow .3s,border-color .3s;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:linear-gradient(180deg,rgba(23,33,58,.78),rgba(13,21,38,.82))}
+.grid>.card:nth-child(2){animation-delay:40ms}.grid>.card:nth-child(3){animation-delay:80ms}.grid>.card:nth-child(4){animation-delay:120ms}.grid>.card:nth-child(5){animation-delay:160ms}
+.btn{transition:transform .3s var(--spring),filter .15s}.btn:active{transform:scale(.94)}
+.hero{position:relative;overflow:hidden;padding:22px;border-color:rgba(245,181,36,.25)}
+.aurora{position:absolute;inset:-40%;background:conic-gradient(from 0deg,rgba(31,166,122,.25),rgba(167,139,250,.22),rgba(245,181,36,.2),rgba(56,189,248,.2),rgba(31,166,122,.25));filter:blur(60px);animation:spinA 18s linear infinite;pointer-events:none}
+@keyframes spinA{to{transform:rotate(360deg)}}
+.gauge{display:grid;place-items:center;position:relative;text-align:center}.gauge b{position:absolute;top:26px;font-size:18px}.gauge small{color:var(--muted);font-size:11.5px;margin-top:2px}
+.crew{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px;margin-top:10px}.mate{display:grid;justify-items:center;text-align:center;gap:2px}.mate.off{opacity:.4;filter:grayscale(1)}.mate small{color:var(--muted);font-size:11px}
+.ringwrap{position:relative;display:grid;place-items:center}.ringwrap span{position:absolute;font-size:24px}
+.mate:hover .ringwrap{animation:bob .6s var(--spring)}@keyframes bob{40%{transform:translateY(-6px) scale(1.06)}}
+.tl{display:flex;flex-direction:column;gap:10px;max-height:420px;overflow:auto}.tl>div{display:grid;grid-template-columns:28px 1fr;gap:6px;align-items:start}.tl small{display:block}.tl pre{white-space:pre-wrap;background:#0a1222;padding:8px;border-radius:8px;max-height:200px;overflow:auto}
+.report{white-space:pre-wrap;line-height:1.9;font-size:14px;margin-top:8px}
+.hint{background:rgba(245,181,36,.08);border:1px dashed rgba(245,181,36,.4);padding:8px 10px;border-radius:10px}
+.esc{transition:opacity .3s,transform .35s var(--spring)}.esc.gone{opacity:0;transform:translateX(-30px) scale(.96)}
+.ladder .rk{display:grid;justify-items:center;text-align:center;min-width:96px;gap:2px}.ladder .rk span{font-size:26px}.ladder .rk small{font-size:11px;max-width:120px}.ladder .arrow{color:var(--muted);font-style:normal}
+.agentcard{border-top:3px solid var(--c)}.note{background:#0b1427;border-radius:10px;padding:8px 10px}
+.digits{font-size:46px;font-weight:800;letter-spacing:8px;margin:16px 0 6px;background:linear-gradient(90deg,#ffd76a,#fff,#22c58b);-webkit-background-clip:text;background-clip:text;color:transparent;animation:in .6s var(--spring)}
+.sfab{position:fixed;bottom:18px;left:18px;z-index:40;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(17,26,46,.85);backdrop-filter:blur(8px);font-size:18px;cursor:pointer;box-shadow:var(--sh)}
+@media (max-width:860px){.sfab{bottom:84px}.gauge b{top:26px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

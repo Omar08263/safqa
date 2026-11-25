@@ -1,4 +1,6 @@
-// Safqa admin — a dependency-free PWA. Talks only to the Safqa edge API.
+// Safqa Hub (admin) — a dependency-free PWA. Talks only to the Safqa edge API.
+import { installHub } from './hub.js';
+import { installTaps } from './asmr.js';
 const API = 'https://safqa-api.safqaeg.workers.dev';
 const SITE = 'https://safqaeg.pages.dev';
 const GOOGLE_CLIENT_ID = '700154178904-k0hi0kp5v19m775u8t1bt6m6mnfhrghc.apps.googleusercontent.com';
@@ -63,13 +65,13 @@ const PAGES = [
   ['moderation', '⚖️', 'الإشراف والتظلمات'], ['content', '💬', 'المحتوى'], ['agents', '🧠', 'الوكلاء'], ['catalog', '🛒', 'الأسعار'], ['broadcast', '📣', 'الإعلانات'], ['settings', '⚙️', 'الإعدادات'],
 ];
 let counts = {};
-const page = () => (location.hash.replace(/^#\/?/, '').split('?')[0] || 'dashboard');
+const page = () => (location.hash.replace(/^#\/?/, '').split('?')[0] || 'hub');
 window.addEventListener('hashchange', () => render());
 
 function shell(title, body) {
   const nav = PAGES.map(([id, e, t]) => `<a href="#/${id}" class="${page() === id ? 'on' : ''}">${e} <span>${t}</span>${counts[id] ? `<span class="badge">${counts[id]}</span>` : ''}</a>`).join('');
   const bottom = PAGES.map(([id, e, t]) => `<a href="#/${id}" class="${page() === id ? 'on' : ''}"><span>${e}</span>${t.split(' ')[0]}${counts[id] ? `<i class="badge">${counts[id]}</i>` : ''}</a>`).join('');
-  $('#app').innerHTML = `<div class="layout"><aside class="side"><div class="brand"><img src="/icons/admin-192.png" alt=""><div><b>إدارة صفقة</b><small>لوحة صاحب الموقع</small></div></div><nav class="nav">${nav}</nav>
+  $('#app').innerHTML = `<div class="layout"><aside class="side"><div class="brand"><img src="/icons/admin-192.png" alt=""><div><b>Safqa Hub</b><small>الموقع + التطبيق + الإدارة</small></div></div><nav class="nav">${nav}</nav>
   <div class="muted small" style="padding:14px 12px">كل الوكلاء هنا ذكاء اصطناعي 🤖 بيشتغلوا على Workers AI المجاني.</div></aside>
   <main class="main"><div class="top"><h1>${title}</h1><span class="sp"></span><div class="me">${me?.picture ? `<img src="${esc(me.picture)}" alt="">` : ''}<span>${esc(me?.name || '')}</span><button class="btn s" id="logout">خروج</button></div></div><div id="view">${body}</div></main></div><nav class="bottom">${bottom}</nav>`;
   $('#logout').onclick = async () => { await post('/api/auth/logout', { refreshToken: store.r }).catch(() => 0); store.set(null, null); render(); };
@@ -253,6 +255,8 @@ VIEWS.ops = async (v) => {
   draw();
 };
 
+installHub({ PAGES, VIEWS, api, post, esc, fmt, ago, toast });
+installTaps();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => 0);
 await completeLogin();
 render();
