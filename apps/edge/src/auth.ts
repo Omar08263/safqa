@@ -32,7 +32,7 @@ export function memberCard(u: Pick<UserRow, 'id' | 'name' | 'picture' | 'handle'
   return { id: u.id, name: u.name, picture: u.picture, handle: u.handle, tier: effectiveTier(u), xp: u.xp, badges: parseJ<string[]>(u.badges, []), joinedAt: u.created_at };
 }
 
-async function issue(env: Env, u: UserRow, extra: Record<string, unknown> = {}) {
+export async function issue(env: Env, u: UserRow, extra: Record<string, unknown> = {}) {
   const accessToken = await signJwt({ sub: u.id, tv: u.token_version }, env.JWT_SECRET, 3600);
   const refresh = uid('r_') + uid();
   await env.DB.prepare('INSERT INTO sessions (id,user_id,exp,created_at) VALUES (?,?,?,?)').bind(await sha256(refresh), u.id, Date.now() + 60 * 86400_000, nowIso()).run();

@@ -7,6 +7,8 @@ import * as C from './community';
 import * as pay from './payments';
 import { loadSnapshot, searchSnapshot, storeSnapshot } from './snapshot';
 import * as T from './telegram';
+import { registerHub } from './hub';
+import { autopilotTick } from './autopilot';
 import { tierById } from './tiers';
 import { cairoDay, type Env, fail, HttpError, json, nowIso, parseJ, rateLimit, readJson, str, timingSafeEqual, uid, b64 } from './util';
 
@@ -32,6 +34,7 @@ async function needAdmin(c: Ctx): Promise<string> {
   return a.user.email;
 }
 const body = (c: Ctx, max?: number) => readJson<Record<string, any>>(c.req, max);
+registerHub(on, { need, needAdmin, body });
 
 // ---------------- meta ----------------
 on('GET', '/api/health', async (c) => ({ ok: true, db: 'd1', edge: true, at: nowIso(), ai: (await aiBudgetLeft(c.env)) > 0 }));
@@ -681,6 +684,7 @@ export default {
         await env.DB.prepare('DELETE FROM sessions WHERE exp < ?').bind(Date.now()).run();
       }
       if (T.tgEnabled(env) && cairoH === 9 && d.getUTCMinutes() >= 30 && d.getUTCMinutes() < 40) await T.queueDigests(env);
+      await autopilotTick(env, d).catch((e) => console.log('autopilot', String(e)));
       await T.drainOutbox(env);
     })());
   },
