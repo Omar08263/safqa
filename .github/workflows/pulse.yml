@@ -25,13 +25,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with: { path: main, sparse-checkout: deploy/status }
       - name: Check out status-data (create on first run)
         run: |
           git clone --depth 1 --branch status-data "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" data \
             || { mkdir data && cd data && git init -q -b status-data && git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"; }
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with: { node-version: 22 }
       - name: Uptime probe
         run: node main/deploy/status/probe.mjs data
