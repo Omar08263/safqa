@@ -7,7 +7,7 @@
 name: pulse
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '0 */6 * * *'   # every 6 h: the Worker cron (apps/edge uptime.ts) covers the 10-min cadence; this job is the independent check + daily Lighthouse. 144 runs/day would burn ~4,320 min/month, over the 2,000 free private-repo quota.
     - cron: '30 1 * * *'   # 03:30 Cairo: quality audit
   workflow_dispatch:
     inputs:
